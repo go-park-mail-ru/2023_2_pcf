@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Здесь создаем новый файл хэндлера и описываем свой хендлер
 func PingHandler(w http.ResponseWriter, r *http.Request) {
 	response := struct {
 		Message string `json:"message"`

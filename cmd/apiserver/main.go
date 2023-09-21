@@ -16,17 +16,16 @@ func init() {
 }
 
 func main() {
-	flag.Parse()
+	flag.Parse() // Парсим флаг с путем до конфига
 
-	config := apiserver.NewConfig()
-	_, err := toml.DecodeFile(configPath, config)
+	config := apiserver.NewConfig()               // Создаем новый конфиг с дефолтными значениями
+	_, err := toml.DecodeFile(configPath, config) // Парсим файл в наш созданный конфиг
 	if err != nil {
-
+		// Здесь будет лог с уровнем еррор и отлов паники
 	}
 
 	s := apiserver.New(config)
 	if err := s.Start(); err != nil {
-
+		// Здесь будет лог с уровнем еррор и отлов паники
 	}
-
 }

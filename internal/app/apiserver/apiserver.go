@@ -23,10 +23,11 @@ func New(config *Config) *APIServer {
 func (s *APIServer) Start() error {
 	s.configureRouter()
 
-	log.Println("INFO: Starting API sever")
+	log.Println("INFO: Starting API sever") // Временный вариант, надо подумать над библиотекой логирования
 	return http.ListenAndServe(s.config.BindAddr, nil)
 }
 
+// Сюда пишем роуты
 func (s *APIServer) configureRouter() {
 	s.router.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
 
