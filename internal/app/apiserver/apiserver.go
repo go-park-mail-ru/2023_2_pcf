@@ -23,7 +23,7 @@ func New(config *Config) *APIServer {
 func (s *APIServer) Start() error {
 	s.configureRouter()
 
-	log.Println("INFO: Starting API sever") // Временный вариант, надо подумать над библиотекой логирования
+	log.Printf("INFO: Starting API sever on %s", s.config.BindAddr) // Временный вариант, надо подумать над библиотекой логирования
 	return http.ListenAndServe(s.config.BindAddr, nil)
 }
 
