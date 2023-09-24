@@ -11,6 +11,7 @@ import (
 type APIServer struct {
 	config *Config
 	router *mux.Router
+	store  *store.Store
 }
 
 func New(config *Config) *APIServer {
@@ -32,4 +33,14 @@ func (s *APIServer) configureRouter() {
 	s.router.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
 
 	http.Handle("/", s.router)
+}
+
+func (s *APIServer) configureStore() error {
+	st := store.New(s.config.Store)
+	if err := st.Open(); err != nil {
+		return err
+	}
+
+	s.store = s.store
+	return nil
 }
