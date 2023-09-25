@@ -1,4 +1,4 @@
-package model
+package models
 
 // Примерная структура модели для БД
 type User struct {

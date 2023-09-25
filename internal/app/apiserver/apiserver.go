@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"AdHub/internal/app/handlers"
+	"AdHub/internal/app/store"
 	"log"
 	"net/http"
 
@@ -22,6 +23,10 @@ func New(config *Config) *APIServer {
 }
 
 func (s *APIServer) Start() error {
+	if err := s.configureStore(); err != nil {
+		return err
+	}
+
 	s.configureRouter()
 
 	log.Printf("INFO: Starting API sever on %s", s.config.BindAddr) // Временный вариант, надо подумать над библиотекой логирования
