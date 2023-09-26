@@ -4,7 +4,6 @@ build:
 
 .PHONY: docker
 docker:
-	docker-compose down
 	docker-compose up --build
 
 .PHONY: docker-build

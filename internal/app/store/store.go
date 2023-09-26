@@ -33,7 +33,7 @@ func (s *Store) Close() {
 	s.db.Close()
 }
 
-// Чтобы обратиться допустим s.User.Add(us User)
+// Чтобы обратиться допустим s.User().Add(us User)
 func (s *Store) User() *UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository

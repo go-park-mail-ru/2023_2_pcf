@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"AdHub/internal/app/models"
+
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +30,18 @@ func (s *APIServer) Start() error {
 	}
 
 	s.configureRouter()
+	userNew, err := s.store.User().Add(&models.User{
+		Id:       1,
+		Login:    "ASD",
+		Password: "ASD",
+	})
 
+	_, err = s.store.User().Get(userNew.Login)
+	if err != nil {
+		return err
+	}
+
+	//log.Printf(*user.Login, *user.Id)
 	log.Printf("INFO: Starting API sever on %s", s.config.BindAddr) // Временный вариант, надо подумать над библиотекой логирования
 	return http.ListenAndServe(s.config.BindAddr, nil)
 }
@@ -46,6 +59,6 @@ func (s *APIServer) configureStore() error {
 		return err
 	}
 
-	s.store = s.store
+	s.store = st
 	return nil
 }
