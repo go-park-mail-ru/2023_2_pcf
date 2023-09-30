@@ -10,6 +10,7 @@ services:
       db:
         condition: service_healthy
 
+
   db:
     restart: always
     image: postgres:latest

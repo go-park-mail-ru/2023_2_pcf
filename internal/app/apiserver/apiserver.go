@@ -2,11 +2,10 @@ package apiserver
 
 import (
 	"AdHub/internal/app/handlers"
+	"AdHub/internal/app/models"
 	"AdHub/internal/app/store"
 	"log"
 	"net/http"
-
-	"AdHub/internal/app/models"
 
 	"github.com/gorilla/mux"
 )
@@ -30,18 +29,43 @@ func (s *APIServer) Start() error {
 	}
 
 	s.configureRouter()
-	userNew, err := s.store.User().Add(&models.User{
-		Id:       1,
-		Login:    "ASD",
-		Password: "ASD",
-	})
-
-	_, err = s.store.User().Get(userNew.Login)
+	userNew := &models.User{Id: 100, Login: "aSda14", Password: "dasdsa"}
+	// попробуй сделтаь new при возврате пользователя
+	userNew, err := s.store.User().Create(userNew)
 	if err != nil {
+		log.Printf("Create")
+	}
+
+	// почему-то ругается на строчку Get, возможно create что-то не возращает
+	rows, err := s.store.User().Get("aSda14")
+	if err != nil {
+		log.Printf("sad")
 		return err
 	}
 
-	//log.Printf(*user.Login, *user.Id)
+	defer rows.Close()
+
+	var user struct {
+		Id       int
+		Login    string
+		Password string
+	}
+
+	for rows.Next() {
+		var id int
+		var login, password string
+
+		err := rows.Scan(&user.Id, &user.Login, &user.Password)
+		if err != nil {
+			log.Printf("sad")
+		}
+		user.Id = id
+		user.Login = login
+		user.Password = password
+	}
+
+	log.Printf(user.Login)
+
 	log.Printf("INFO: Starting API sever on %s", s.config.BindAddr) // Временный вариант, надо подумать над библиотекой логирования
 	return http.ListenAndServe(s.config.BindAddr, nil)
 }
@@ -56,6 +80,7 @@ func (s *APIServer) configureRouter() {
 func (s *APIServer) configureStore() error {
 	st := store.New(s.config.Store)
 	if err := st.Open(); err != nil {
+		log.Printf("Database open error")
 		return err
 	}
 
