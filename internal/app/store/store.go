@@ -11,6 +11,7 @@ type Store struct {
 	config         *Config
 	db             *sql.DB
 	userRepository *UserRepository
+	adRepository   *AdRepository
 }
 
 func New(config *Config) *Store {
@@ -46,4 +47,16 @@ func (s *Store) User() *UserRepository {
 	}
 
 	return s.userRepository
+}
+
+func (s *Store) Ad() *AdRepository {
+	if s.adRepository != nil {
+		return s.adRepository
+	}
+
+	s.adRepository = &AdRepository{
+		store: s,
+	}
+
+	return s.adRepository
 }

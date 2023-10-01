@@ -1,8 +1,6 @@
 package apiserver
 
 import (
-	"AdHub/internal/app/handlers"
-	"AdHub/internal/app/models"
 	"AdHub/internal/app/store"
 	"log"
 	"net/http"
@@ -13,7 +11,7 @@ import (
 type APIServer struct {
 	config *Config
 	router *mux.Router
-	store  *store.Store
+	Store  *store.Store
 }
 
 func New(config *Config) *APIServer {
@@ -29,42 +27,6 @@ func (s *APIServer) Start() error {
 	}
 
 	s.configureRouter()
-	userNew := &models.User{Id: 100, Login: "aSda14", Password: "dasdsa"}
-	// попробуй сделтаь new при возврате пользователя
-	userNew, err := s.store.User().Create(userNew)
-	if err != nil {
-		log.Printf("Create")
-	}
-
-	// почему-то ругается на строчку Get, возможно create что-то не возращает
-	rows, err := s.store.User().Get("aSda14")
-	if err != nil {
-		log.Printf("sad")
-		return err
-	}
-
-	defer rows.Close()
-
-	var user struct {
-		Id       int
-		Login    string
-		Password string
-	}
-
-	for rows.Next() {
-		var id int
-		var login, password string
-
-		err := rows.Scan(&user.Id, &user.Login, &user.Password)
-		if err != nil {
-			log.Printf("sad")
-		}
-		user.Id = id
-		user.Login = login
-		user.Password = password
-	}
-
-	log.Printf(user.Login)
 
 	log.Printf("INFO: Starting API sever on %s", s.config.BindAddr) // Временный вариант, надо подумать над библиотекой логирования
 	return http.ListenAndServe(s.config.BindAddr, nil)
@@ -72,7 +34,16 @@ func (s *APIServer) Start() error {
 
 // Сюда пишем роуты
 func (s *APIServer) configureRouter() {
-	s.router.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
+	s.router.HandleFunc("/ping", PingHandler).Methods("GET")
+	s.router.HandleFunc("/user", s.UserReadHandler).Methods("GET")
+	s.router.HandleFunc("/user", s.UserCreateHandler).Methods("POST")
+	//s.router.HandleFunc("/user/{user_id:[0-9]+}", handlers.UserUpdateHandler).Methods("POST")
+	s.router.HandleFunc("/user", s.UserDeleteHandler).Methods("DELETE")
+	//s.router.HandleFunc("/ad/", handlers.AdHandler).Methods("GET")
+	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdReadHandler).Methods("GET")
+	//s.router.HandleFunc("/ad", handlers.AdCreateHandler).Methods("POST")
+	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdUpdateHandler).Methods("POST")
+	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdDeleteHandler).Methods("DELETE")
 
 	http.Handle("/", s.router)
 }
@@ -84,6 +55,6 @@ func (s *APIServer) configureStore() error {
 		return err
 	}
 
-	s.store = st
+	s.Store = st
 	return nil
 }

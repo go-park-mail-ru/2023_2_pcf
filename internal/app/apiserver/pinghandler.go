@@ -1,4 +1,4 @@
-package handlers
+package apiserver
 
 import (
 	"encoding/json"
