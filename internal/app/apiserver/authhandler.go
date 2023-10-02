@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-var MySessionStorage = auth.SessionStorage{
-	Sessions: make(map[string]int),
-}
-
 func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
@@ -35,19 +31,19 @@ func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
 			//do smg...
 		}
 		//check if this token already exists
-		for contains := MySessionStorage.Contains(newSession.Token); contains; MySessionStorage.Contains(newSession.Token) {
+		for contains := auth.MySessionStorage.Contains(newSession.Token); contains; auth.MySessionStorage.Contains(newSession.Token) {
 			err = newSession.SetToken()
 			if err != nil {
 				//do smg...
 			}
 		}
-		MySessionStorage.AddSession(newSession)
+		auth.MySessionStorage.AddSession(newSession)
 
 		w.WriteHeader(http.StatusCreated) // HTTP Status - 201
 		w.Header().Set("Content-Type", "application/json")
 		responseJSON, err := json.Marshal(newSession)
 		if err != nil {
-			defer MySessionStorage.RemoveSession(newSession.Token)
+			defer auth.MySessionStorage.RemoveSession(newSession.Token)
 			http.Error(w, "Failed to marshal JSON: "+err.Error(), http.StatusInternalServerError)
 			return
 		}

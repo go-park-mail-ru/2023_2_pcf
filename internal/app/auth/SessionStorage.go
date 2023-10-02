@@ -10,6 +10,10 @@ type SessionStorage struct {
 	mutex    sync.Mutex
 }
 
+var MySessionStorage = SessionStorage{
+	Sessions: make(map[string]int),
+}
+
 func (ss *SessionStorage) AddSession(session Session) {
 	ss.mutex.Lock()
 	defer ss.mutex.Unlock()
