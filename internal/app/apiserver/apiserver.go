@@ -44,6 +44,7 @@ func (s *APIServer) configureRouter() {
 	//s.router.HandleFunc("/ad", handlers.AdCreateHandler).Methods("POST")
 	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdUpdateHandler).Methods("POST")
 	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdDeleteHandler).Methods("DELETE")
+	s.router.HandleFunc("/auth", s.AuthHandler).Methods("POST")
 
 	http.Handle("/", s.router)
 }
