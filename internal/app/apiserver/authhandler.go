@@ -4,14 +4,11 @@ import (
 	"AdHub/internal/app/auth"
 	"AdHub/internal/app/models"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
 
 func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("123\n")
-	fmt.Printf("%v\n", r.Method)
 
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
@@ -53,7 +50,6 @@ func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		auth.MySessionStorage.AddSession(newSession)
 
-		w.WriteHeader(http.StatusCreated) // HTTP Status - 201
 		w.Header().Set("Content-Type", "application/json")
 		responseJSON, err := json.Marshal(newSession)
 		if err != nil {
@@ -69,10 +65,11 @@ func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 		}
 		http.SetCookie(w, cookie)
+		w.WriteHeader(http.StatusOK)
 		w.Write(responseJSON)
 
 	} else {
-		http.Error(w, "User check error: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Wrong password", http.StatusBadRequest)
 		return
 	}
 }
