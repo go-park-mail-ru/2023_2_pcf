@@ -15,7 +15,7 @@ func (r *AdRepository) Create(s *models.Ad) (*models.Ad, error) {
 		"INSERT INTO \"ad\" (name, description, sector, owner_id) VALUES($1, $2, $3, $4) RETURNING id;",
 		s.Name, s.Description, s.Sector, s.Owner_id,
 	).Scan(&s.Id); err != nil {
-		log.Panic(err)
+		log.Printf("Error: %s", err)
 		return nil, err
 	}
 
@@ -40,7 +40,7 @@ func (r *AdRepository) Update(s *models.Ad) error {
 		s.Name, s.Description, s.Sector, s.Owner_id, s.Id,
 	)
 	if err != nil {
-		log.Panic(err)
+		log.Printf("Error: %s", err)
 		return err
 	}
 

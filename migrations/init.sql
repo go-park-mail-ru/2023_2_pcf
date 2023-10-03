@@ -12,5 +12,5 @@ CREATE TABLE "ad" (
     description TEXT,
     sector VARCHAR(255),
     owner_id INT,
-    FOREIGEN KEY (owner_id) REFERENCES "user" (id)
+    FOREIGN KEY (owner_id) REFERENCES "user" (id)
 );
