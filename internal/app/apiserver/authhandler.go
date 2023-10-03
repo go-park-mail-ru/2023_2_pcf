@@ -4,11 +4,25 @@ import (
 	"AdHub/internal/app/auth"
 	"AdHub/internal/app/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
 
 func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("лох\n")
+	fmt.Printf("%v\n", r.Method)
+
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var user models.User
 	decoder := json.NewDecoder(r.Body)
