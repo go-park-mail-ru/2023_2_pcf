@@ -10,7 +10,7 @@ import (
 )
 
 func (s *APIServer) AuthHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("лох\n")
+	fmt.Printf("123\n")
 	fmt.Printf("%v\n", r.Method)
 
 	if r.Method == http.MethodOptions {
