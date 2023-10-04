@@ -11,6 +11,6 @@ func GenToken(length int) (str string, err error) {
 	if err != nil {
 		return str, err
 	}
-	str = base64.URLEncoding.EncodeToString(b)
+	str = base64.URLEncoding.EncodeToString(b)[:length]
 	return str, err
 }

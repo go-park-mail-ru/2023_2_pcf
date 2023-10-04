@@ -1,13 +1,15 @@
 package apiserver
 
 import (
+	"AdHub/internal/app/auth"
 	"AdHub/internal/app/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func (s *APIServer) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
@@ -20,23 +22,45 @@ func (s *APIServer) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-	var user models.User
+	var request struct {
+		Token       string `json:"token"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Sector      string `json:"sector"`
+	}
+
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&user); err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
 
-	newUser, err := s.Store.User().Create(&user)
+	userId, err := auth.MySessionStorage.GetUserId(request.Token)
 	if err != nil {
-		http.Error(w, "Error create user", http.StatusBadRequest)
+		log.Printf("%v", err)
+		http.Error(w, "Error get session", http.StatusBadRequest)
+		return
+	}
+
+	ad := models.Ad{
+		Id:          1,
+		Name:        request.Name,
+		Description: request.Description,
+		Sector:      request.Sector,
+		Owner_id:    userId,
+	}
+
+	newUser, err := s.Store.Ad().Create(&ad)
+	if err != nil {
+		http.Error(w, "Error create ad", http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated) // HTTP Status - 201
 	w.Header().Set("Content-Type", "application/json")
 	responseJSON, err := json.Marshal(newUser)
+	fmt.Println(len(auth.MySessionStorage.Sessions))
 	fmt.Println(responseJSON)
 	w.Write(responseJSON)
 }
