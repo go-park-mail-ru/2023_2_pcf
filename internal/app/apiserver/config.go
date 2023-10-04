@@ -1,9 +1,14 @@
 package apiserver
 
-import "github.com/spf13/viper"
+import (
+	"AdHub/internal/app/store"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	BindAddr string `toml:"bind_addr"`
+	Store    *store.Config
 }
 
 func Parse(configPath string) error {
@@ -22,6 +27,7 @@ func Parse(configPath string) error {
 func NewConfig() *Config {
 	return &Config{
 		BindAddr: viper.GetString("bind_addr"),
+		Store:    store.NewConfig(),
 	}
 
 }

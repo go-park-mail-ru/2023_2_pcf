@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  apiserver:
+    build: ./
+    command: ./apiserver
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "zxc123"
+      POSTGRES_DB: "adhub"
+    ports:
+      - 5436:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "adhub", "-U", "postgres"]
+      interval: 5s
+      retries: 10
