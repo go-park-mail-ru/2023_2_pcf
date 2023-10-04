@@ -20,14 +20,14 @@ func (ss *SessionStorage) AddSession(session Session) {
 	ss.Sessions[session.Token] = session.UserId
 }
 
-// removes 1 session (by its token)
+// RemoveSession removes 1 session (by its token)
 func (ss *SessionStorage) RemoveSession(token string) {
 	ss.mutex.Lock()
 	defer ss.mutex.Unlock()
 	delete(ss.Sessions, token)
 }
 
-// removes all Sessions assigned to this user (by userId)
+// RemoveUser removes all Sessions assigned to this user (by userId)
 func (ss *SessionStorage) RemoveUser(userId int) {
 	ss.mutex.Lock()
 	defer ss.mutex.Unlock()
@@ -51,6 +51,8 @@ func (ss *SessionStorage) RemoveUser(userId int) {
 }
 
 func (ss *SessionStorage) Contains(token string) bool {
+	ss.mutex.Lock()
+	defer ss.mutex.Unlock()
 	_, got := ss.Sessions[token]
 	return got
 }

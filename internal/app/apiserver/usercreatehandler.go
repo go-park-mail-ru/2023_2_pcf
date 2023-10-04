@@ -27,6 +27,11 @@ func (s *APIServer) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	if !(user.ValidateEmail() && user.ValidatePassword() && user.ValidateFName() && user.ValidateLName()) {
+		http.Error(w, "Invalid user params", http.StatusBadRequest)
+		return
+	}
+
 	newUser, err := s.Store.User().Create(&user)
 	if err != nil {
 		http.Error(w, "Error create user", http.StatusBadRequest)
