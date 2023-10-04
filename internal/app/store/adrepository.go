@@ -34,6 +34,10 @@ func (r *AdRepository) Get(id int) (*sql.Rows, error) {
 	return r.store.db.Query("SELECT name, description, sector, owner_id FROM \"ad\" WHERE id=$1;", id)
 }
 
+func (r *AdRepository) GetList(id int) (*sql.Rows, error) {
+	return r.store.db.Query("SELECT name, description, sector, id FROM \"ad\" WHERE owner_id=$1;", id)
+}
+
 func (r *AdRepository) Update(s *models.Ad) error {
 	_, err := r.store.db.Exec(
 		"UPDATE \"ad\" SET name=$1, description=$2, sector=$3, owner_id=$4 WHERE id=$5;",
@@ -47,24 +51,27 @@ func (r *AdRepository) Update(s *models.Ad) error {
 	return nil
 }
 
-func (r *AdRepository) Read(id int) (*models.Ad, error) {
-	rows, err := r.Get(id)
+func (r *AdRepository) Read(id int) ([]*models.Ad, error) {
+	rows, err := r.GetList(id)
 	if err != nil {
-		log.Printf("Error GET Ad")
+		log.Printf("Error GET Ads")
 		return nil, err
 	}
 
 	defer rows.Close()
 
-	var ad *models.Ad
+	var ads []*models.Ad
 
 	for rows.Next() {
-		err := rows.Scan(&ad.Id, &ad.Name, &ad.Description, &ad.Sector, &ad.Owner_id)
+		ad := &models.Ad{}
+		err := rows.Scan(&ad.Name, &ad.Description, &ad.Sector, &ad.Id)
+		ad.Owner_id = id
 		if err != nil {
-			log.Printf("Error scan rows Ad")
+			log.Printf("Error scan rows Ads")
 			return nil, err
 		}
+		ads = append(ads, ad)
 	}
 
-	return ad, nil
+	return ads, nil
 }

@@ -10,7 +10,7 @@ type SessionStorage struct {
 	mutex    sync.Mutex
 }
 
-var MySessionStorage = SessionStorage{
+var MySessionStorage = &SessionStorage{
 	Sessions: make(map[string]int),
 }
 
@@ -62,7 +62,7 @@ func (ss *SessionStorage) GetUserId(token string) (userId int, err error) {
 	defer ss.mutex.Unlock()
 	userId, got := ss.Sessions[token]
 	if !got {
-		err = fmt.Errorf("Session not found")
+		err = fmt.Errorf("Session not found, %d", MySessionStorage.Sessions)
 		return -1, err
 	}
 	return userId, nil
