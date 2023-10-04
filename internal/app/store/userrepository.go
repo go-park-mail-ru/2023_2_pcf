@@ -3,6 +3,7 @@ package store
 import (
 	"AdHub/internal/app/models"
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -66,6 +67,8 @@ func (r *UserRepository) Read(mail string) (*models.User, error) {
 			return nil, err
 		}
 	}
-
+	if len(user.Login) == 0 {
+		return nil, fmt.Errorf("User not found")
+	}
 	return user, nil
 }

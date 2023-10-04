@@ -36,7 +36,7 @@ func (s *APIServer) Start() error {
 func (s *APIServer) configureRouter() {
 	s.router.HandleFunc("/ping", PingHandler).Methods("GET")
 	s.router.HandleFunc("/user", s.UserReadHandler).Methods("GET")
-	s.router.HandleFunc("/user", s.UserCreateHandler).Methods("POST")
+	s.router.HandleFunc("/user", s.UserCreateHandler).Methods("POST", "OPTIONS")
 	//s.router.HandleFunc("/user/{user_id:[0-9]+}", handlers.UserUpdateHandler).Methods("POST")
 	s.router.HandleFunc("/user", s.UserDeleteHandler).Methods("DELETE")
 	//s.router.HandleFunc("/ad/", handlers.AdHandler).Methods("GET")
@@ -44,6 +44,7 @@ func (s *APIServer) configureRouter() {
 	//s.router.HandleFunc("/ad", handlers.AdCreateHandler).Methods("POST")
 	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdUpdateHandler).Methods("POST")
 	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdDeleteHandler).Methods("DELETE")
+	s.router.HandleFunc("/auth", s.AuthHandler).Methods("POST", "OPTIONS")
 
 	http.Handle("/", s.router)
 }
