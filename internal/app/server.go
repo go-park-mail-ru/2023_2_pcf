@@ -1,27 +1,27 @@
-package apiserver
+package server
 
 import (
-	"AdHub/internal/app/store"
+	"AdHub/internal/app/frameworks/store"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-type APIServer struct {
+type HTTPServer struct {
 	config *Config
-	router *mux.Router
-	Store  *store.Store
+	router interfaces.router
+	Store  interfaces.db
 }
 
-func New(config *Config) *APIServer {
-	return &APIServer{
+func New(config *Config) *HTTPServer {
+	return &HTTPServer{
 		config: config,
 		router: mux.NewRouter(),
 	}
 }
 
-func (s *APIServer) Start() error {
+func (s *HTTPServer) Start() error {
 	if err := s.configureStore(); err != nil {
 		return err
 	}
@@ -33,7 +33,7 @@ func (s *APIServer) Start() error {
 }
 
 // Сюда пишем роуты
-func (s *APIServer) configureRouter() {
+func (s *HTTPServer) configureRouter() {
 	s.router.HandleFunc("/ping", PingHandler).Methods("GET")
 	s.router.HandleFunc("/user", s.UserReadHandler).Methods("GET")
 	s.router.HandleFunc("/user", s.UserCreateHandler).Methods("POST", "OPTIONS")
@@ -49,7 +49,7 @@ func (s *APIServer) configureRouter() {
 	http.Handle("/", s.router)
 }
 
-func (s *APIServer) configureStore() error {
+func (s *HTTPServer) configureStore() error {
 	st := store.New(s.config.Store)
 	if err := st.Open(); err != nil {
 		log.Printf("Database open error")

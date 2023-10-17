@@ -1,8 +1,8 @@
-package apiserver
+package router
 
 import (
-	"AdHub/internal/app/auth"
 	"AdHub/internal/app/models"
+	"AdHub/internal/frameworks/auth"
 	"encoding/json"
 	"net/http"
 	"time"

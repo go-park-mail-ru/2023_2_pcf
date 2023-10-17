@@ -1,16 +1,27 @@
-package store
+package repo
 
 import (
-	"AdHub/internal/app/models"
+	"AdHub/internal/entities"
+	"AdHub/internal/interfaces"
 	"database/sql"
 	"log"
 )
 
 type AdRepository struct {
-	store *Store
+	store *interfaces.Db
 }
 
-func (r *AdRepository) Create(s *models.Ad) (*models.Ad, error) {
+func (r *AdRepository) Configure(DB interfaces.Db) (*AdRepository, error) {
+	var err error
+	r.store, err = DB.open()
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func (r *AdRepository) Create(s *entities.Ad) (*entities.Ad, error) {
 	if err := r.store.db.QueryRow(
 		"INSERT INTO \"ad\" (name, description, sector, owner_id) VALUES($1, $2, $3, $4) RETURNING id;",
 		s.Name, s.Description, s.Sector, s.Owner_id,
@@ -38,7 +49,7 @@ func (r *AdRepository) GetList(id int) (*sql.Rows, error) {
 	return r.store.db.Query("SELECT name, description, sector, id FROM \"ad\" WHERE owner_id=$1;", id)
 }
 
-func (r *AdRepository) Update(s *models.Ad) error {
+func (r *AdRepository) Update(s *entities.Ad) error {
 	_, err := r.store.db.Exec(
 		"UPDATE \"ad\" SET name=$1, description=$2, sector=$3, owner_id=$4 WHERE id=$5;",
 		s.Name, s.Description, s.Sector, s.Owner_id, s.Id,
@@ -51,7 +62,7 @@ func (r *AdRepository) Update(s *models.Ad) error {
 	return nil
 }
 
-func (r *AdRepository) Read(id int) ([]*models.Ad, error) {
+func (r *AdRepository) Read(id int) ([]*entities.Ad, error) {
 	rows, err := r.GetList(id)
 	if err != nil {
 		log.Printf("Error GET Ads")
@@ -60,10 +71,10 @@ func (r *AdRepository) Read(id int) ([]*models.Ad, error) {
 
 	defer rows.Close()
 
-	var ads []*models.Ad
+	var ads []*entities.Ad
 
 	for rows.Next() {
-		ad := &models.Ad{}
+		ad := &entities.Ad{}
 		err := rows.Scan(&ad.Name, &ad.Description, &ad.Sector, &ad.Id)
 		ad.Owner_id = id
 		if err != nil {

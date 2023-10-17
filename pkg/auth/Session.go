@@ -1,6 +1,6 @@
 package auth
 
-import "AdHub/internal/app/cryptoUtils"
+import "AdHub/pkg/cryptoUtils"
 
 const (
 	tokenLen = 32
