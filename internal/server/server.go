@@ -1,11 +1,10 @@
 package server
 
 import (
-	"log"
-	"net/http"
-
 	"AdHub/internal/router"
 	"AdHub/pkg/postgres"
+	"log"
+	"net/http"
 
 	"AdHub/internal/usecases/ad"
 	"AdHub/internal/usecases/repo"
