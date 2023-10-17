@@ -1,7 +1,7 @@
 package main
 
 import (
-	"AdHub/internal/app/apiserver"
+	"AdHub/internal/server"
 	"flag"
 )
 
@@ -16,12 +16,12 @@ func init() {
 func main() {
 	flag.Parse() // Парсим флаг с путем до конфига
 
-	err := apiserver.Parse(configPath)
+	err := server.Parse(configPath)
 	if err != nil {
 		// Здесь будет лог с уровнем еррор и отлов паники
 	}
-	config := apiserver.NewConfig() // Создаем новый конфиг с дефолтными значениями
-	s := apiserver.New(config)
+	config := server.NewConfig() // Создаем новый конфиг с дефолтными значениями
+	s := server.New(config)
 	if err := s.Start(); err != nil {
 		// Здесь будет лог с уровнем еррор и отлов паники
 	}

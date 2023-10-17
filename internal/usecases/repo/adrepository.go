@@ -8,21 +8,24 @@ import (
 )
 
 type AdRepository struct {
-	store *interfaces.Db
+	store interfaces.Db
 }
 
-func (r *AdRepository) Configure(DB interfaces.Db) (*AdRepository, error) {
-	var err error
-	r.store, err = DB.open()
+func NewAdRepo(DB interfaces.Db) (*AdRepository, error) {
+	st, err := DB.Open()
 	if err != nil {
 		return nil, err
+	}
+
+	r := &AdRepository{
+		store: st,
 	}
 
 	return r, nil
 }
 
 func (r *AdRepository) Create(s *entities.Ad) (*entities.Ad, error) {
-	if err := r.store.db.QueryRow(
+	if err := r.store.Db().QueryRow(
 		"INSERT INTO \"ad\" (name, description, sector, owner_id) VALUES($1, $2, $3, $4) RETURNING id;",
 		s.Name, s.Description, s.Sector, s.Owner_id,
 	).Scan(&s.Id); err != nil {
@@ -34,7 +37,7 @@ func (r *AdRepository) Create(s *entities.Ad) (*entities.Ad, error) {
 }
 
 func (r *AdRepository) Remove(id int) error {
-	if _, err := r.store.db.Exec("DELETE FROM \"ad\" WHERE id=$1;", id); err != nil {
+	if _, err := r.store.Db().Exec("DELETE FROM \"ad\" WHERE id=$1;", id); err != nil {
 		return err
 	}
 
@@ -42,15 +45,15 @@ func (r *AdRepository) Remove(id int) error {
 }
 
 func (r *AdRepository) Get(id int) (*sql.Rows, error) {
-	return r.store.db.Query("SELECT name, description, sector, owner_id FROM \"ad\" WHERE id=$1;", id)
+	return r.store.Db().Query("SELECT name, description, sector, owner_id FROM \"ad\" WHERE id=$1;", id)
 }
 
 func (r *AdRepository) GetList(id int) (*sql.Rows, error) {
-	return r.store.db.Query("SELECT name, description, sector, id FROM \"ad\" WHERE owner_id=$1;", id)
+	return r.store.Db().Query("SELECT name, description, sector, id FROM \"ad\" WHERE owner_id=$1;", id)
 }
 
 func (r *AdRepository) Update(s *entities.Ad) error {
-	_, err := r.store.db.Exec(
+	_, err := r.store.Db().Exec(
 		"UPDATE \"ad\" SET name=$1, description=$2, sector=$3, owner_id=$4 WHERE id=$5;",
 		s.Name, s.Description, s.Sector, s.Owner_id, s.Id,
 	)

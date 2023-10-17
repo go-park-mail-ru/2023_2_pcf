@@ -1,6 +1,7 @@
-package pg
+package postgres
 
 import (
+	"AdHub/internal/interfaces"
 	"database/sql"
 	"log"
 
@@ -8,17 +9,18 @@ import (
 )
 
 type Pg struct {
-	config *Config
-	db     *sql.DB
+	db *sql.DB
 }
 
-func New(config *Config) *Pg {
-	return &Pg{
-		config: config,
-	}
+func New() *Pg {
+	return &Pg{}
 }
 
-func (s *Pg) Open() (*Pg, error) {
+func (s *Pg) Db() *sql.DB {
+	return s.db
+}
+
+func (s *Pg) Open() (interfaces.Db, error) {
 	db, err := sql.Open("postgres", "user=postgres password=zxc123 host=db port=5432 dbname=adhub sslmode=disable")
 	if err != nil {
 		log.Printf("open")

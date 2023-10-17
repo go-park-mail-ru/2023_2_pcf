@@ -1,7 +1,9 @@
 package interfaces
 
+import "database/sql"
+
 type Db interface {
-	New() *Db
-	Open() (*Db, error)
+	Db() *sql.DB
+	Open() (Db, error)
 	Close()
 }

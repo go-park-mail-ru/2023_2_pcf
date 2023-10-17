@@ -1,4 +1,4 @@
-package models
+package entities
 
 type Ad struct {
 	Id          int    `json:"id"`          // Id

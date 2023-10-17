@@ -9,21 +9,24 @@ import (
 )
 
 type UserRepository struct {
-	store *interfaces.Db
+	store interfaces.Db
 }
 
-func (r *UserRepository) Configure(DB interfaces.Db) (*UserRepository, error) {
-	var err error
-	r.store, err = DB.open()
+func NewUserRepo(DB interfaces.Db) (*UserRepository, error) {
+	st, err := DB.Open()
 	if err != nil {
 		return nil, err
+	}
+
+	r := &UserRepository{
+		store: st,
 	}
 
 	return r, nil
 }
 
 func (r *UserRepository) Create(s *entities.User) (*entities.User, error) {
-	if err := r.store.db.QueryRow(
+	if err := r.store.Db().QueryRow(
 		"INSERT INTO \"user\" (login, password, f_name, l_name) VALUES($1, $2, $3, $4) RETURNING id;",
 		s.Login, s.Password, s.FName, s.LName,
 	).Scan(&s.Id); err != nil {
@@ -35,7 +38,7 @@ func (r *UserRepository) Create(s *entities.User) (*entities.User, error) {
 }
 
 func (r *UserRepository) Remove(mail string) error {
-	if _, err := r.store.db.Exec("DELETE FROM \"user\" WHERE login=$1;", mail); err != nil {
+	if _, err := r.store.Db().Exec("DELETE FROM \"user\" WHERE login=$1;", mail); err != nil {
 		return err
 	}
 
@@ -43,11 +46,11 @@ func (r *UserRepository) Remove(mail string) error {
 }
 
 func (r *UserRepository) Get(mail string) (*sql.Rows, error) {
-	return r.store.db.Query("SELECT id, login, password, f_name, l_name FROM \"user\" WHERE login=$1;", mail)
+	return r.store.Db().Query("SELECT id, login, password, f_name, l_name FROM \"user\" WHERE login=$1;", mail)
 }
 
 func (r *UserRepository) Update(s *entities.User) error {
-	_, err := r.store.db.Exec(
+	_, err := r.store.Db().Exec(
 		"UPDATE \"user\" SET login=$1, password=$2, f_name=$3, l_name=$4 WHERE id=$5;",
 		s.Login, s.Password, s.FName, s.LName, s.Id,
 	)
