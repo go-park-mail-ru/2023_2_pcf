@@ -1,7 +1,7 @@
 package main
 
 import (
-	"AdHub/internal/server"
+	server "AdHub/internal/app"
 	"flag"
 )
 
@@ -20,8 +20,8 @@ func main() {
 	if err != nil {
 		// Здесь будет лог с уровнем еррор и отлов паники
 	}
-	config := server.NewConfig() // Создаем новый конфиг с дефолтными значениями
-	s := server.New(config)
+
+	s := server.New(server.NewConfig())
 	if err := s.Start(); err != nil {
 		// Здесь будет лог с уровнем еррор и отлов паники
 	}
