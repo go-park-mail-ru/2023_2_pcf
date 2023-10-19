@@ -32,6 +32,7 @@ func (mr *MuxRouter) ConfigureRouter() {
 	mr.router.HandleFunc("/auth", mr.AuthHandler).Methods("POST", "OPTIONS")
 
 	mr.router.Use(middleware.CORSMiddleware)
+	mr.router.Use(middleware.RecoverMiddleware)
 
 	http.Handle("/", mr.router)
 }
