@@ -2,6 +2,7 @@ package router
 
 import (
 	"AdHub/internal/interfaces"
+	"AdHub/internal/middleware"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -22,13 +23,16 @@ func NewMuxRouter(UserUC interfaces.UserUseCase, AdUC interfaces.AdUseCase) *Mux
 }
 
 func (mr *MuxRouter) ConfigureRouter() {
-	mr.router.HandleFunc("/ping", PingHandler).Methods("GET")
-	mr.router.HandleFunc("/user", mr.UserReadHandler).Methods("GET")
+	mr.router.HandleFunc("/ping", PingHandler).Methods("GET", "OPTIONS")
+	mr.router.HandleFunc("/user", mr.UserReadHandler).Methods("GET", "OPTIONS")
 	mr.router.HandleFunc("/user", mr.UserCreateHandler).Methods("POST", "OPTIONS")
-	mr.router.HandleFunc("/user", mr.UserDeleteHandler).Methods("DELETE")
-	mr.router.HandleFunc("/ad", mr.AdListHandler).Methods("GET")
-	mr.router.HandleFunc("/ad", mr.AdCreateHandler).Methods("POST")
+	mr.router.HandleFunc("/user", mr.UserDeleteHandler).Methods("DELETE", "OPTIONS")
+	mr.router.HandleFunc("/ad", mr.AdListHandler).Methods("GET", "OPTIONS")
+	mr.router.HandleFunc("/ad", mr.AdCreateHandler).Methods("POST", "OPTIONS")
 	mr.router.HandleFunc("/auth", mr.AuthHandler).Methods("POST", "OPTIONS")
+
+	mr.router.Use(middleware.CORSMiddleware)
+	mr.router.Use(middleware.RecoverMiddleware)
 
 	http.Handle("/", mr.router)
 }
