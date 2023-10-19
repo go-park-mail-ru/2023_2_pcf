@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"database/sql"
 	"strings"
 )
 
@@ -22,7 +21,6 @@ type User struct {
 type UserRepoInterface interface {
 	Create(s *User) (*User, error)
 	Remove(mail string) error
-	Get(mail string) (*sql.Rows, error)
 	Update(s *User) error
 	Read(mail string) (*User, error)
 }

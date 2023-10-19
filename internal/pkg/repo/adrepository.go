@@ -44,11 +44,11 @@ func (r *AdRepository) Remove(id int) error {
 	return nil
 }
 
-func (r *AdRepository) Get(id int) (*sql.Rows, error) {
+func (r *AdRepository) get(id int) (*sql.Rows, error) {
 	return r.store.Db().Query("SELECT name, description, sector, owner_id FROM \"ad\" WHERE id=$1;", id)
 }
 
-func (r *AdRepository) GetList(id int) (*sql.Rows, error) {
+func (r *AdRepository) getList(id int) (*sql.Rows, error) {
 	return r.store.Db().Query("SELECT name, description, sector, id FROM \"ad\" WHERE owner_id=$1;", id)
 }
 
@@ -66,7 +66,7 @@ func (r *AdRepository) Update(s *entities.Ad) error {
 }
 
 func (r *AdRepository) Read(id int) ([]*entities.Ad, error) {
-	rows, err := r.GetList(id)
+	rows, err := r.getList(id)
 	if err != nil {
 		log.Printf("Error GET Ads")
 		return nil, err

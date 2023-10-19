@@ -1,7 +1,5 @@
 package entities
 
-import "database/sql"
-
 type Ad struct {
 	Id          int    `json:"id"`          // Id
 	Name        string `json:"name"`        // название объявления
@@ -13,8 +11,6 @@ type Ad struct {
 type AdRepoInterface interface {
 	Create(s *Ad) (*Ad, error)
 	Remove(id int) error
-	Get(id int) (*sql.Rows, error)
-	GetList(id int) (*sql.Rows, error)
 	Update(s *Ad) error
 	Read(id int) ([]*Ad, error)
 }

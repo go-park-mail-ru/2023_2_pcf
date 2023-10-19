@@ -45,7 +45,7 @@ func (r *UserRepository) Remove(mail string) error {
 	return nil
 }
 
-func (r *UserRepository) Get(mail string) (*sql.Rows, error) {
+func (r *UserRepository) get(mail string) (*sql.Rows, error) {
 	return r.store.Db().Query("SELECT id, login, password, f_name, l_name FROM \"user\" WHERE login=$1;", mail)
 }
 
@@ -63,7 +63,7 @@ func (r *UserRepository) Update(s *entities.User) error {
 }
 
 func (r *UserRepository) Read(mail string) (*entities.User, error) {
-	rows, err := r.Get(mail)
+	rows, err := r.get(mail)
 	if err != nil {
 		log.Printf("Error GET user")
 		return nil, err
