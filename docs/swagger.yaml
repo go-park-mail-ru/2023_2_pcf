@@ -1,0 +1,48 @@
+definitions:
+  auth.Session:
+    properties:
+      token:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: Аутентификация пользователя на основе логина и пароля и возврат
+        токена сессии
+      operationId: auth-user
+      parameters:
+      - description: Логин пользователя
+        in: body
+        name: login
+        required: true
+        schema:
+          type: string
+      - description: Пароль пользователя
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешный ответ с токеном сессии
+          schema:
+            $ref: '#/definitions/auth.Session'
+        "400":
+          description: Неверное тело запроса или ошибка при проверке пользователя
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Аутентификация пользователя
+      tags:
+      - authentication
+swagger: "2.0"

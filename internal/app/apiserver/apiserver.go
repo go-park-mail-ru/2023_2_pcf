@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"AdHub/internal/app/store"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"log"
 	"net/http"
 
@@ -45,6 +46,10 @@ func (s *APIServer) configureRouter() {
 	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdUpdateHandler).Methods("POST")
 	//s.router.HandleFunc("/ad/{ad_id:[0-9]+}", handlers.AdDeleteHandler).Methods("DELETE")
 	s.router.HandleFunc("/auth", s.AuthHandler).Methods("POST")
+
+	httpSwagger.URL("/swagger-docs/swagger.json")
+	http.Handle("/swagger/", httpSwagger.WrapHandler)
+	http.Handle("/swagger-docs/", http.StripPrefix("/swagger-docs/", http.FileServer(http.Dir("./cmd/apiserver/docs/"))))
 
 	http.Handle("/", s.router)
 }
