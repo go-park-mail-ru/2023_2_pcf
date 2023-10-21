@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "AdHub/docs"
 	server "AdHub/internal/app"
 	"flag"
 )

@@ -32,6 +32,7 @@ func ConfigureRouter(ar *AdRouter) {
 	httpSwagger.URL("/swagger-docs/swagger.json")
 	http.Handle("/swagger/", httpSwagger.WrapHandler)
 	http.Handle("/swagger-docs/", http.StripPrefix("/swagger-docs/", http.FileServer(http.Dir("./cmd/apiserver/docs/"))))
+	ar.router.PathPrefix("/swagger/").Handler(httpSwagger.Handler()).Methods(http.MethodGet)
 
 	http.Handle("/", ar.router)
 }
