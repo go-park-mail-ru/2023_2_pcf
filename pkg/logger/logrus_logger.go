@@ -15,7 +15,7 @@ func NewLogrusLogger(level string) *LogrusLogger {
 	log := logrus.New()
 
 	l := &LogrusLogger{log: log}
-	l.SetLevel(level)
+	l.SetLogLevel(level)
 
 	return l
 }
@@ -32,14 +32,15 @@ func (l *LogrusLogger) Fatal(message string) {
 	l.log.Fatal(message)
 }
 
-func (l *LogrusLogger) SetLevel(level string) {
-	if level == "debug" {
+func (l *LogrusLogger) SetLogLevel(level string) {
+	switch level {
+	case DebugLevel:
 		l.log.SetLevel(logrus.DebugLevel)
-	} else if level == "info" {
+	case InfoLevel:
 		l.log.SetLevel(logrus.InfoLevel)
-	} else if level == "error" {
+	case ErrorLevel:
 		l.log.SetLevel(logrus.ErrorLevel)
-	} else if level == "fatal" {
+	case FatalLevel:
 		l.log.SetLevel(logrus.FatalLevel)
 	}
 }
