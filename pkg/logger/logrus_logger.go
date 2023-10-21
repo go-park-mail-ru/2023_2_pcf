@@ -11,9 +11,13 @@ type LogrusLogger struct {
 	log *logrus.Logger
 }
 
-func NewLogrusLogger() *LogrusLogger {
+func NewLogrusLogger(level string) *LogrusLogger {
 	log := logrus.New()
-	return &LogrusLogger{log: log}
+
+	l := &LogrusLogger{log: log}
+	l.SetLevel(level)
+
+	return l
 }
 
 func (l *LogrusLogger) Info(message string) {
@@ -26,6 +30,18 @@ func (l *LogrusLogger) Error(message string) {
 
 func (l *LogrusLogger) Fatal(message string) {
 	l.log.Fatal(message)
+}
+
+func (l *LogrusLogger) SetLevel(level string) {
+	if level == "debug" {
+		l.log.SetLevel(logrus.DebugLevel)
+	} else if level == "info" {
+		l.log.SetLevel(logrus.InfoLevel)
+	} else if level == "error" {
+		l.log.SetLevel(logrus.ErrorLevel)
+	} else if level == "fatal" {
+		l.log.SetLevel(logrus.FatalLevel)
+	}
 }
 
 func (l *LogrusLogger) MW(message string, r *http.Request, duration time.Duration) {

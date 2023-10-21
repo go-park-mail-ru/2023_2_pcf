@@ -24,8 +24,8 @@ func New(config *Config) *HTTPServer {
 }
 
 func (s *HTTPServer) Start() error {
-	log := logger.NewLogrusLogger()
-	DB := db.New()
+	log := logger.NewLogrusLogger(s.config.LogLevel)
+	DB := db.New(s.config.DataBase)
 
 	UserRepo, err := repo.NewUserRepo(DB)
 	if err != nil {
