@@ -1,33 +1,36 @@
 package router
 
 import (
-	"AdHub/internal/pkg/delivery/middleware"
 	"AdHub/internal/pkg/entities"
-	"net/http"
+	"AdHub/pkg/middleware"
+
+	"AdHub/pkg/logger"
 
 	"github.com/gorilla/mux"
 )
 
 type UserRouter struct {
 	router *mux.Router
+	logger logger.Logger
 	User   entities.UserUseCaseInterface
 }
 
-func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface) *UserRouter {
+func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, log logger.Logger) *UserRouter {
 	return &UserRouter{
+		logger: log,
 		router: r,
 		User:   UserUC,
 	}
 }
 
 func ConfigureRouter(ur *UserRouter) {
+	ur.router.HandleFunc("/ping", PingHandler).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/user", ur.UserReadHandler).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/user", ur.UserCreateHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/user", ur.UserDeleteHandler).Methods("DELETE", "OPTIONS")
 	ur.router.HandleFunc("/auth", ur.AuthHandler).Methods("POST", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
-	ur.router.Use(middleware.Recover)
-
-	http.Handle("/", ur.router)
+	ur.router.Use(middleware.Logger(ur.logger))
+	ur.router.Use(middleware.Recover(ur.logger))
 }

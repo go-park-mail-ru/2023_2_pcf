@@ -12,6 +12,7 @@ func (mr *UserRouter) UserDeleteHandler(w http.ResponseWriter, r *http.Request) 
 	userMail := vars["login"]
 
 	if err := mr.User.UserDelete(userMail); err != nil {
+		mr.logger.Error("Failed to delet user" + err.Error())
 		http.Error(w, "Failed to delete user", http.StatusInternalServerError)
 		return
 	}
