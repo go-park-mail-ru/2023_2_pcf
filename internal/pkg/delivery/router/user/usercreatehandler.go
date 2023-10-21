@@ -7,6 +7,14 @@ import (
 	"net/http"
 )
 
+// @Summary Создать нового пользователя
+// @Description Создает нового пользователя
+// @ID createUser
+// @Produce json
+// @Param user body User true "Данные нового пользователя"
+// @Success 201 {object} UserResponse
+// @Router /user [post]
+
 func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {

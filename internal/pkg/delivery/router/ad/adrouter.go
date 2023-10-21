@@ -5,6 +5,8 @@ import (
 	"AdHub/internal/pkg/entities"
 	"net/http"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+
 	"github.com/gorilla/mux"
 )
 
@@ -26,6 +28,10 @@ func ConfigureRouter(ar *AdRouter) {
 
 	ar.router.Use(middleware.CORS)
 	ar.router.Use(middleware.Recover)
+
+	httpSwagger.URL("/swagger-docs/swagger.json")
+	http.Handle("/swagger/", httpSwagger.WrapHandler)
+	http.Handle("/swagger-docs/", http.StripPrefix("/swagger-docs/", http.FileServer(http.Dir("./cmd/apiserver/docs/"))))
 
 	http.Handle("/", ar.router)
 }
