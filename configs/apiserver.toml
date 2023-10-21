@@ -1,4 +1,3 @@
 bind_addr = ":8080"
-
-[store]
 database_url = "user=postgres password=zxc123 host=db port=5432 dbname=adhub sslmode=disable"
+log_level = "debug"

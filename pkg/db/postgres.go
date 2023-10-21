@@ -8,11 +8,12 @@ import (
 )
 
 type Pg struct {
-	db *sql.DB
+	connect string
+	db      *sql.DB
 }
 
-func New() *Pg {
-	return &Pg{}
+func New(connect string) *Pg {
+	return &Pg{connect: connect}
 }
 
 func (s *Pg) Db() *sql.DB {
@@ -20,7 +21,7 @@ func (s *Pg) Db() *sql.DB {
 }
 
 func (s *Pg) Open() (DbInterface, error) {
-	db, err := sql.Open("postgres", "user=postgres password=zxc123 host=db port=5432 dbname=adhub sslmode=disable")
+	db, err := sql.Open("postgres", s.connect)
 	if err != nil {
 		log.Printf("open")
 		return nil, err
