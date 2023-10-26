@@ -37,11 +37,11 @@ CREATE TABLE "ad" (
     description TEXT DEFAULT NULL,
     website_link VARCHAR(255) NOT NULL,
     budget DECIMAL DEFAULT 0.0 NOT NULL,
-    audience_id INT,
+    target_id INT,
     image_link VARCHAR(255) NOT NULL,
     owner_id INT,
     FOREIGN KEY (owner_id) REFERENCES "user" (id),
-    FOREIGN KEY (audience_id) REFERENCES "target" (id)
+    FOREIGN KEY (target_id) REFERENCES "target" (id)
 );
 
 CREATE TABLE "target" (
