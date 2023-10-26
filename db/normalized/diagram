@@ -28,7 +28,7 @@ entity "Ad" as ad {
   owner_id
 }
 
-entity "Audience" as audience {
+entity "Targets" as targets {
   +id
   name
   owner_id
@@ -53,10 +53,10 @@ entity "Tags" as tags {
 }
 
 user -- balance
-user -- ad
-ad -- audience
-audience -- regions
-audience -- interests
-audience -- tags
+user --* ad
+ad *-- targets
+targets --* regions
+targets --* interests
+targets --* tags
 
 @enduml
