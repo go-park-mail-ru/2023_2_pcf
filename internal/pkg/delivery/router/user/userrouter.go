@@ -10,16 +10,18 @@ import (
 )
 
 type UserRouter struct {
-	router *mux.Router
-	logger logger.Logger
-	User   entities.UserUseCaseInterface
+	router   *mux.Router
+	logger   logger.Logger
+	User     entities.UserUseCaseInterface
+	SessionU entities.SessionUseCaseInterface
 }
 
-func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, log logger.Logger) *UserRouter {
+func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, log logger.Logger, sessionUC entities.SessionUseCaseInterface) *UserRouter {
 	return &UserRouter{
-		logger: log,
-		router: r,
-		User:   UserUC,
+		logger:   log,
+		router:   r,
+		User:     UserUC,
+		SessionU: sessionUC,
 	}
 }
 

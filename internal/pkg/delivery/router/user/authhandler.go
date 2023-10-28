@@ -2,7 +2,7 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/auth"
+	"AdHub/pkg/cryptoUtils"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -36,24 +36,27 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Проверка пароля
 	if user.Password == userFromDB.Password {
-		newSession := auth.Session{UserId: userFromDB.Id}
-		err = newSession.SetToken()
+		//todo САША ВЫНЕСИ ТОКЕН_ЛЕН В КОНФИГ
+		tokenLen := 32
+		newSession := &entities.Session{UserId: userFromDB.Id}
+		newSession.Token, err = cryptoUtils.GenToken(32)
 		if err != nil {
 			mr.logger.Error("Error while token generation" + err.Error())
 			http.Error(w, "Error while token gen", http.StatusInternalServerError)
 			return
 		}
 
-		//Проверка уникальности токена, перегенерация если он уже занят
-		for contains := auth.MySessionStorage.Contains(newSession.Token); contains; auth.MySessionStorage.Contains(newSession.Token) {
-			err = newSession.SetToken()
+		//Проверка уникальности токена, регенерация если он уже занят
+
+		for contains, err := mr.SessionU.SessionContains(&newSession); contains; auth.MySessionStorage.Contains(newSession.Token) {
+			newSession.Token, err = cryptoUtils.GenToken(entities.TokenLen)
 			if err != nil {
 				mr.logger.Error("Error while token generation" + err.Error())
 				http.Error(w, "Error while token gen", http.StatusInternalServerError)
 				return
 			}
 		}
-		auth.MySessionStorage.AddSession(newSession)
+		newSession, err = mr.SessionU
 
 		//Перевод структуры сессии в JSON
 		w.Header().Set("Content-Type", "application/json")
