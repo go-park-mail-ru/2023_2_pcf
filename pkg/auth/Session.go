@@ -6,6 +6,10 @@ const (
 	tokenLen = 32
 )
 
+type SessionInterface interface {
+	SetToken() (err error)
+}
+
 type Session struct {
 	Token  string `json:"token"`
 	UserId int    `json:"-"`

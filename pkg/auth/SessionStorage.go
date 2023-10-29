@@ -5,6 +5,15 @@ import (
 	"sync"
 )
 
+//go:generate /Users/bincom/go/bin/mockgen -source=SessionStorage.go -destination=mocks/mock.go
+type SessionStorageInterface interface {
+	AddSession(session Session)
+	RemoveSession(token string)
+	RemoveUser(userId int)
+	Contains(token string) bool
+	GetUserId(token string) (userId int, err error)
+}
+
 type SessionStorage struct {
 	Sessions map[string]int //key - session token, value - user_id
 	mutex    sync.Mutex
@@ -62,7 +71,7 @@ func (ss *SessionStorage) GetUserId(token string) (userId int, err error) {
 	defer ss.mutex.Unlock()
 	userId, got := ss.Sessions[token]
 	if !got {
-		err = fmt.Errorf("Session not found, %d", MySessionStorage.Sessions)
+		err = fmt.Errorf("Session not found")
 		return -1, err
 	}
 	return userId, nil

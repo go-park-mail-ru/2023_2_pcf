@@ -13,8 +13,8 @@ func (mr *AdRouter) AdListHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := auth.MySessionStorage.GetUserId(token)
 	if err != nil {
-		log.Printf("Session not fount: %v", err)
-		http.Error(w, "Session not fount", http.StatusNotFound)
+		log.Printf("Session not found: %v", err)
+		http.Error(w, "Session not found", http.StatusNotFound)
 		return
 	}
 
