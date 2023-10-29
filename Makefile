@@ -10,4 +10,9 @@ docker:
 docker-build:
 	docker-compose build
 
+.PHONY: test-cvg
+test-cvg:
+	go test ./... -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
+	
 .DEFAULT_GOAL := docker
