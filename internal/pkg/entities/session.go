@@ -10,6 +10,8 @@ type SessionUseCaseInterface interface {
 	SessionRead(sr *Session) (*Session, error)
 	SessionRemove(sr *Session) error
 	SessionContains(sr *Session) (bool, error)
+	Auth(*User) (*Session, error)
+	GetUserId(token string) (int, error)
 }
 
 type SessionRepoInterface interface {

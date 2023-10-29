@@ -2,7 +2,6 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/cryptoUtils"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -36,26 +35,11 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Проверка пароля
 	if user.Password == userFromDB.Password {
-		//todo САША ВЫНЕСИ ТОКЕН_ЛЕН В КОНФИГ
-		var tokenLen = 32
-		newSession := &entities.Session{UserId: userFromDB.Id}
-		newSession.Token, err = cryptoUtils.GenToken(tokenLen)
+		newSession, err := mr.Session.Auth(userFromDB)
 		if err != nil {
 			mr.logger.Error("Error while token generation" + err.Error())
 			http.Error(w, "Error while token gen", http.StatusInternalServerError)
-			return
 		}
-
-		//Проверка уникальности токена, регенерация если он уже занят
-		for contains, err := mr.SessionU.SessionContains(newSession); contains; mr.SessionU.SessionContains(newSession) {
-			newSession.Token, err = cryptoUtils.GenToken(tokenLen)
-			if err != nil {
-				mr.logger.Error("Error while token generation" + err.Error())
-				http.Error(w, "Error while token gen", http.StatusInternalServerError)
-				return
-			}
-		}
-		newSession, err = mr.SessionU.SessionCreate(newSession)
 
 		//Кукисет и возврат ответа (успех)
 		cookie := &http.Cookie{

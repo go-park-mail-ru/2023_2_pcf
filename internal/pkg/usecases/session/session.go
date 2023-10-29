@@ -2,6 +2,7 @@ package session
 
 import (
 	"AdHub/internal/pkg/entities"
+	"AdHub/pkg/cryptoUtils"
 )
 
 type SessionUseCase struct {
@@ -28,4 +29,37 @@ func (su SessionUseCase) SessionRemove(sr *entities.Session) error {
 
 func (su SessionUseCase) SessionContains(sr *entities.Session) (bool, error) {
 	return su.repo.Contains(sr)
+}
+
+func (su SessionUseCase) Auth(userFromDB *entities.User) (*entities.Session, error) {
+	var tokenLen = 32
+	newSession := &entities.Session{UserId: userFromDB.Id}
+
+	var err error
+	newSession.Token, err = cryptoUtils.GenToken(tokenLen)
+	if err != nil {
+		return nil, err
+	}
+
+	//Проверка уникальности токена, регенерация если он уже занят
+	for contains, err := su.SessionContains(newSession); contains; su.SessionContains(newSession) {
+		newSession.Token, err = cryptoUtils.GenToken(tokenLen)
+		if err != nil {
+			return nil, err
+		}
+	}
+	newSession, err = su.SessionCreate(newSession)
+	if err != nil {
+		return nil, err
+	}
+
+	return newSession, nil
+}
+
+func (su SessionUseCase) GetUserId(token string) (int, error) {
+	s, err := su.repo.Read(&entities.Session{
+		Token:  token,
+		UserId: 0,
+	})
+	return s.UserId, err
 }

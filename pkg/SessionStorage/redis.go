@@ -2,18 +2,29 @@ package SessionStorage
 
 import (
 	"context"
+
 	"github.com/go-redis/redis/v8"
 )
 
 type Redis struct {
-	client *redis.Client
+	client   *redis.Client
+	addr     string
+	password string
+	db       int
+}
+
+func New(addr string, password string, db int) *Redis {
+	return &Redis{
+		addr:     addr,
+		password: password,
+		db:       db,
+	}
 }
 
 func (r Redis) Open() (SessionStorageInterface, error) {
 	r.client = redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379", // Адрес Redis-сервера
-		Password: "123",            // Пароль, если он установлен
-		DB:       0,                // Номер базы данных
+		Addr: r.addr, // Адрес Redis-сервера
+		DB:   r.db,   // Номер базы данных
 	})
 
 	_, err := r.client.Ping(context.Background()).Result()

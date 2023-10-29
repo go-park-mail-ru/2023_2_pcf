@@ -2,9 +2,7 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/auth"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -24,7 +22,7 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	userId, err := auth.MySessionStorage.GetUserId(request.Token)
+	userId, err := mr.Session.GetUserId(request.Token)
 	if err != nil {
 		mr.logger.Error("Error get session" + err.Error())
 		http.Error(w, "Error get session", http.StatusBadRequest)
@@ -49,7 +47,5 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated) // HTTP Status - 201
 	w.Header().Set("Content-Type", "application/json")
 	responseJSON, err := json.Marshal(newAd)
-	fmt.Println(len(auth.MySessionStorage.Sessions))
-	fmt.Println(responseJSON)
 	w.Write(responseJSON)
 }

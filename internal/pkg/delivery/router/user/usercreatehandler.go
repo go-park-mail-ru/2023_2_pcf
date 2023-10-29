@@ -9,18 +9,6 @@ import (
 )
 
 func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == http.MethodOptions {
-		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
 	//Получение данных из запроса
 	var user entities.User
 	decoder := json.NewDecoder(r.Body)
@@ -49,6 +37,11 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 			http.Error(w, "Error create user", http.StatusInternalServerError)
 		}
 		return
+	}
+
+	_, err = mr.Session.Auth(newUser)
+	if err != nil {
+		mr.logger.Error("Error user auth" + err.Error())
 	}
 
 	w.WriteHeader(http.StatusCreated) // HTTP Status - 201

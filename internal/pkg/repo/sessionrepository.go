@@ -13,8 +13,8 @@ type SessionRepository struct {
 	store SessionStorage.SessionStorageInterface
 }
 
-func NewSessionRepo() (sr SessionRepository, err error) {
-	sr.store, err = SessionStorage.Redis{}.Open()
+func NewSessionRepo(ss SessionStorage.SessionStorageInterface) (sr SessionRepository, err error) {
+	sr.store, err = ss.Open()
 	return sr, err
 }
 

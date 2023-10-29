@@ -2,7 +2,6 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/auth"
 	"encoding/json"
 	"net/http"
 )
@@ -10,7 +9,7 @@ import (
 func (mr *AdRouter) AdListHandler(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 
-	id, err := auth.MySessionStorage.GetUserId(token)
+	id, err := mr.Session.GetUserId(token)
 	if err != nil {
 		mr.logger.Error("Session not found" + err.Error())
 		http.Error(w, "Session not found", http.StatusNotFound)
