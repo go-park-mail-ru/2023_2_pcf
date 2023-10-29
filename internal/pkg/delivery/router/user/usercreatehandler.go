@@ -11,18 +11,21 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 	var user entities.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {
+		mr.logger.Error("Invalid request body." + err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
 
 	if !(user.ValidateEmail() && user.ValidatePassword() && user.ValidateFName() && user.ValidateLName()) {
+		mr.logger.Error("Invalid user params.")
 		http.Error(w, "Invalid user params", http.StatusBadRequest)
 		return
 	}
 
 	newUser, err := mr.User.UserCreate(&user)
 	if err != nil {
+		mr.logger.Error("Error user create" + err.Error())
 		http.Error(w, "Error create user", http.StatusBadRequest)
 		return
 	}

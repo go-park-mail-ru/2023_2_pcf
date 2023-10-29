@@ -9,6 +9,7 @@ func (mr *UserRouter) UserDeleteHandler(w http.ResponseWriter, r *http.Request) 
 	login := r.URL.Query().Get("login")
 
 	if err := mr.User.UserDelete(login); err != nil {
+		mr.logger.Error("Failed to delet user" + err.Error())
 		http.Error(w, "Failed to delete user", http.StatusInternalServerError)
 		return
 	}

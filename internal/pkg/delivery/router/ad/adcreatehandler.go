@@ -5,7 +5,6 @@ import (
 	"AdHub/pkg/auth"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -19,6 +18,7 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&request); err != nil {
+		mr.logger.Error("Invalid request body" + err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -26,7 +26,7 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	userId, err := auth.MySessionStorage.GetUserId(request.Token)
 	if err != nil {
-		log.Printf("%v", err)
+		mr.logger.Error("Error get session" + err.Error())
 		http.Error(w, "Error get session", http.StatusBadRequest)
 		return
 	}
@@ -41,6 +41,7 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	newAd, err := mr.Ad.AdCreate(&ad)
 	if err != nil {
+		mr.logger.Error("Error ad create" + err.Error())
 		http.Error(w, "Error create ad", http.StatusBadRequest)
 		return
 	}
