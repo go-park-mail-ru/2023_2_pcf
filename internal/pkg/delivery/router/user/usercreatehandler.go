@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,6 +21,7 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8081")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
+	//Получение данных из запроса
 	var user entities.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {
@@ -29,16 +31,23 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	defer r.Body.Close()
 
+	//Валидация полученных данных
 	if !(user.ValidateEmail() && user.ValidatePassword() && user.ValidateFName() && user.ValidateLName()) {
 		mr.logger.Error("Invalid user params.")
 		http.Error(w, "Invalid user params", http.StatusBadRequest)
 		return
 	}
 
+	//Создание юзера
 	newUser, err := mr.User.UserCreate(&user)
 	if err != nil {
 		mr.logger.Error("Error user create" + err.Error())
-		http.Error(w, "Error create user", http.StatusBadRequest)
+
+		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			http.Error(w, "User with this login already exists", http.StatusConflict)
+		} else {
+			http.Error(w, "Error create user", http.StatusInternalServerError)
+		}
 		return
 	}
 

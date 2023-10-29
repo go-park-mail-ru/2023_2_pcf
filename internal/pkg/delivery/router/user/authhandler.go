@@ -37,9 +37,9 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 	//Проверка пароля
 	if user.Password == userFromDB.Password {
 		//todo САША ВЫНЕСИ ТОКЕН_ЛЕН В КОНФИГ
-		tokenLen := 32
+		var tokenLen = 32
 		newSession := &entities.Session{UserId: userFromDB.Id}
-		newSession.Token, err = cryptoUtils.GenToken(32)
+		newSession.Token, err = cryptoUtils.GenToken(tokenLen)
 		if err != nil {
 			mr.logger.Error("Error while token generation" + err.Error())
 			http.Error(w, "Error while token gen", http.StatusInternalServerError)
@@ -47,26 +47,15 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//Проверка уникальности токена, регенерация если он уже занят
-
-		for contains, err := mr.SessionU.SessionContains(&newSession); contains; auth.MySessionStorage.Contains(newSession.Token) {
-			newSession.Token, err = cryptoUtils.GenToken(entities.TokenLen)
+		for contains, err := mr.SessionU.SessionContains(newSession); contains; mr.SessionU.SessionContains(newSession) {
+			newSession.Token, err = cryptoUtils.GenToken(tokenLen)
 			if err != nil {
 				mr.logger.Error("Error while token generation" + err.Error())
 				http.Error(w, "Error while token gen", http.StatusInternalServerError)
 				return
 			}
 		}
-		newSession, err = mr.SessionU
-
-		//Перевод структуры сессии в JSON
-		w.Header().Set("Content-Type", "application/json")
-		responseJSON, err := json.Marshal(newSession)
-		if err != nil {
-			defer auth.MySessionStorage.RemoveSession(newSession.Token)
-			mr.logger.Error("Failed to marshal JSON." + err.Error())
-			http.Error(w, "Failed to marshal JSON:", http.StatusInternalServerError)
-			return
-		}
+		newSession, err = mr.SessionU.SessionCreate(newSession)
 
 		//Кукисет и возврат ответа (успех)
 		cookie := &http.Cookie{
@@ -77,7 +66,6 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.SetCookie(w, cookie)
 		w.WriteHeader(http.StatusOK)
-		w.Write(responseJSON)
 
 	} else {
 		http.Error(w, "Wrong password", http.StatusBadRequest)
