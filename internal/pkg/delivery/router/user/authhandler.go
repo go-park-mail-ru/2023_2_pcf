@@ -2,7 +2,6 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/auth"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -36,33 +35,10 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Проверка пароля
 	if user.Password == userFromDB.Password {
-		newSession := auth.Session{UserId: userFromDB.Id}
-		err = newSession.SetToken()
+		newSession, err := mr.Session.Auth(userFromDB)
 		if err != nil {
 			mr.logger.Error("Error while token generation" + err.Error())
 			http.Error(w, "Error while token gen", http.StatusInternalServerError)
-			return
-		}
-
-		//Проверка уникальности токена, перегенерация если он уже занят
-		for contains := auth.MySessionStorage.Contains(newSession.Token); contains; auth.MySessionStorage.Contains(newSession.Token) {
-			err = newSession.SetToken()
-			if err != nil {
-				mr.logger.Error("Error while token generation" + err.Error())
-				http.Error(w, "Error while token gen", http.StatusInternalServerError)
-				return
-			}
-		}
-		auth.MySessionStorage.AddSession(newSession)
-
-		//Перевод структуры сессии в JSON
-		w.Header().Set("Content-Type", "application/json")
-		responseJSON, err := json.Marshal(newSession)
-		if err != nil {
-			defer auth.MySessionStorage.RemoveSession(newSession.Token)
-			mr.logger.Error("Failed to marshal JSON." + err.Error())
-			http.Error(w, "Failed to marshal JSON:", http.StatusInternalServerError)
-			return
 		}
 
 		//Кукисет и возврат ответа (успех)
@@ -74,7 +50,6 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.SetCookie(w, cookie)
 		w.WriteHeader(http.StatusOK)
-		w.Write(responseJSON)
 
 	} else {
 		http.Error(w, "Wrong password", http.StatusBadRequest)

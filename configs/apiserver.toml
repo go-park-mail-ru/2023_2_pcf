@@ -1,3 +1,6 @@
 bind_addr = ":8080"
 database_url = "user=postgres password=zxc123 host=db port=5432 dbname=adhub sslmode=disable"
 log_level = "debug"
+redis_addr = "redis:6379"
+redis_password = "123"
+redis_db = 0

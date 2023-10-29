@@ -9,7 +9,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
+      redis:
+        condition: service_healthy
+    links:
+      - redis 
 
   db:
     restart: always
@@ -26,3 +29,15 @@ services:
       test: ["CMD", "pg_isready", "-q", "-d", "adhub", "-U", "postgres"]
       interval: 5s
       retries: 10
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_DB=0
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
