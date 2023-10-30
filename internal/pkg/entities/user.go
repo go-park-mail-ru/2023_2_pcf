@@ -18,6 +18,7 @@ type User struct {
 	LName    string `json:"last_name"`  // Фамилия
 }
 
+//go:generate /Users/bincom/go/bin/mockgen -source=user.go -destination=mock_entities/user_mock.go
 type UserRepoInterface interface {
 	Create(s *User) (*User, error)
 	Remove(mail string) error
