@@ -1,0 +1,62 @@
+@startuml
+
+entity "User" as user {
+  +id
+  login
+  password
+  f_name
+  l_name
+  s_name
+  balance_id
+}
+
+entity "Balance" as balance {
+  +id
+  total_balance
+  reserved_balance
+  available_balance
+}
+
+entity "Ad" as ad {
+  +id
+  name
+  description
+  website_link
+  budget
+  audience_id
+  image_link
+  owner_id
+}
+
+entity "Targets" as targets {
+  +id
+  name
+  owner_id
+  gender
+  min_age
+  max_age
+}
+
+entity "Regions" as regions {
+  +id
+  name
+}
+
+entity "Interests" as interests {
+  +id
+  name
+}
+
+entity "Tags" as tags {
+  +id
+  name
+}
+
+user -- balance
+user --* ad
+ad *-- targets
+targets --* regions
+targets --* interests
+targets --* tags
+
+@enduml
