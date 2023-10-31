@@ -12,6 +12,15 @@ type UserRepository struct {
 	store db.DbInterface
 }
 
+func NewUserRepoMock(DB db.DbInterface) (*UserRepository, error) {
+
+	r := &UserRepository{
+		store: DB,
+	}
+
+	return r, nil
+}
+
 func NewUserRepo(DB db.DbInterface) (*UserRepository, error) {
 	st, err := DB.Open()
 	if err != nil {

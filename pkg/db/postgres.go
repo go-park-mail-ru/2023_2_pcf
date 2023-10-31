@@ -16,6 +16,12 @@ func New(connect string) *Pg {
 	return &Pg{connect: connect}
 }
 
+func NewMock(db *sql.DB) *Pg {
+	return &Pg{
+		db: db,
+	}
+}
+
 func (s *Pg) Db() *sql.DB {
 	return s.db
 }

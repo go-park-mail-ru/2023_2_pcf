@@ -8,6 +8,7 @@ type Ad struct {
 	Owner_id    int    `json:"owner_id`     // id владельца
 }
 
+//go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
 type AdRepoInterface interface {
 	Create(s *Ad) (*Ad, error)
 	Remove(id int) error

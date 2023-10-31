@@ -5,6 +5,7 @@ type Session struct {
 	UserId int    `json:"-"`
 }
 
+//go:generate /Users/bincom/go/bin/mockgen -source=session.go -destination=mock_entities/session_mock.go
 type SessionUseCaseInterface interface {
 	SessionCreate(sr *Session) (*Session, error)
 	SessionRead(sr *Session) (*Session, error)
