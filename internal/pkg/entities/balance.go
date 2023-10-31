@@ -7,7 +7,7 @@ type Balance struct {
 	Available_balance float64 `json:"available_balance"` // Свободный
 }
 
-//go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
+//go:generate /Users/bincom/go/bin/mockgen -source=balance.go -destination=mock_entities/balance_mock.go
 type BalanceRepoInterface interface {
 	Create(s *Balance) (*Balance, error)
 	Remove(id int) error

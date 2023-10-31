@@ -5,7 +5,7 @@ type Region struct {
 	Name string `json:"name"` // Название
 }
 
-//go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
+//go:generate /Users/bincom/go/bin/mockgen -source=region.go -destination=mock_entities/region_mock.go
 type RegionRepoInterface interface {
 	Create(s *Region) (*Region, error)
 	Remove(id int) error

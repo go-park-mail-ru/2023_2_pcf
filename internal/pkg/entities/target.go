@@ -12,7 +12,7 @@ type Target struct {
 	Regions   []Region   `json:"regions"`   // Регионы
 }
 
-//go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
+//go:generate /Users/bincom/go/bin/mockgen -source=target.go -destination=mock_entities/target_mock.go
 type TargetRepoInterface interface {
 	Create(s *Target) (*Target, error)
 	Remove(id int) error

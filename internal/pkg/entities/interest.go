@@ -5,7 +5,7 @@ type Interest struct {
 	Name string `json:"name"` // Название
 }
 
-//go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
+//go:generate /Users/bincom/go/bin/mockgen -source=interest.go -destination=mock_entities/interest_mock.go
 type InterestRepoInterface interface {
 	Create(s *Interest) (*Interest, error)
 	Remove(id int) error
