@@ -113,6 +113,9 @@ AdHub/internal/pkg/repo/userrepository.go:88.17,91.4 2 0
 AdHub/internal/pkg/repo/userrepository.go:93.2,93.26 1 1
 AdHub/internal/pkg/repo/userrepository.go:93.26,95.3 1 0
 AdHub/internal/pkg/repo/userrepository.go:96.2,96.18 1 1
+AdHub/internal/pkg/usecases/ad/ad.go:11.49,15.2 1 1
+AdHub/internal/pkg/usecases/ad/ad.go:17.70,19.2 1 1
+AdHub/internal/pkg/usecases/ad/ad.go:21.65,23.2 1 1
 AdHub/internal/pkg/usecases/session/session.go:12.59,16.2 1 1
 AdHub/internal/pkg/usecases/session/session.go:18.89,20.2 1 1
 AdHub/internal/pkg/usecases/session/session.go:22.87,24.2 1 1
@@ -127,9 +130,6 @@ AdHub/internal/pkg/usecases/session/session.go:51.2,52.16 2 1
 AdHub/internal/pkg/usecases/session/session.go:52.16,54.3 1 0
 AdHub/internal/pkg/usecases/session/session.go:56.2,56.24 1 1
 AdHub/internal/pkg/usecases/session/session.go:59.63,65.2 2 1
-AdHub/internal/pkg/usecases/ad/ad.go:11.49,15.2 1 1
-AdHub/internal/pkg/usecases/ad/ad.go:17.70,19.2 1 1
-AdHub/internal/pkg/usecases/ad/ad.go:21.65,23.2 1 1
 AdHub/internal/pkg/usecases/user/user.go:11.53,15.2 1 1
 AdHub/internal/pkg/usecases/user/user.go:17.80,19.2 1 1
 AdHub/internal/pkg/usecases/user/user.go:21.58,23.2 1 1
