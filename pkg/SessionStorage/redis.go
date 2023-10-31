@@ -13,6 +13,12 @@ type Redis struct {
 	db       int
 }
 
+func NewMock(red *redis.Client) *Redis {
+	return &Redis{
+		client: red,
+	}
+}
+
 func New(addr string, password string, db int) *Redis {
 	return &Redis{
 		addr:     addr,
@@ -35,8 +41,8 @@ func (r Redis) Open() (SessionStorageInterface, error) {
 	return r, nil
 }
 
-func (r Redis) Close() {
-	//todo
+func (r Redis) Close() error {
+	return nil
 }
 
 func (r Redis) Store() *redis.Client {

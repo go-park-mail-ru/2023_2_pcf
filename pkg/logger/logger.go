@@ -12,6 +12,7 @@ const (
 	FatalLevel = "fatal"
 )
 
+//go:generate /Users/bincom/go/bin/mockgen -source=logger.go -destination=mock_logger/mock.go
 type Logger interface {
 	Info(message string)
 	Error(message string)

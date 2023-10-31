@@ -11,6 +11,14 @@ type AdRepository struct {
 	store db.DbInterface
 }
 
+func NewAdRepoMock(DB db.DbInterface) (*AdRepository, error) {
+	r := &AdRepository{
+		store: DB,
+	}
+
+	return r, nil
+}
+
 func NewAdRepo(DB db.DbInterface) (*AdRepository, error) {
 	st, err := DB.Open()
 	if err != nil {
