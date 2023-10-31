@@ -18,10 +18,13 @@ func TestAdUseCase_AdCreate(t *testing.T) {
 	useCase := New(mockRepo)
 
 	fakeAd := &entities.Ad{
-		Name:        "Test Ad",
-		Description: "This is a test ad",
-		Sector:      "Technology",
-		Owner_id:    1,
+		Name:         "Test Ad",
+		Description:  "This is a test ad",
+		Website_link: "http://example.com",
+		Budget:       100.0,
+		Target_id:    1,
+		Image_link:   "http://example.com/image.jpg",
+		Owner_id:     1,
 	}
 
 	mockRepo.EXPECT().Create(gomock.Eq(fakeAd)).Return(fakeAd, nil)
@@ -41,18 +44,24 @@ func TestAdUseCase_AdReadList(t *testing.T) {
 
 	fakeAds := []*entities.Ad{
 		{
-			Id:          1,
-			Name:        "Ad 1",
-			Description: "Description 1",
-			Sector:      "Sector 1",
-			Owner_id:    1,
+			Id:           1,
+			Name:         "Ad 1",
+			Description:  "Description 1",
+			Website_link: "http://example.com/ad1",
+			Budget:       50.0,
+			Target_id:    1,
+			Image_link:   "http://example.com/ad1/image.jpg",
+			Owner_id:     1,
 		},
 		{
-			Id:          2,
-			Name:        "Ad 2",
-			Description: "Description 2",
-			Sector:      "Sector 2",
-			Owner_id:    2,
+			Id:           2,
+			Name:         "Ad 2",
+			Description:  "Description 2",
+			Website_link: "http://example.com/ad2",
+			Budget:       75.0,
+			Target_id:    2,
+			Image_link:   "http://example.com/ad2/image.jpg",
+			Owner_id:     2,
 		},
 	}
 

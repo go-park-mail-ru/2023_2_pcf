@@ -5,7 +5,6 @@ import (
 	"AdHub/pkg/db"
 	"database/sql"
 	"fmt"
-	"log"
 )
 
 type UserRepository struct {
@@ -35,7 +34,6 @@ func (r *UserRepository) Create(user *entities.User) (*entities.User, error) {
 		"INSERT INTO \"user\" (login, password, f_name, l_name, s_name, balance_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING id;",
 		user.Login, user.Password, user.FName, user.LName, user.SName, user.BalanceId,
 	).Scan(&user.Id); err != nil {
-		log.Panic(err)
 		return nil, err
 	}
 	return user, nil
@@ -58,7 +56,6 @@ func (r *UserRepository) Update(user *entities.User) error {
 		user.Login, user.Password, user.FName, user.LName, user.SName, user.BalanceId, user.Id,
 	)
 	if err != nil {
-		log.Panic(err)
 		return err
 	}
 	return nil
@@ -67,7 +64,6 @@ func (r *UserRepository) Update(user *entities.User) error {
 func (r *UserRepository) Read(login string) (*entities.User, error) {
 	rows, err := r.get(login)
 	if err != nil {
-		log.Printf("Error GET user")
 		return nil, err
 	}
 	defer rows.Close()
@@ -75,7 +71,6 @@ func (r *UserRepository) Read(login string) (*entities.User, error) {
 	for rows.Next() {
 		err := rows.Scan(&user.Id, &user.Login, &user.Password, &user.FName, &user.LName, &user.SName, &user.BalanceId)
 		if err != nil {
-			log.Printf("Error scan rows User")
 			return nil, err
 		}
 	}

@@ -4,7 +4,6 @@ import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/pkg/db"
 	"database/sql"
-	"log"
 )
 
 type AdRepository struct {
@@ -37,7 +36,6 @@ func (r *AdRepository) Create(ad *entities.Ad) (*entities.Ad, error) {
 		"INSERT INTO \"ad\" (name, description, website_link, budget, target_id, image_link, owner_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id;",
 		ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id,
 	).Scan(&ad.Id); err != nil {
-		log.Printf("Error: %s", err)
 		return nil, err
 	}
 
@@ -58,7 +56,6 @@ func (r *AdRepository) Update(ad *entities.Ad) error {
 		ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, ad.Id,
 	)
 	if err != nil {
-		log.Printf("Error: %s", err)
 		return err
 	}
 
@@ -68,7 +65,6 @@ func (r *AdRepository) Update(ad *entities.Ad) error {
 func (r *AdRepository) Read(id int) ([]*entities.Ad, error) {
 	rows, err := r.getList(id)
 	if err != nil {
-		log.Printf("Error GET Ads")
 		return nil, err
 	}
 
@@ -80,7 +76,6 @@ func (r *AdRepository) Read(id int) ([]*entities.Ad, error) {
 		ad := &entities.Ad{}
 		err := rows.Scan(&ad.Id, &ad.Name, &ad.Description, &ad.Website_link, &ad.Budget, &ad.Target_id, &ad.Image_link, &ad.Owner_id)
 		if err != nil {
-			log.Printf("Error scan rows Ads")
 			return nil, err
 		}
 		ads = append(ads, ad)

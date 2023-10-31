@@ -11,3 +11,11 @@ type Target struct {
 	Tags      []Tag      `json:"tags"`      // Тэги
 	Regions   []Region   `json:"regions"`   // Регионы
 }
+
+//go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
+type TargetRepoInterface interface {
+	Create(s *Target) (*Target, error)
+	Remove(id int) error
+	Update(s *Target) error
+	Read(id int) (*Target, error)
+}

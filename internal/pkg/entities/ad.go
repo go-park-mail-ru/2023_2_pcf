@@ -9,7 +9,6 @@ type Ad struct {
 	Target_id    int     `json:"target_id"`    //таргетинг
 	Image_link   string  `json:"image_link"`   //баннер(картинка)
 	Owner_id     int     `json:"owner_id`      // id владельца
-
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
