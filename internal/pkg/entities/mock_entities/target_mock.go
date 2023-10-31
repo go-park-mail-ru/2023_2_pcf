@@ -49,6 +49,51 @@ func (mr *MockTargetRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTargetRepoInterface)(nil).Create), s)
 }
 
+// GetTargetInterests mocks base method.
+func (m *MockTargetRepoInterface) GetTargetInterests(targetID int) ([]entities.Interest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTargetInterests", targetID)
+	ret0, _ := ret[0].([]entities.Interest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTargetInterests indicates an expected call of GetTargetInterests.
+func (mr *MockTargetRepoInterfaceMockRecorder) GetTargetInterests(targetID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTargetInterests", reflect.TypeOf((*MockTargetRepoInterface)(nil).GetTargetInterests), targetID)
+}
+
+// GetTargetRegions mocks base method.
+func (m *MockTargetRepoInterface) GetTargetRegions(targetID int) ([]entities.Region, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTargetRegions", targetID)
+	ret0, _ := ret[0].([]entities.Region)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTargetRegions indicates an expected call of GetTargetRegions.
+func (mr *MockTargetRepoInterfaceMockRecorder) GetTargetRegions(targetID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTargetRegions", reflect.TypeOf((*MockTargetRepoInterface)(nil).GetTargetRegions), targetID)
+}
+
+// GetTargetTags mocks base method.
+func (m *MockTargetRepoInterface) GetTargetTags(targetID int) ([]entities.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTargetTags", targetID)
+	ret0, _ := ret[0].([]entities.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTargetTags indicates an expected call of GetTargetTags.
+func (mr *MockTargetRepoInterfaceMockRecorder) GetTargetTags(targetID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTargetTags", reflect.TypeOf((*MockTargetRepoInterface)(nil).GetTargetTags), targetID)
+}
+
 // Read mocks base method.
 func (m *MockTargetRepoInterface) Read(id int) (*entities.Target, error) {
 	m.ctrl.T.Helper()
@@ -90,4 +135,85 @@ func (m *MockTargetRepoInterface) Update(s *entities.Target) error {
 func (mr *MockTargetRepoInterfaceMockRecorder) Update(s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTargetRepoInterface)(nil).Update), s)
+}
+
+// MockTargetUseCaseInterface is a mock of TargetUseCaseInterface interface.
+type MockTargetUseCaseInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockTargetUseCaseInterfaceMockRecorder
+}
+
+// MockTargetUseCaseInterfaceMockRecorder is the mock recorder for MockTargetUseCaseInterface.
+type MockTargetUseCaseInterfaceMockRecorder struct {
+	mock *MockTargetUseCaseInterface
+}
+
+// NewMockTargetUseCaseInterface creates a new mock instance.
+func NewMockTargetUseCaseInterface(ctrl *gomock.Controller) *MockTargetUseCaseInterface {
+	mock := &MockTargetUseCaseInterface{ctrl: ctrl}
+	mock.recorder = &MockTargetUseCaseInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTargetUseCaseInterface) EXPECT() *MockTargetUseCaseInterfaceMockRecorder {
+	return m.recorder
+}
+
+// TargetCreate mocks base method.
+func (m *MockTargetUseCaseInterface) TargetCreate(s *entities.Target) (*entities.Target, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TargetCreate", s)
+	ret0, _ := ret[0].(*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TargetCreate indicates an expected call of TargetCreate.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetCreate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetCreate", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetCreate), s)
+}
+
+// TargetRead mocks base method.
+func (m *MockTargetUseCaseInterface) TargetRead(id int) (*entities.Target, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TargetRead", id)
+	ret0, _ := ret[0].(*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TargetRead indicates an expected call of TargetRead.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetRead(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetRead", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetRead), id)
+}
+
+// TargetRemove mocks base method.
+func (m *MockTargetUseCaseInterface) TargetRemove(id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TargetRemove", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// TargetRemove indicates an expected call of TargetRemove.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetRemove(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetRemove", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetRemove), id)
+}
+
+// TargetUpdate mocks base method.
+func (m *MockTargetUseCaseInterface) TargetUpdate(s *entities.Target) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TargetUpdate", s)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// TargetUpdate indicates an expected call of TargetUpdate.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetUpdate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetUpdate", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetUpdate), s)
 }

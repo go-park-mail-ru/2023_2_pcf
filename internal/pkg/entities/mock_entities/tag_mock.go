@@ -91,3 +91,55 @@ func (mr *MockTagRepoInterfaceMockRecorder) Update(s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTagRepoInterface)(nil).Update), s)
 }
+
+// MockTagUseCaseInterface is a mock of TagUseCaseInterface interface.
+type MockTagUseCaseInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockTagUseCaseInterfaceMockRecorder
+}
+
+// MockTagUseCaseInterfaceMockRecorder is the mock recorder for MockTagUseCaseInterface.
+type MockTagUseCaseInterfaceMockRecorder struct {
+	mock *MockTagUseCaseInterface
+}
+
+// NewMockTagUseCaseInterface creates a new mock instance.
+func NewMockTagUseCaseInterface(ctrl *gomock.Controller) *MockTagUseCaseInterface {
+	mock := &MockTagUseCaseInterface{ctrl: ctrl}
+	mock.recorder = &MockTagUseCaseInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTagUseCaseInterface) EXPECT() *MockTagUseCaseInterfaceMockRecorder {
+	return m.recorder
+}
+
+// TagCreate mocks base method.
+func (m *MockTagUseCaseInterface) TagCreate(s *entities.Tag) (*entities.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TagCreate", s)
+	ret0, _ := ret[0].(*entities.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TagCreate indicates an expected call of TagCreate.
+func (mr *MockTagUseCaseInterfaceMockRecorder) TagCreate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TagCreate", reflect.TypeOf((*MockTagUseCaseInterface)(nil).TagCreate), s)
+}
+
+// TagRemove mocks base method.
+func (m *MockTagUseCaseInterface) TagRemove(id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TagRemove", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// TagRemove indicates an expected call of TagRemove.
+func (mr *MockTagUseCaseInterfaceMockRecorder) TagRemove(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TagRemove", reflect.TypeOf((*MockTagUseCaseInterface)(nil).TagRemove), id)
+}

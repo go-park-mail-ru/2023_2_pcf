@@ -29,6 +29,7 @@ type UserRepoInterface interface {
 }
 
 type UserUseCaseInterface interface {
+	UserUpdate(s *User) error
 	UserRead(login string) (*User, error)
 	UserDelete(userMail string) error
 	UserCreate(user *User) (*User, error)

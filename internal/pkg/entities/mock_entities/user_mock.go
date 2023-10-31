@@ -158,3 +158,17 @@ func (mr *MockUserUseCaseInterfaceMockRecorder) UserRead(login interface{}) *gom
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserRead", reflect.TypeOf((*MockUserUseCaseInterface)(nil).UserRead), login)
 }
+
+// UserUpdate mocks base method.
+func (m *MockUserUseCaseInterface) UserUpdate(s *entities.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserUpdate", s)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UserUpdate indicates an expected call of UserUpdate.
+func (mr *MockUserUseCaseInterfaceMockRecorder) UserUpdate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserUpdate", reflect.TypeOf((*MockUserUseCaseInterface)(nil).UserUpdate), s)
+}

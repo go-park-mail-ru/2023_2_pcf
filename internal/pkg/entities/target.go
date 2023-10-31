@@ -18,4 +18,14 @@ type TargetRepoInterface interface {
 	Remove(id int) error
 	Update(s *Target) error
 	Read(id int) (*Target, error)
+	GetTargetInterests(targetID int) ([]Interest, error)
+	GetTargetRegions(targetID int) ([]Region, error)
+	GetTargetTags(targetID int) ([]Tag, error)
+}
+
+type TargetUseCaseInterface interface {
+	TargetCreate(s *Target) (*Target, error)
+	TargetRead(id int) (*Target, error)
+	TargetRemove(id int) error
+	TargetUpdate(s *Target) error
 }

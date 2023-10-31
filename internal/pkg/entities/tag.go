@@ -12,3 +12,8 @@ type TagRepoInterface interface {
 	Update(s *Tag) error
 	Read(id int) (*Tag, error)
 }
+
+type TagUseCaseInterface interface {
+	TagCreate(s *Tag) (*Tag, error)
+	TagRemove(id int) error
+}

@@ -91,3 +91,55 @@ func (mr *MockRegionRepoInterfaceMockRecorder) Update(s interface{}) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRegionRepoInterface)(nil).Update), s)
 }
+
+// MockRegionUseCaseInterface is a mock of RegionUseCaseInterface interface.
+type MockRegionUseCaseInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockRegionUseCaseInterfaceMockRecorder
+}
+
+// MockRegionUseCaseInterfaceMockRecorder is the mock recorder for MockRegionUseCaseInterface.
+type MockRegionUseCaseInterfaceMockRecorder struct {
+	mock *MockRegionUseCaseInterface
+}
+
+// NewMockRegionUseCaseInterface creates a new mock instance.
+func NewMockRegionUseCaseInterface(ctrl *gomock.Controller) *MockRegionUseCaseInterface {
+	mock := &MockRegionUseCaseInterface{ctrl: ctrl}
+	mock.recorder = &MockRegionUseCaseInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRegionUseCaseInterface) EXPECT() *MockRegionUseCaseInterfaceMockRecorder {
+	return m.recorder
+}
+
+// RegionCreate mocks base method.
+func (m *MockRegionUseCaseInterface) RegionCreate(s *entities.Interest) (*entities.Interest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RegionCreate", s)
+	ret0, _ := ret[0].(*entities.Interest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RegionCreate indicates an expected call of RegionCreate.
+func (mr *MockRegionUseCaseInterfaceMockRecorder) RegionCreate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegionCreate", reflect.TypeOf((*MockRegionUseCaseInterface)(nil).RegionCreate), s)
+}
+
+// RegionRemove mocks base method.
+func (m *MockRegionUseCaseInterface) RegionRemove(id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RegionRemove", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RegionRemove indicates an expected call of RegionRemove.
+func (mr *MockRegionUseCaseInterfaceMockRecorder) RegionRemove(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegionRemove", reflect.TypeOf((*MockRegionUseCaseInterface)(nil).RegionRemove), id)
+}

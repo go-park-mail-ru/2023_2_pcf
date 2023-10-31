@@ -21,3 +21,15 @@ func (uc *AdUseCase) AdCreate(ad *entities.Ad) (*entities.Ad, error) {
 func (uc *AdUseCase) AdReadList(id int) ([]*entities.Ad, error) {
 	return uc.repo.Read(id)
 }
+
+func (uc *AdUseCase) AdRead(id int) (*entities.Ad, error) {
+	return uc.repo.Read(id)
+}
+
+func (uc *AdUseCase) AdRemove(id int) error {
+	return uc.repo.Remove(id)
+}
+
+func (uc *AdUseCase) AdUpdate(s *entities.Ad) error {
+	return uc.repo.Update(s)
+}

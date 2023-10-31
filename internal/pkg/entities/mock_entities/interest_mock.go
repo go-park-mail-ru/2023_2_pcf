@@ -91,3 +91,55 @@ func (mr *MockInterestRepoInterfaceMockRecorder) Update(s interface{}) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockInterestRepoInterface)(nil).Update), s)
 }
+
+// MockInterestUseCaseInterface is a mock of InterestUseCaseInterface interface.
+type MockInterestUseCaseInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockInterestUseCaseInterfaceMockRecorder
+}
+
+// MockInterestUseCaseInterfaceMockRecorder is the mock recorder for MockInterestUseCaseInterface.
+type MockInterestUseCaseInterfaceMockRecorder struct {
+	mock *MockInterestUseCaseInterface
+}
+
+// NewMockInterestUseCaseInterface creates a new mock instance.
+func NewMockInterestUseCaseInterface(ctrl *gomock.Controller) *MockInterestUseCaseInterface {
+	mock := &MockInterestUseCaseInterface{ctrl: ctrl}
+	mock.recorder = &MockInterestUseCaseInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockInterestUseCaseInterface) EXPECT() *MockInterestUseCaseInterfaceMockRecorder {
+	return m.recorder
+}
+
+// InterestCreate mocks base method.
+func (m *MockInterestUseCaseInterface) InterestCreate(s *entities.Interest) (*entities.Interest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InterestCreate", s)
+	ret0, _ := ret[0].(*entities.Interest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InterestCreate indicates an expected call of InterestCreate.
+func (mr *MockInterestUseCaseInterfaceMockRecorder) InterestCreate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InterestCreate", reflect.TypeOf((*MockInterestUseCaseInterface)(nil).InterestCreate), s)
+}
+
+// InterestRemove mocks base method.
+func (m *MockInterestUseCaseInterface) InterestRemove(id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InterestRemove", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InterestRemove indicates an expected call of InterestRemove.
+func (mr *MockInterestUseCaseInterfaceMockRecorder) InterestRemove(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InterestRemove", reflect.TypeOf((*MockInterestUseCaseInterface)(nil).InterestRemove), id)
+}

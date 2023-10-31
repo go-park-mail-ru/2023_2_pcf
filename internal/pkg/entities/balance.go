@@ -14,3 +14,12 @@ type BalanceRepoInterface interface {
 	Update(s *Balance) error
 	Read(id int) (*Balance, error)
 }
+
+type BalanceUseCaseInterface interface {
+	BalanceCreate(s *Balance) (*Balance, error)
+	BalanceRead(id int) (*Balance, error)
+	BalanceRemove(id int) error
+	BalanceUP(sum float64, id int) error
+	BalanceDown(sum float64, id int) error
+	BalanceReserve(sum float64, id int) error
+}

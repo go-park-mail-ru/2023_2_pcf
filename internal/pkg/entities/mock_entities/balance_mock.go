@@ -91,3 +91,112 @@ func (mr *MockBalanceRepoInterfaceMockRecorder) Update(s interface{}) *gomock.Ca
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBalanceRepoInterface)(nil).Update), s)
 }
+
+// MockBalanceUseCaseInterface is a mock of BalanceUseCaseInterface interface.
+type MockBalanceUseCaseInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockBalanceUseCaseInterfaceMockRecorder
+}
+
+// MockBalanceUseCaseInterfaceMockRecorder is the mock recorder for MockBalanceUseCaseInterface.
+type MockBalanceUseCaseInterfaceMockRecorder struct {
+	mock *MockBalanceUseCaseInterface
+}
+
+// NewMockBalanceUseCaseInterface creates a new mock instance.
+func NewMockBalanceUseCaseInterface(ctrl *gomock.Controller) *MockBalanceUseCaseInterface {
+	mock := &MockBalanceUseCaseInterface{ctrl: ctrl}
+	mock.recorder = &MockBalanceUseCaseInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBalanceUseCaseInterface) EXPECT() *MockBalanceUseCaseInterfaceMockRecorder {
+	return m.recorder
+}
+
+// BalanceCreate mocks base method.
+func (m *MockBalanceUseCaseInterface) BalanceCreate(s *entities.Balance) (*entities.Balance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BalanceCreate", s)
+	ret0, _ := ret[0].(*entities.Balance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BalanceCreate indicates an expected call of BalanceCreate.
+func (mr *MockBalanceUseCaseInterfaceMockRecorder) BalanceCreate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalanceCreate", reflect.TypeOf((*MockBalanceUseCaseInterface)(nil).BalanceCreate), s)
+}
+
+// BalanceDown mocks base method.
+func (m *MockBalanceUseCaseInterface) BalanceDown(sum float64, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BalanceDown", sum, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// BalanceDown indicates an expected call of BalanceDown.
+func (mr *MockBalanceUseCaseInterfaceMockRecorder) BalanceDown(sum, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalanceDown", reflect.TypeOf((*MockBalanceUseCaseInterface)(nil).BalanceDown), sum, id)
+}
+
+// BalanceRead mocks base method.
+func (m *MockBalanceUseCaseInterface) BalanceRead(id int) (*entities.Balance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BalanceRead", id)
+	ret0, _ := ret[0].(*entities.Balance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BalanceRead indicates an expected call of BalanceRead.
+func (mr *MockBalanceUseCaseInterfaceMockRecorder) BalanceRead(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalanceRead", reflect.TypeOf((*MockBalanceUseCaseInterface)(nil).BalanceRead), id)
+}
+
+// BalanceRemove mocks base method.
+func (m *MockBalanceUseCaseInterface) BalanceRemove(id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BalanceRemove", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// BalanceRemove indicates an expected call of BalanceRemove.
+func (mr *MockBalanceUseCaseInterfaceMockRecorder) BalanceRemove(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalanceRemove", reflect.TypeOf((*MockBalanceUseCaseInterface)(nil).BalanceRemove), id)
+}
+
+// BalanceReserve mocks base method.
+func (m *MockBalanceUseCaseInterface) BalanceReserve(sum float64, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BalanceReserve", sum, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// BalanceReserve indicates an expected call of BalanceReserve.
+func (mr *MockBalanceUseCaseInterfaceMockRecorder) BalanceReserve(sum, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalanceReserve", reflect.TypeOf((*MockBalanceUseCaseInterface)(nil).BalanceReserve), sum, id)
+}
+
+// BalanceUP mocks base method.
+func (m *MockBalanceUseCaseInterface) BalanceUP(sum float64, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BalanceUP", sum, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// BalanceUP indicates an expected call of BalanceUP.
+func (mr *MockBalanceUseCaseInterfaceMockRecorder) BalanceUP(sum, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BalanceUP", reflect.TypeOf((*MockBalanceUseCaseInterface)(nil).BalanceUP), sum, id)
+}

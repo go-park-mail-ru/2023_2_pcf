@@ -157,3 +157,39 @@ func TestRead(t *testing.T) {
 
 	require.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestGet(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock database: %v", err)
+	}
+	defer db.Close()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	dbInterface := pg.NewMock(db)
+	repo, err := NewAdRepoMock(dbInterface)
+	require.NoError(t, err)
+
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id"}).
+		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1)
+
+	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM "ad" WHERE id=\$1;`).
+		WithArgs(1).
+		WillReturnRows(rows)
+
+	ad, err := repo.Get(1)
+
+	require.NoError(t, err)
+	assert.Equal(t, "Ad1", ad.Name)
+	assert.Equal(t, "Description1", ad.Description)
+	assert.Equal(t, "https://example1.com", ad.Website_link)
+	assert.Equal(t, 100.0, ad.Budget)
+	assert.Equal(t, 1, ad.Target_id)
+	assert.Equal(t, "https://example1.com/image.jpg", ad.Image_link)
+	assert.Equal(t, 1, ad.Owner_id)
+	assert.Equal(t, 1, ad.Id)
+
+	require.NoError(t, mock.ExpectationsWereMet())
+}

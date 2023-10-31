@@ -49,6 +49,21 @@ func (mr *MockAdRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAdRepoInterface)(nil).Create), s)
 }
 
+// Get mocks base method.
+func (m *MockAdRepoInterface) Get(id int) (*entities.Ad, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", id)
+	ret0, _ := ret[0].(*entities.Ad)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockAdRepoInterfaceMockRecorder) Get(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockAdRepoInterface)(nil).Get), id)
+}
+
 // Read mocks base method.
 func (m *MockAdRepoInterface) Read(id int) ([]*entities.Ad, error) {
 	m.ctrl.T.Helper()
@@ -130,6 +145,21 @@ func (mr *MockAdUseCaseInterfaceMockRecorder) AdCreate(ad interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdCreate", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdCreate), ad)
 }
 
+// AdRead mocks base method.
+func (m *MockAdUseCaseInterface) AdRead(id int) (*entities.Ad, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdRead", id)
+	ret0, _ := ret[0].(*entities.Ad)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AdRead indicates an expected call of AdRead.
+func (mr *MockAdUseCaseInterfaceMockRecorder) AdRead(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdRead", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdRead), id)
+}
+
 // AdReadList mocks base method.
 func (m *MockAdUseCaseInterface) AdReadList(id int) ([]*entities.Ad, error) {
 	m.ctrl.T.Helper()
@@ -143,4 +173,32 @@ func (m *MockAdUseCaseInterface) AdReadList(id int) ([]*entities.Ad, error) {
 func (mr *MockAdUseCaseInterfaceMockRecorder) AdReadList(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdReadList", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdReadList), id)
+}
+
+// AdRemove mocks base method.
+func (m *MockAdUseCaseInterface) AdRemove(id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdRemove", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AdRemove indicates an expected call of AdRemove.
+func (mr *MockAdUseCaseInterfaceMockRecorder) AdRemove(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdRemove", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdRemove), id)
+}
+
+// AdUpdate mocks base method.
+func (m *MockAdUseCaseInterface) AdUpdate(s *entities.Ad) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdUpdate", s)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AdUpdate indicates an expected call of AdUpdate.
+func (mr *MockAdUseCaseInterfaceMockRecorder) AdUpdate(s interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdUpdate", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdUpdate), s)
 }

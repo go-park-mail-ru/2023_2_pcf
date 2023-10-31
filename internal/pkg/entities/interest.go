@@ -12,3 +12,8 @@ type InterestRepoInterface interface {
 	Update(s *Interest) error
 	Read(id int) (*Interest, error)
 }
+
+type InterestUseCaseInterface interface {
+	InterestCreate(s *Interest) (*Interest, error)
+	InterestRemove(id int) error
+}

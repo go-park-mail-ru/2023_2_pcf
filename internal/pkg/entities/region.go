@@ -12,3 +12,8 @@ type RegionRepoInterface interface {
 	Update(s *Region) error
 	Read(id int) (*Region, error)
 }
+
+type RegionUseCaseInterface interface {
+	RegionCreate(s *Interest) (*Interest, error)
+	RegionRemove(id int) error
+}

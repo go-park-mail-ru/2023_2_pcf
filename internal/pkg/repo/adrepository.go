@@ -87,3 +87,29 @@ func (r *AdRepository) Read(id int) ([]*entities.Ad, error) {
 func (r *AdRepository) getList(id int) (*sql.Rows, error) {
 	return r.store.Db().Query("SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM \"ad\" WHERE owner_id=$1;", id)
 }
+
+func (r *AdRepository) getOne(id int) (*sql.Rows, error) {
+	return r.store.Db().Query("SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM \"ad\" WHERE id=$1;", id)
+}
+
+func (r *AdRepository) Get(id int) (*entities.Ad, error) {
+	rows, err := r.getOne(id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var ads *entities.Ad
+
+	for rows.Next() {
+		ad := &entities.Ad{}
+		err = rows.Scan(&ad.Id, &ad.Name, &ad.Description, &ad.Website_link, &ad.Budget, &ad.Target_id, &ad.Image_link, &ad.Owner_id)
+		if err != nil {
+			return nil, err
+		}
+		ads = ad
+	}
+
+	return ads, nil
+}

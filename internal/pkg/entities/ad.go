@@ -17,9 +17,13 @@ type AdRepoInterface interface {
 	Remove(id int) error
 	Update(s *Ad) error
 	Read(id int) ([]*Ad, error)
+	Get(id int) (*Ad, error)
 }
 
 type AdUseCaseInterface interface {
 	AdCreate(ad *Ad) (*Ad, error)
 	AdReadList(id int) ([]*Ad, error)
+	AdRead(id int) (*Ad, error)
+	AdRemove(id int) error
+	AdUpdate(s *Ad) error
 }
