@@ -26,14 +26,17 @@ func TestCreate(t *testing.T) {
 	require.NoError(t, err)
 
 	ad := &entities.Ad{
-		Name:        "Test Ad",
-		Description: "Test Description",
-		Sector:      "Test Sector",
-		Owner_id:    1,
+		Name:         "Test Ad",
+		Description:  "Test Description",
+		Website_link: "https://example.com",
+		Budget:       100.0,
+		Target_id:    1,
+		Image_link:   "https://example.com/image.jpg",
+		Owner_id:     1,
 	}
 
-	mock.ExpectQuery("INSERT INTO \"ad\" (.+) RETURNING id;").
-		WithArgs(ad.Name, ad.Description, ad.Sector, ad.Owner_id).
+	mock.ExpectQuery(`INSERT INTO "ad" (.+) RETURNING id;`).
+		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	createdAd, err := repo.Create(ad)
@@ -60,6 +63,7 @@ func TestRemove(t *testing.T) {
 	require.NoError(t, err)
 
 	mock.ExpectExec(`DELETE FROM "ad" WHERE id=\$1;`).
+		WithArgs(1).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err = repo.Remove(1)
@@ -84,15 +88,18 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	ad := &entities.Ad{
-		Id:          1,
-		Name:        "Updated Ad",
-		Description: "Updated Description",
-		Sector:      "Updated Sector",
-		Owner_id:    1,
+		Id:           1,
+		Name:         "Updated Ad",
+		Description:  "Updated Description",
+		Website_link: "https://updated.com",
+		Budget:       200.0,
+		Target_id:    2,
+		Image_link:   "https://updated.com/image.jpg",
+		Owner_id:     1,
 	}
 
-	mock.ExpectExec(`UPDATE "ad" SET name=\$1, description=\$2, sector=\$3, owner_id=\$4 WHERE id=\$5;`).
-		WithArgs(ad.Name, ad.Description, ad.Sector, ad.Owner_id, ad.Id).
+	mock.ExpectExec(`UPDATE "ad" SET name=\$1, description=\$2, website_link=\$3, budget=\$4, target_id=\$5, image_link=\$6, owner_id=\$7 WHERE id=\$8;`).
+		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, ad.Id).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err = repo.Update(ad)
@@ -116,11 +123,12 @@ func TestRead(t *testing.T) {
 	repo, err := NewAdRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"name", "description", "sector", "id"}).
-		AddRow("Ad1", "Description1", "Sector1", 1).
-		AddRow("Ad2", "Description2", "Sector2", 2)
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id"}).
+		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1).
+		AddRow(2, "Ad2", "Description2", "https://example2.com", 200.0, 2, "https://example2.com/image.jpg", 2)
 
-	mock.ExpectQuery(`SELECT name, description, sector, id FROM "ad" WHERE owner_id=\$1;`).
+	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM "ad" WHERE owner_id=\$1;`).
+		WithArgs(1).
 		WillReturnRows(rows)
 
 	ads, err := repo.Read(1)
@@ -131,12 +139,20 @@ func TestRead(t *testing.T) {
 
 	assert.Equal(t, "Ad1", ads[0].Name)
 	assert.Equal(t, "Description1", ads[0].Description)
-	assert.Equal(t, "Sector1", ads[0].Sector)
+	assert.Equal(t, "https://example1.com", ads[0].Website_link)
+	assert.Equal(t, 100.0, ads[0].Budget)
+	assert.Equal(t, 1, ads[0].Target_id)
+	assert.Equal(t, "https://example1.com/image.jpg", ads[0].Image_link)
+	assert.Equal(t, 1, ads[0].Owner_id)
 	assert.Equal(t, 1, ads[0].Id)
 
 	assert.Equal(t, "Ad2", ads[1].Name)
 	assert.Equal(t, "Description2", ads[1].Description)
-	assert.Equal(t, "Sector2", ads[1].Sector)
+	assert.Equal(t, "https://example2.com", ads[1].Website_link)
+	assert.Equal(t, 200.0, ads[1].Budget)
+	assert.Equal(t, 2, ads[1].Target_id)
+	assert.Equal(t, "https://example2.com/image.jpg", ads[1].Image_link)
+	assert.Equal(t, 2, ads[1].Owner_id)
 	assert.Equal(t, 2, ads[1].Id)
 
 	require.NoError(t, mock.ExpectationsWereMet())

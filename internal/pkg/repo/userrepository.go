@@ -5,7 +5,6 @@ import (
 	"AdHub/pkg/db"
 	"database/sql"
 	"fmt"
-	"log"
 )
 
 type UserRepository struct {
@@ -13,11 +12,9 @@ type UserRepository struct {
 }
 
 func NewUserRepoMock(DB db.DbInterface) (*UserRepository, error) {
-
 	r := &UserRepository{
 		store: DB,
 	}
-
 	return r, nil
 }
 
@@ -26,71 +23,58 @@ func NewUserRepo(DB db.DbInterface) (*UserRepository, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	r := &UserRepository{
 		store: st,
 	}
-
 	return r, nil
 }
 
-func (r *UserRepository) Create(s *entities.User) (*entities.User, error) {
+func (r *UserRepository) Create(user *entities.User) (*entities.User, error) {
 	if err := r.store.Db().QueryRow(
-		"INSERT INTO \"user\" (login, password, f_name, l_name) VALUES($1, $2, $3, $4) RETURNING id;",
-		s.Login, s.Password, s.FName, s.LName,
-	).Scan(&s.Id); err != nil {
-		log.Panic(err)
+		"INSERT INTO \"user\" (login, password, f_name, l_name, s_name, balance_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING id;",
+		user.Login, user.Password, user.FName, user.LName, user.SName, user.BalanceId,
+	).Scan(&user.Id); err != nil {
 		return nil, err
 	}
-
-	return s, nil
+	return user, nil
 }
 
-func (r *UserRepository) Remove(mail string) error {
-	if _, err := r.store.Db().Exec("DELETE FROM \"user\" WHERE login=$1;", mail); err != nil {
+func (r *UserRepository) Remove(login string) error {
+	if _, err := r.store.Db().Exec("DELETE FROM \"user\" WHERE login=$1;", login); err != nil {
 		return err
 	}
-
 	return nil
 }
 
-func (r *UserRepository) get(mail string) (*sql.Rows, error) {
-	return r.store.Db().Query("SELECT id, login, password, f_name, l_name FROM \"user\" WHERE login=$1;", mail)
+func (r *UserRepository) get(login string) (*sql.Rows, error) {
+	return r.store.Db().Query("SELECT id, login, password, f_name, l_name, s_name, balance_id FROM \"user\" WHERE login=$1;", login)
 }
 
-func (r *UserRepository) Update(s *entities.User) error {
+func (r *UserRepository) Update(user *entities.User) error {
 	_, err := r.store.Db().Exec(
-		"UPDATE \"user\" SET login=$1, password=$2, f_name=$3, l_name=$4 WHERE id=$5;",
-		s.Login, s.Password, s.FName, s.LName, s.Id,
+		"UPDATE \"user\" SET login=$1, password=$2, f_name=$3, l_name=$4, s_name=$5, balance_id=$6 WHERE id=$7;",
+		user.Login, user.Password, user.FName, user.LName, user.SName, user.BalanceId, user.Id,
 	)
 	if err != nil {
-		log.Panic(err)
 		return err
 	}
-
 	return nil
 }
 
-func (r *UserRepository) Read(mail string) (*entities.User, error) {
-	rows, err := r.get(mail)
+func (r *UserRepository) Read(login string) (*entities.User, error) {
+	rows, err := r.get(login)
 	if err != nil {
-		log.Printf("Error GET user")
 		return nil, err
 	}
-
 	defer rows.Close()
-
-	user := &entities.User{} // Initialize user
-
+	user := &entities.User{}
 	for rows.Next() {
-		// Assign values to user
-		err := rows.Scan(&user.Id, &user.Login, &user.Password, &user.FName, &user.LName)
+		err := rows.Scan(&user.Id, &user.Login, &user.Password, &user.FName, &user.LName, &user.SName, &user.BalanceId)
 		if err != nil {
-			log.Printf("Error scan rows User")
 			return nil, err
 		}
 	}
-	if len(user.Login) == 0 {
+	if user.Id == 0 {
 		return nil, fmt.Errorf("User not found")
 	}
 	return user, nil

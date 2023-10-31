@@ -18,11 +18,13 @@ func TestUserUseCase_UserCreate(t *testing.T) {
 	useCase := New(mockRepo)
 
 	fakeUser := &entities.User{
-		Id:       1,
-		Login:    "user@example.com",
-		Password: "1234556",
-		LName:    "joe",
-		FName:    "joe",
+		Id:        1,
+		Login:     "user@example.com",
+		Password:  "1234556",
+		LName:     "Doe",
+		FName:     "John",
+		SName:     "Smith",
+		BalanceId: 1,
 	}
 
 	mockRepo.EXPECT().Create(gomock.Eq(fakeUser)).Return(fakeUser, nil)
@@ -59,11 +61,13 @@ func TestUserUseCase_UserRead(t *testing.T) {
 	login := "user@example.com"
 
 	fakeUser := &entities.User{
-		Id:       1,
-		Login:    login,
-		Password: "1234556",
-		LName:    "joe",
-		FName:    "joe",
+		Id:        1,
+		Login:     login,
+		Password:  "1234556",
+		LName:     "Doe",
+		FName:     "John",
+		SName:     "Smith",
+		BalanceId: 1,
 	}
 
 	mockRepo.EXPECT().Read(login).Return(fakeUser, nil)
