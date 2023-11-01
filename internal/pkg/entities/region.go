@@ -1,8 +1,9 @@
 package entities
 
 type Region struct {
-	Id   int    `json:"id"`   // Id
-	Name string `json:"name"` // Название
+	Id       int    `json:"id"`        // Id
+	Name     string `json:"name"`      // Название
+	TargetID int    `json:"target_id"` //Id таргета
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=region.go -destination=mock_entities/region_mock.go

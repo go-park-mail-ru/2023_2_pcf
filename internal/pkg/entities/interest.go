@@ -1,8 +1,9 @@
 package entities
 
 type Interest struct {
-	Id   int    `json:"id"`   // Id
-	Name string `json:"name"` // Название
+	Id       int    `json:"id"`        // Id
+	Name     string `json:"name"`      // Название
+	TargetID int    `json:"target_id"` //Id таргета
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=interest.go -destination=mock_entities/interest_mock.go

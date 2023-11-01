@@ -1,8 +1,9 @@
 package entities
 
 type Tag struct {
-	Id   int    `json:"id"`   // Id
-	Name string `json:"name"` // Название
+	Id       int    `json:"id"`        // Id
+	Name     string `json:"name"`      // Название
+	TargetID int    `json:"target_id"` //Id таргета
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=tag.go -destination=mock_entities/tag_mock.go

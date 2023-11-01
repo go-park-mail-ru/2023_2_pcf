@@ -1,16 +1,16 @@
 СREATE TABLE "regions" (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE "interests" (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE "tags" (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE "balance" (
