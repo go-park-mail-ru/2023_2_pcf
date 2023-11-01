@@ -49,51 +49,6 @@ func (mr *MockTargetRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTargetRepoInterface)(nil).Create), s)
 }
 
-// GetTargetInterests mocks base method.
-func (m *MockTargetRepoInterface) GetTargetInterests(targetID int) ([]entities.Interest, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTargetInterests", targetID)
-	ret0, _ := ret[0].([]entities.Interest)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTargetInterests indicates an expected call of GetTargetInterests.
-func (mr *MockTargetRepoInterfaceMockRecorder) GetTargetInterests(targetID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTargetInterests", reflect.TypeOf((*MockTargetRepoInterface)(nil).GetTargetInterests), targetID)
-}
-
-// GetTargetRegions mocks base method.
-func (m *MockTargetRepoInterface) GetTargetRegions(targetID int) ([]entities.Region, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTargetRegions", targetID)
-	ret0, _ := ret[0].([]entities.Region)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTargetRegions indicates an expected call of GetTargetRegions.
-func (mr *MockTargetRepoInterfaceMockRecorder) GetTargetRegions(targetID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTargetRegions", reflect.TypeOf((*MockTargetRepoInterface)(nil).GetTargetRegions), targetID)
-}
-
-// GetTargetTags mocks base method.
-func (m *MockTargetRepoInterface) GetTargetTags(targetID int) ([]entities.Tag, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTargetTags", targetID)
-	ret0, _ := ret[0].([]entities.Tag)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTargetTags indicates an expected call of GetTargetTags.
-func (mr *MockTargetRepoInterfaceMockRecorder) GetTargetTags(targetID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTargetTags", reflect.TypeOf((*MockTargetRepoInterface)(nil).GetTargetTags), targetID)
-}
-
 // Read mocks base method.
 func (m *MockTargetRepoInterface) Read(id int) (*entities.Target, error) {
 	m.ctrl.T.Helper()

@@ -11,7 +11,6 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		Token       string `json:"token"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		Sector      string `json:"sector"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -33,7 +32,6 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		Id:          1,
 		Name:        request.Name,
 		Description: request.Description,
-		Sector:      request.Sector,
 		Owner_id:    userId,
 	}
 
