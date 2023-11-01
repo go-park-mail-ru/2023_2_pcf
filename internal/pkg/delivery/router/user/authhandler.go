@@ -26,7 +26,7 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Получение реального юзера из бд по логину из запроса
-	userFromDB, err := mr.User.UserRead(user.Login)
+	userFromDB, err := mr.User.UserReadByLogin(user.Login)
 	if err != nil {
 		mr.logger.Error("Error while getting user from DB: " + err.Error())
 		http.Error(w, "Error while getting user from DB: "+err.Error(), http.StatusBadRequest)

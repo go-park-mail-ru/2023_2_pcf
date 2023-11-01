@@ -67,7 +67,7 @@ func (mr *MockAdRepoInterfaceMockRecorder) Get(id interface{}) *gomock.Call {
 // Read mocks base method.
 func (m *MockAdRepoInterface) Read(id int) ([]*entities.Ad, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", id)
+	ret := m.ctrl.Call(m, "ReadByLogin", id)
 	ret0, _ := ret[0].([]*entities.Ad)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -76,7 +76,7 @@ func (m *MockAdRepoInterface) Read(id int) ([]*entities.Ad, error) {
 // Read indicates an expected call of Read.
 func (mr *MockAdRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockAdRepoInterface)(nil).Read), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockAdRepoInterface)(nil).Read), id)
 }
 
 // Remove mocks base method.

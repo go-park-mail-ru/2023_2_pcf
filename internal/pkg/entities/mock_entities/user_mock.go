@@ -50,9 +50,9 @@ func (mr *MockUserRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Call 
 }
 
 // Read mocks base method.
-func (m *MockUserRepoInterface) Read(mail string) (*entities.User, error) {
+func (m *MockUserRepoInterface) ReadByLogin(mail string) (*entities.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", mail)
+	ret := m.ctrl.Call(m, "ReadByLogin", mail)
 	ret0, _ := ret[0].(*entities.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -61,7 +61,7 @@ func (m *MockUserRepoInterface) Read(mail string) (*entities.User, error) {
 // Read indicates an expected call of Read.
 func (mr *MockUserRepoInterfaceMockRecorder) Read(mail interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockUserRepoInterface)(nil).Read), mail)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockUserRepoInterface)(nil).ReadByLogin), mail)
 }
 
 // Remove mocks base method.
@@ -147,7 +147,7 @@ func (mr *MockUserUseCaseInterfaceMockRecorder) UserDelete(userMail interface{})
 // UserRead mocks base method.
 func (m *MockUserUseCaseInterface) UserRead(login string) (*entities.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UserRead", login)
+	ret := m.ctrl.Call(m, "UserReadByLogin", login)
 	ret0, _ := ret[0].(*entities.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -156,7 +156,7 @@ func (m *MockUserUseCaseInterface) UserRead(login string) (*entities.User, error
 // UserRead indicates an expected call of UserRead.
 func (mr *MockUserUseCaseInterfaceMockRecorder) UserRead(login interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserRead", reflect.TypeOf((*MockUserUseCaseInterface)(nil).UserRead), login)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserReadByLogin", reflect.TypeOf((*MockUserUseCaseInterface)(nil).UserRead), login)
 }
 
 // UserUpdate mocks base method.

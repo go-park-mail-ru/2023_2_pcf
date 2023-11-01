@@ -52,7 +52,7 @@ func (mr *MockBalanceRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Ca
 // Read mocks base method.
 func (m *MockBalanceRepoInterface) Read(id int) (*entities.Balance, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", id)
+	ret := m.ctrl.Call(m, "ReadByLogin", id)
 	ret0, _ := ret[0].(*entities.Balance)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -61,7 +61,7 @@ func (m *MockBalanceRepoInterface) Read(id int) (*entities.Balance, error) {
 // Read indicates an expected call of Read.
 func (mr *MockBalanceRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockBalanceRepoInterface)(nil).Read), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockBalanceRepoInterface)(nil).Read), id)
 }
 
 // Remove mocks base method.

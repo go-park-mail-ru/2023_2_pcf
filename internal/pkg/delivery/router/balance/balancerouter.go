@@ -26,7 +26,9 @@ func NewBalanceRouter(r *mux.Router, BalanceUC entities.BalanceUseCaseInterface,
 }
 
 func ConfigureRouter(ur *BalanceRouter) {
-	ur.router.HandleFunc("/ping", PingHandler).Methods("GET", "OPTIONS")
+	//ur.router.HandleFunc("/ping", PingHandler).Methods("GET", "OPTIONS")
+	ur.router.HandleFunc("/balanceadd", ur.BalanceReplenishHandler).Methods("POST", "OPTIONS")
+	ur.router.HandleFunc("/balanceget", ur.GetBalanceHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
 	ur.router.Use(middleware.Logger(ur.logger))

@@ -52,7 +52,7 @@ func (mr *MockRegionRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Cal
 // Read mocks base method.
 func (m *MockRegionRepoInterface) Read(id int) (*entities.Region, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", id)
+	ret := m.ctrl.Call(m, "ReadByLogin", id)
 	ret0, _ := ret[0].(*entities.Region)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -61,7 +61,7 @@ func (m *MockRegionRepoInterface) Read(id int) (*entities.Region, error) {
 // Read indicates an expected call of Read.
 func (mr *MockRegionRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockRegionRepoInterface)(nil).Read), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockRegionRepoInterface)(nil).Read), id)
 }
 
 // Remove mocks base method.

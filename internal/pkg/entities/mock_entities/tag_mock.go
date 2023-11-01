@@ -52,7 +52,7 @@ func (mr *MockTagRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Call {
 // Read mocks base method.
 func (m *MockTagRepoInterface) Read(id int) (*entities.Tag, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", id)
+	ret := m.ctrl.Call(m, "ReadByLogin", id)
 	ret0, _ := ret[0].(*entities.Tag)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -61,7 +61,7 @@ func (m *MockTagRepoInterface) Read(id int) (*entities.Tag, error) {
 // Read indicates an expected call of Read.
 func (mr *MockTagRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockTagRepoInterface)(nil).Read), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockTagRepoInterface)(nil).Read), id)
 }
 
 // Remove mocks base method.

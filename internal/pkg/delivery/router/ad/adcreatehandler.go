@@ -8,10 +8,13 @@ import (
 
 func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token       string `json:"token"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Sector      string `json:"sector"`
+		Token       string  `json:"token"`
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		WebsiteLink string  `json:"website_link"`
+		Budget      float64 `json:"budget"`
+		TargetId    int     `json:"target_id"`
+		ImageLink   string  `json:"image_Link"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -30,17 +33,20 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ad := entities.Ad{
-		Id:          1,
-		Name:        request.Name,
-		Description: request.Description,
-		Sector:      request.Sector,
-		Owner_id:    userId,
+		//Id:           1,
+		Name:         request.Name,
+		Description:  request.Description,
+		Website_link: request.WebsiteLink,
+		Budget:       request.Budget,    // Преобразование int в float64
+		Image_link:   request.ImageLink, // Используйте Imagelink из request
+		Owner_id:     userId,            // Укажите нужное значение Owner_id
+		Target_id:    request.TargetId,  // Укажите нужное значение Target_id
 	}
 
 	newAd, err := mr.Ad.AdCreate(&ad)
 	if err != nil {
 		mr.logger.Error("Error ad create" + err.Error())
-		http.Error(w, "Error create ad", http.StatusBadRequest)
+		http.Error(w, "Error create ad", http.StatusInternalServerError)
 		return
 	}
 

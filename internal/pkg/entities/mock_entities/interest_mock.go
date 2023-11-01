@@ -52,7 +52,7 @@ func (mr *MockInterestRepoInterfaceMockRecorder) Create(s interface{}) *gomock.C
 // Read mocks base method.
 func (m *MockInterestRepoInterface) Read(id int) (*entities.Interest, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", id)
+	ret := m.ctrl.Call(m, "ReadByLogin", id)
 	ret0, _ := ret[0].(*entities.Interest)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -61,7 +61,7 @@ func (m *MockInterestRepoInterface) Read(id int) (*entities.Interest, error) {
 // Read indicates an expected call of Read.
 func (mr *MockInterestRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockInterestRepoInterface)(nil).Read), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockInterestRepoInterface)(nil).Read), id)
 }
 
 // Remove mocks base method.

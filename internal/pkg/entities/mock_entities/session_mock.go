@@ -179,7 +179,7 @@ func (mr *MockSessionRepoInterfaceMockRecorder) Create(s interface{}) *gomock.Ca
 // Read mocks base method.
 func (m *MockSessionRepoInterface) Read(s *entities.Session) (*entities.Session, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", s)
+	ret := m.ctrl.Call(m, "ReadByLogin", s)
 	ret0, _ := ret[0].(*entities.Session)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -188,7 +188,7 @@ func (m *MockSessionRepoInterface) Read(s *entities.Session) (*entities.Session,
 // Read indicates an expected call of Read.
 func (mr *MockSessionRepoInterfaceMockRecorder) Read(s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockSessionRepoInterface)(nil).Read), s)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByLogin", reflect.TypeOf((*MockSessionRepoInterface)(nil).Read), s)
 }
 
 // Remove mocks base method.

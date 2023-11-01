@@ -22,8 +22,12 @@ func (uc *UserUseCase) UserDelete(userMail string) error {
 	return uc.repo.Remove(userMail)
 }
 
-func (uc *UserUseCase) UserRead(login string) (*entities.User, error) {
-	return uc.repo.Read(login)
+func (uc *UserUseCase) UserReadByLogin(login string) (*entities.User, error) {
+	return uc.repo.ReadByLogin(login)
+}
+
+func (uc *UserUseCase) UserReadById(id int) (*entities.User, error) {
+	return uc.repo.ReadById(id)
 }
 
 func (uc *UserUseCase) UserUpdate(s *entities.User) error {
