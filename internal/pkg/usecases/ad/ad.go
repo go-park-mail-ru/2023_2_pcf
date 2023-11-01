@@ -23,7 +23,7 @@ func (uc *AdUseCase) AdReadList(id int) ([]*entities.Ad, error) {
 }
 
 func (uc *AdUseCase) AdRead(id int) (*entities.Ad, error) {
-	return uc.repo.Read(id)
+	return uc.repo.Get(id)
 }
 
 func (uc *AdUseCase) AdRemove(id int) error {

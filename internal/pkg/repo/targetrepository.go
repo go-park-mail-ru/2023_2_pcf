@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 )
 
 type TargetRepository struct {
@@ -34,14 +35,36 @@ func NewTargetRepo(DB db.DbInterface) (*TargetRepository, error) {
 }
 
 func (r *TargetRepository) Create(target *entities.Target) (*entities.Target, error) {
+	tagsStr := strings.Join(target.Tags, ", ")
+	regionsStr := strings.Join(target.Regions, ", ")
+	interestsStr := strings.Join(target.Interests, ", ")
+	keysStr := strings.Join(target.Keys, ", ")
+
 	if err := r.store.Db().QueryRow(
-		"INSERT INTO \"targets\" (name, owner_id, gender, min_age, max_age) VALUES($1, $2, $3, $4, $5) RETURNING id;",
-		target.Name, target.Owner_id, target.Gender, target.Min_age, target.Max_age,
+		"INSERT INTO \"target\" (name, owner_id, gender, min_age, max_age, tags, regions, interests, keys) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;",
+		target.Name, target.Owner_id, target.Gender, target.Min_age, target.Max_age, tagsStr, regionsStr, interestsStr, keysStr,
 	).Scan(&target.Id); err != nil {
 		return nil, err
 	}
 
 	return target, nil
+}
+
+func (r *TargetRepository) Update(target *entities.Target) error {
+	tagsStr := strings.Join(target.Tags, ", ")
+	regionsStr := strings.Join(target.Regions, ", ")
+	interestsStr := strings.Join(target.Interests, ", ")
+	keysStr := strings.Join(target.Keys, ", ")
+
+	_, err := r.store.Db().Exec(
+		"UPDATE \"target\" SET name=$1, owner_id=$2, gender=$3, min_age=$4, max_age=$5, tags=$6, regions=$7, interests=$8, keys=$9 WHERE id=$10;",
+		target.Name, target.Owner_id, target.Gender, target.Min_age, target.Max_age, tagsStr, regionsStr, interestsStr, keysStr, target.Id,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *TargetRepository) Remove(id int) error {
@@ -53,19 +76,7 @@ func (r *TargetRepository) Remove(id int) error {
 }
 
 func (r *TargetRepository) get(id int) (*sql.Rows, error) {
-	return r.store.Db().Query("SELECT id, name, owner_id, gender, min_age, max_age FROM \"targets\" WHERE id=$1;", id)
-}
-
-func (r *TargetRepository) Update(target *entities.Target) error {
-	_, err := r.store.Db().Exec(
-		"UPDATE \"targets\" SET name=$1, owner_id=$2, gender=$3, min_age=$4, max_age=$5 WHERE id=$6;",
-		target.Name, target.Owner_id, target.Gender, target.Min_age, target.Max_age, target.Id,
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return r.store.Db().Query("SELECT id, name, owner_id, gender, min_age, max_age, tags, regions, interests, keys FROM \"target\" WHERE id=$1;", id)
 }
 
 func (r *TargetRepository) Read(id int) (*entities.Target, error) {
@@ -80,91 +91,29 @@ func (r *TargetRepository) Read(id int) (*entities.Target, error) {
 	target := &entities.Target{}
 
 	for rows.Next() {
-		err := rows.Scan(&target.Id, &target.Name, &target.Owner_id, &target.Gender, &target.Min_age, &target.Max_age)
+		var tagsStr, regionsStr, interestsStr, keysStr string
+		err := rows.Scan(&target.Id, &target.Name, &target.Owner_id, &target.Gender, &target.Min_age, &target.Max_age, &tagsStr, &regionsStr, &interestsStr, &keysStr)
 		if err != nil {
 			return nil, err
 		}
+
+		target.Tags = splitTags(tagsStr)
+		target.Regions = splitTags(regionsStr)
+		target.Interests = splitTags(interestsStr)
+		target.Keys = splitTags(keysStr)
 	}
+
 	if target.Id == 0 {
 		return nil, fmt.Errorf("Target not found")
 	}
+
 	return target, nil
 }
 
-func (r *TargetRepository) GetTargetTags(targetID int) ([]entities.Tag, error) {
-	rows, err := r.store.Db().Query(`
-        SELECT t.id, t.name
-        FROM "tags" t
-        JOIN "target_tags" tt ON t.id = tt.tag_id
-        WHERE tt.target_id = $1;
-    `, targetID)
-	if err != nil {
-		log.Printf("Error getting target tags")
-		return nil, err
+func splitTags(input string) []string {
+	tags := strings.Split(input, ",")
+	for i := range tags {
+		tags[i] = strings.TrimSpace(tags[i])
 	}
-	defer rows.Close()
-
-	var tags []entities.Tag
-
-	for rows.Next() {
-		tag := entities.Tag{}
-		if err := rows.Scan(&tag.Id, &tag.Name); err != nil {
-			return nil, err
-		}
-		tags = append(tags, tag)
-	}
-
-	return tags, nil
-}
-
-func (r *TargetRepository) GetTargetRegions(targetID int) ([]entities.Region, error) {
-	rows, err := r.store.Db().Query(`
-        SELECT r.id, r.name
-        FROM "regions" r
-        JOIN "target_regions" tr ON r.id = tr.region_id
-        WHERE tr.target_id = $1;
-    `, targetID)
-	if err != nil {
-		log.Printf("Error getting target regions")
-		return nil, err
-	}
-	defer rows.Close()
-
-	var regions []entities.Region
-
-	for rows.Next() {
-		region := entities.Region{}
-		if err := rows.Scan(&region.Id, &region.Name); err != nil {
-			return nil, err
-		}
-		regions = append(regions, region)
-	}
-
-	return regions, nil
-}
-
-func (r *TargetRepository) GetTargetInterests(targetID int) ([]entities.Interest, error) {
-	rows, err := r.store.Db().Query(`
-        SELECT i.id, i.name
-        FROM "interests" i
-        JOIN "target_interests" ti ON i.id = ti.interest_id
-        WHERE ti.target_id = $1;
-    `, targetID)
-	if err != nil {
-		log.Printf("Error getting target interests")
-		return nil, err
-	}
-	defer rows.Close()
-
-	var interests []entities.Interest
-
-	for rows.Next() {
-		interest := entities.Interest{}
-		if err := rows.Scan(&interest.Id, &interest.Name); err != nil {
-			return nil, err
-		}
-		interests = append(interests, interest)
-	}
-
-	return interests, nil
+	return tags
 }

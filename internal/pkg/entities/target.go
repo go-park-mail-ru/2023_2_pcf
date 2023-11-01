@@ -1,15 +1,16 @@
 package entities
 
 type Target struct {
-	Id        int        `json:"id"`        // Id
-	Name      string     `json:"name"`      // Название
-	Owner_id  int        `json:"owner_id"`  // Владелец
-	Gender    string     `json:"gender"`    // Пол
-	Min_age   int        `json:"min_age"`   // Минимальный возраст
-	Max_age   int        `json:"max_age"`   // Максимальный возраст
-	Interests []Interest `json:"interests"` // Интересы
-	Tags      []Tag      `json:"tags"`      // Тэги
-	Regions   []Region   `json:"regions"`   // Регионы
+	Id        int      `json:"id"`        // Id
+	Name      string   `json:"name"`      // Название
+	Owner_id  int      `json:"owner_id"`  // Владелец
+	Gender    string   `json:"gender"`    // Пол
+	Min_age   int      `json:"min_age"`   // Минимальный возраст
+	Max_age   int      `json:"max_age"`   // Максимальный возраст
+	Interests []string `json:"interests"` // Интересы
+	Tags      []string `json:"tags"`      // Тэги
+	Keys      []string `json:"keys"`      // Ключи
+	Regions   []string `json:"regions"`   // Регионы
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=target.go -destination=mock_entities/target_mock.go
@@ -18,9 +19,6 @@ type TargetRepoInterface interface {
 	Remove(id int) error
 	Update(s *Target) error
 	Read(id int) (*Target, error)
-	GetTargetInterests(targetID int) ([]Interest, error)
-	GetTargetRegions(targetID int) ([]Region, error)
-	GetTargetTags(targetID int) ([]Tag, error)
 }
 
 type TargetUseCaseInterface interface {

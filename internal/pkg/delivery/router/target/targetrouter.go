@@ -26,7 +26,6 @@ func NewUserRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, Sess
 }
 
 func ConfigureRouter(ur *TargetRouter) {
-	ur.router.HandleFunc("/ping", PingHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
 	ur.router.Use(middleware.Logger(ur.logger))
