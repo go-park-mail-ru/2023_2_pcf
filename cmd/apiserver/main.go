@@ -2,6 +2,7 @@ package main
 
 import (
 	server "AdHub/internal/app"
+	log "AdHub/pkg/logger"
 	"flag"
 )
 
@@ -15,14 +16,15 @@ func init() {
 
 func main() {
 	flag.Parse() // Парсим флаг с путем до конфига
+	l := log.NewLogrusLogger("Error")
 
 	err := server.Parse(configPath)
 	if err != nil {
-		// Здесь будет лог с уровнем еррор и отлов паники
+		l.Error("Error: Flag parse " + err.Error())
 	}
 
 	s := server.New(server.NewConfig())
 	if err := s.Start(); err != nil {
-		// Здесь будет лог с уровнем еррор и отлов паники
+		l.Error("Error: Server start" + err.Error())
 	}
 }
