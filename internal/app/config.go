@@ -11,6 +11,7 @@ type Config struct {
 	Redis_addr     string `toml:"redis_addr"`
 	Redis_password string `toml:"redis_password"`
 	Redis_db       int    `toml:"redis_db"`
+	File_path      string `toml:"file_path"`
 }
 
 func Parse(configPath string) error {
@@ -34,6 +35,7 @@ func NewConfig() *Config {
 		Redis_addr:     viper.GetString("redis_addr"),
 		Redis_password: viper.GetString("redis_password"),
 		Redis_db:       viper.GetInt("redis_db"),
+		File_path:      viper.GetString("file_path"),
 	}
 
 }

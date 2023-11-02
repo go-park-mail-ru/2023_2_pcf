@@ -14,14 +14,16 @@ type UserRouter struct {
 	logger  logger.Logger
 	User    entities.UserUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	File    entities.FileUseCaseInterface
 }
 
-func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *UserRouter {
+func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, log logger.Logger) *UserRouter {
 	return &UserRouter{
 		logger:  log,
 		router:  r,
 		User:    UserUC,
 		Session: SessionUC,
+		File:    FileUC,
 	}
 }
 
