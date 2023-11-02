@@ -31,11 +31,12 @@ func TestCreateUser(t *testing.T) {
 		FName:       "John",
 		LName:       "Doe",
 		CompanyName: "Smith",
+		Avatar:      "avatar.jpg",
 		BalanceId:   1,
 	}
 
 	mock.ExpectQuery("INSERT INTO \"user\" (.+) RETURNING id;").
-		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.BalanceId).
+		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.Avatar, user.BalanceId).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	createdUser, err := repo.Create(user)
@@ -93,11 +94,12 @@ func TestUpdateUser(t *testing.T) {
 		FName:       "Jane",
 		LName:       "Smith",
 		CompanyName: "Johnson",
+		Avatar:      "de.jpg",
 		BalanceId:   2,
 	}
 
-	mock.ExpectExec(`UPDATE "user" SET login=\$1, password=\$2, f_name=\$3, l_name=\$4, s_name=\$5, balance_id=\$6 WHERE id=\$7;`).
-		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.BalanceId, user.Id).
+	mock.ExpectExec(`UPDATE \"user\" SET login=\$1, password=\$2, f_name=\$3, l_name=\$4, s_name=\$5, avatar=\$6, balance_id=\$7 WHERE id=\$8;`).
+		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.Avatar, user.BalanceId, user.Id).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err = repo.Update(user)
@@ -121,13 +123,46 @@ func TestReadUser(t *testing.T) {
 	repo, err := NewUserRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"id", "login", "password", "f_name", "l_name", "s_name", "balance_id"}).
-		AddRow(1, "testuser", "password", "John", "Doe", "Smith", 1)
+	rows := sqlmock.NewRows([]string{"id", "login", "password", "f_name", "l_name", "s_name", "balance_id", "avatar"}).
+		AddRow(1, "testuser", "password", "John", "Doe", "Smith", "def.jpg", 1)
 
-	mock.ExpectQuery(`SELECT id, login, password, f_name, l_name, s_name, balance_id FROM "user" WHERE login=\$1;`).
+	mock.ExpectQuery(`SELECT id, login, password, f_name, l_name, s_name, balance_id, avatar FROM \"user\" WHERE login=\$1;`).
 		WillReturnRows(rows)
 
 	user, err := repo.ReadByLogin("testuser")
+
+	require.NoError(t, err)
+
+	assert.Equal(t, "testuser", user.Login)
+	assert.Equal(t, "password", user.Password)
+	assert.Equal(t, "John", user.FName)
+	assert.Equal(t, "Doe", user.LName)
+	assert.Equal(t, "Smith", user.CompanyName)
+
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestReadIdUser(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock database: %v", err)
+	}
+	defer db.Close()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	dbInterface := pg.NewMock(db)
+	repo, err := NewUserRepoMock(dbInterface)
+	require.NoError(t, err)
+
+	rows := sqlmock.NewRows([]string{"id", "login", "password", "f_name", "l_name", "s_name", "balance_id", "avatar"}).
+		AddRow(1, "testuser", "password", "John", "Doe", "Smith", "def.jpg", 1)
+
+	mock.ExpectQuery(`SELECT id, login, password, f_name, l_name, s_name, balance_id, avatar FROM \"user\" WHERE id=\$1;`).
+		WillReturnRows(rows)
+
+	user, err := repo.ReadById(1)
 
 	require.NoError(t, err)
 
