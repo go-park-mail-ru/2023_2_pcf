@@ -44,7 +44,7 @@ func (s *HTTPServer) Start() error {
 	if err != nil {
 		log.Error("Ad repo error: " + err.Error())
 	}
-	BalanceRepo, err := repo.NewSBalanceRepo(DB)
+	BalanceRepo, err := repo.NewBalanceRepo(DB)
 	if err != nil {
 		log.Error("Balance repo error: " + err.Error())
 	}

@@ -28,14 +28,16 @@ func TestUserReadHandler(t *testing.T) {
 	}
 
 	expectedUser := &entities.User{
-		Id:       1,
-		Login:    "testuser",
-		Password: "test",
-		FName:    "test",
-		LName:    "test",
+		Id:          1,
+		Login:       "testuser",
+		Password:    "test",
+		FName:       "test",
+		LName:       "test",
+		CompanyName: "Yandex",
+		Avatar:      "test.jpg",
 	}
 
-	mockUserUseCase.EXPECT().UserRead("testuser").Return(expectedUser, nil)
+	mockUserUseCase.EXPECT().UserReadByLogin("testuser").Return(expectedUser, nil)
 	rr := httptest.NewRecorder()
 
 	userRouter.UserReadHandler(rr, req)

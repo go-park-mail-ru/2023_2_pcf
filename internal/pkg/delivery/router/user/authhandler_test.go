@@ -32,7 +32,7 @@ func TestAuthHandler(t *testing.T) {
 		LName:    "Doe",
 	}
 
-	mockUserUseCase.EXPECT().UserRead(gomock.Any()).Return(fakeUser, nil)
+	mockUserUseCase.EXPECT().UserReadByLogin(gomock.Any()).Return(fakeUser, nil)
 
 	fakeSession := &entities.Session{
 		Token:  "test",

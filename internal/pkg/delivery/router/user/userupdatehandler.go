@@ -13,6 +13,7 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 		FName       *string `json:"f_name"`
 		LName       *string `json:"l_name"`
 		CompanyName *string `json:"company_name"`
+		Avatar      *string `json:"avatar"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -61,6 +62,9 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	if request.CompanyName != nil {
 		currentUser.CompanyName = *request.CompanyName
+	}
+	if request.Avatar != nil {
+		currentUser.Avatar = *request.Avatar
 	}
 
 	// Обновление данных пользователя в базе данных

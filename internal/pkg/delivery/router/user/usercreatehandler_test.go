@@ -26,10 +26,13 @@ func TestUserCreateHandler(t *testing.T) {
 	}
 
 	fakeUser := &entities.User{
-		Login:    "test@example.com",
-		Password: "password123",
-		FName:    "John",
-		LName:    "Doe",
+		Id:          1,
+		Login:       "testuser@mail.ru",
+		Password:    "test312",
+		FName:       "test",
+		LName:       "test",
+		CompanyName: "Yandex",
+		Avatar:      "test.jpg",
 	}
 
 	fakeSession := &entities.Session{
