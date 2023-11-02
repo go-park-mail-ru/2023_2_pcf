@@ -32,6 +32,7 @@ func ConfigureRouter(ur *UserRouter) {
 	ur.router.HandleFunc("/user", ur.UserDeleteHandler).Methods("DELETE", "OPTIONS")
 	ur.router.HandleFunc("/auth", ur.AuthHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/useredit", ur.AuthHandler).Methods("POST", "OPTIONS")
+	ur.router.HandleFunc("/usergetbytoken", ur.GetUserByTokenHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
 	ur.router.Use(middleware.Logger(ur.logger))
