@@ -8,7 +8,7 @@ import (
 func (mr *UserRouter) UserReadHandler(w http.ResponseWriter, r *http.Request) {
 	login := r.URL.Query().Get("login")
 
-	user, err := mr.User.UserRead(login)
+	user, err := mr.User.UserReadByLogin(login)
 	if err != nil {
 		mr.logger.Error("User not found" + err.Error())
 		http.Error(w, "User not found", http.StatusNotFound)

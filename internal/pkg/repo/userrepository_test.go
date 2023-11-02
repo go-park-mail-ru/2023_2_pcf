@@ -26,16 +26,16 @@ func TestCreateUser(t *testing.T) {
 	require.NoError(t, err)
 
 	user := &entities.User{
-		Login:     "testuser",
-		Password:  "password",
-		FName:     "John",
-		LName:     "Doe",
-		SName:     "Smith",
-		BalanceId: 1,
+		Login:       "testuser",
+		Password:    "password",
+		FName:       "John",
+		LName:       "Doe",
+		CompanyName: "Smith",
+		BalanceId:   1,
 	}
 
 	mock.ExpectQuery("INSERT INTO \"user\" (.+) RETURNING id;").
-		WithArgs(user.Login, user.Password, user.FName, user.LName, user.SName, user.BalanceId).
+		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.BalanceId).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	createdUser, err := repo.Create(user)
@@ -87,17 +87,17 @@ func TestUpdateUser(t *testing.T) {
 	require.NoError(t, err)
 
 	user := &entities.User{
-		Id:        1,
-		Login:     "updateduser",
-		Password:  "newpassword",
-		FName:     "Jane",
-		LName:     "Smith",
-		SName:     "Johnson",
-		BalanceId: 2,
+		Id:          1,
+		Login:       "updateduser",
+		Password:    "newpassword",
+		FName:       "Jane",
+		LName:       "Smith",
+		CompanyName: "Johnson",
+		BalanceId:   2,
 	}
 
 	mock.ExpectExec(`UPDATE "user" SET login=\$1, password=\$2, f_name=\$3, l_name=\$4, s_name=\$5, balance_id=\$6 WHERE id=\$7;`).
-		WithArgs(user.Login, user.Password, user.FName, user.LName, user.SName, user.BalanceId, user.Id).
+		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.BalanceId, user.Id).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err = repo.Update(user)
@@ -127,7 +127,7 @@ func TestReadUser(t *testing.T) {
 	mock.ExpectQuery(`SELECT id, login, password, f_name, l_name, s_name, balance_id FROM "user" WHERE login=\$1;`).
 		WillReturnRows(rows)
 
-	user, err := repo.Read("testuser")
+	user, err := repo.ReadByLogin("testuser")
 
 	require.NoError(t, err)
 
@@ -135,7 +135,7 @@ func TestReadUser(t *testing.T) {
 	assert.Equal(t, "password", user.Password)
 	assert.Equal(t, "John", user.FName)
 	assert.Equal(t, "Doe", user.LName)
-	assert.Equal(t, "Smith", user.SName)
+	assert.Equal(t, "Smith", user.CompanyName)
 
 	require.NoError(t, mock.ExpectationsWereMet())
 }

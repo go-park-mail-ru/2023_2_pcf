@@ -28,6 +28,9 @@ func NewAdRouter(r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC enti
 func ConfigureRouter(ar *AdRouter) {
 	ar.router.HandleFunc("/ad", ar.AdListHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/ad", ar.AdCreateHandler).Methods("POST", "OPTIONS")
+	ar.router.HandleFunc("/adedit", ar.AdUpdateHandler).Methods("POST", "OPTIONS")
+	ar.router.HandleFunc("/addelete", ar.AdDeleteHandler).Methods("DELETE", "OPTIONS")
+	ar.router.HandleFunc("/addget/{adID}", ar.AdDeleteHandler).Methods("GET", "OPTIONS")
 
 	ar.router.Use(middleware.CORS)
 	ar.router.Use(middleware.Logger(ar.logger))
