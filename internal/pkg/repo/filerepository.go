@@ -2,8 +2,10 @@ package repo
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"path/filepath"
+
+	"github.com/google/uuid"
 )
 
 type FileRepository struct {
@@ -14,21 +16,32 @@ func NewFileRepository(storagePath string) *FileRepository {
 	return &FileRepository{storagePath}
 }
 
-func (repo *FileRepository) Save(fileData []byte, fileName string) error {
-	filePath := repo.getFilePath(fileName)
+func (repo *FileRepository) GenerateUniqueFileName(originalName string) string {
+	uniqueID := uuid.New()
 
-	err := ioutil.WriteFile(filePath, fileData, 0644)
+	fileExtension := filepath.Ext(originalName)
+
+	uniqueFileName := fmt.Sprintf("%s%s", uniqueID, fileExtension)
+
+	return uniqueFileName
+}
+
+func (repo *FileRepository) Save(fileData []byte, originalName string) (string, error) {
+	uniqueFileName := repo.GenerateUniqueFileName(originalName)
+	filePath := repo.getFilePath(uniqueFileName)
+
+	err := os.WriteFile(filePath, fileData, 0644)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return uniqueFileName, nil
 }
 
 func (repo *FileRepository) Get(fileName string) ([]byte, error) {
 	filePath := repo.getFilePath(fileName)
 
-	data, err := ioutil.ReadFile(filePath)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -48,5 +61,5 @@ func (repo *FileRepository) Delete(fileName string) error {
 }
 
 func (repo *FileRepository) getFilePath(fileName string) string {
-	return fmt.Sprintf("%s/%s", repo.storagePath, fileName)
+	return filepath.Join(repo.storagePath, fileName)
 }

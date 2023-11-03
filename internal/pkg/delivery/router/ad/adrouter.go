@@ -14,14 +14,16 @@ type AdRouter struct {
 	logger  logger.Logger
 	Ad      entities.AdUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	File    entities.FileUseCaseInterface
 }
 
-func NewAdRouter(r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *AdRouter {
+func NewAdRouter(r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, log logger.Logger) *AdRouter {
 	return &AdRouter{
 		router:  r,
 		logger:  log,
 		Ad:      AdUC,
 		Session: SessionUC,
+		File:    FileUC,
 	}
 }
 
