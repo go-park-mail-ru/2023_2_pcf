@@ -24,6 +24,7 @@ func TestUserUseCase_UserCreate(t *testing.T) {
 		LName:       "Doe",
 		FName:       "John",
 		CompanyName: "Smith",
+		Avatar:      "def.jpg",
 		BalanceId:   1,
 	}
 
@@ -67,12 +68,41 @@ func TestUserUseCase_UserRead(t *testing.T) {
 		LName:       "Doe",
 		FName:       "John",
 		CompanyName: "Smith",
+		Avatar:      "defaul.jpg",
 		BalanceId:   1,
 	}
 
-	mockRepo.EXPECT().Read(login).Return(fakeUser, nil)
+	mockRepo.EXPECT().ReadByLogin(login).Return(fakeUser, nil)
 
-	user, err := useCase.UserRead(login)
+	user, err := useCase.UserReadByLogin(login)
+	assert.NoError(t, err)
+	assert.Equal(t, fakeUser, user)
+}
+
+func TestUserUseCase_UserReadById(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mock_entities.NewMockUserRepoInterface(ctrl)
+
+	useCase := New(mockRepo)
+
+	id := 1
+
+	fakeUser := &entities.User{
+		Id:          1,
+		Login:       "login@login.ru",
+		Password:    "1234556",
+		LName:       "Doe",
+		FName:       "John",
+		CompanyName: "Smith",
+		Avatar:      "defaul.jpg",
+		BalanceId:   1,
+	}
+
+	mockRepo.EXPECT().ReadById(id).Return(fakeUser, nil)
+
+	user, err := useCase.UserReadById(id)
 	assert.NoError(t, err)
 	assert.Equal(t, fakeUser, user)
 }

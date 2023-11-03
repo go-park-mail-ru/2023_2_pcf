@@ -19,11 +19,13 @@ type TargetRepoInterface interface {
 	Remove(id int) error
 	Update(s *Target) error
 	Read(id int) (*Target, error)
+	ReadList(id int) ([]*Target, error)
 }
 
 type TargetUseCaseInterface interface {
 	TargetCreate(s *Target) (*Target, error)
 	TargetRead(id int) (*Target, error)
+	TargetReadList(id int) ([]*Target, error)
 	TargetRemove(id int) error
 	TargetUpdate(s *Target) error
 }

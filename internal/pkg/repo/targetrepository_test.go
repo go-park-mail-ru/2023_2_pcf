@@ -149,3 +149,41 @@ func TestRemoveTarget(t *testing.T) {
 
 	require.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestReadListTarget(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock database: %v", err)
+	}
+	defer db.Close()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	dbInterface := pg.NewMock(db)
+	repo, err := NewTargetRepoMock(dbInterface)
+	require.NoError(t, err)
+
+	rows := sqlmock.NewRows([]string{"id", "name", "owner_id", "gender", "min_age", "max_age", "tags", "regions", "interests", "keys"}).
+		AddRow(1, "Test Target 1", 1, "Male", 18, 50, "tag1, tag2", "region1, region2", "interest1, interest2", "key1, key2").
+		AddRow(2, "Test Target 2", 1, "Female", 20, 60, "tag3, tag4", "region3, region4", "interest3, interest4", "key3, key4")
+
+	mock.ExpectQuery(`SELECT id, name, owner_id, gender, min_age, max_age, tags, regions, interests, keys FROM "target" WHERE owner_id=\$1;`).
+		WithArgs(1).
+		WillReturnRows(rows)
+
+	targets, err := repo.ReadList(1)
+
+	require.NoError(t, err)
+	require.Len(t, targets, 2)
+
+	target1 := targets[0]
+	assert.Equal(t, 1, target1.Id)
+	assert.Equal(t, "Test Target 1", target1.Name)
+
+	target2 := targets[1]
+	assert.Equal(t, 2, target2.Id)
+	assert.Equal(t, "Test Target 2", target2.Name)
+
+	require.NoError(t, mock.ExpectationsWereMet())
+}

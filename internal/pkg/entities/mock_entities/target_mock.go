@@ -64,6 +64,21 @@ func (mr *MockTargetRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockTargetRepoInterface)(nil).Read), id)
 }
 
+// ReadList mocks base method.
+func (m *MockTargetRepoInterface) ReadList(id int) ([]*entities.Target, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadList", id)
+	ret0, _ := ret[0].([]*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadList indicates an expected call of ReadList.
+func (mr *MockTargetRepoInterfaceMockRecorder) ReadList(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadList", reflect.TypeOf((*MockTargetRepoInterface)(nil).ReadList), id)
+}
+
 // Remove mocks base method.
 func (m *MockTargetRepoInterface) Remove(id int) error {
 	m.ctrl.T.Helper()
@@ -143,6 +158,21 @@ func (m *MockTargetUseCaseInterface) TargetRead(id int) (*entities.Target, error
 func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetRead(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetRead", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetRead), id)
+}
+
+// TargetReadList mocks base method.
+func (m *MockTargetUseCaseInterface) TargetReadList(id int) ([]*entities.Target, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TargetReadList", id)
+	ret0, _ := ret[0].([]*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TargetReadList indicates an expected call of TargetReadList.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetReadList(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetReadList", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetReadList), id)
 }
 
 // TargetRemove mocks base method.
