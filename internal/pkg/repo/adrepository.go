@@ -4,6 +4,7 @@ import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/pkg/db"
 	"database/sql"
+	"text/template"
 )
 
 type AdRepository struct {
@@ -78,6 +79,12 @@ func (r *AdRepository) Read(id int) ([]*entities.Ad, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		ad.Name = template.HTMLEscapeString(ad.Name)
+		ad.Description = template.HTMLEscapeString(ad.Description)
+		ad.Website_link = template.HTMLEscapeString(ad.Website_link)
+		ad.Image_link = template.HTMLEscapeString(ad.Image_link)
+
 		ads = append(ads, ad)
 	}
 
@@ -108,6 +115,12 @@ func (r *AdRepository) Get(id int) (*entities.Ad, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		ad.Name = template.HTMLEscapeString(ad.Name)
+		ad.Description = template.HTMLEscapeString(ad.Description)
+		ad.Website_link = template.HTMLEscapeString(ad.Website_link)
+		ad.Image_link = template.HTMLEscapeString(ad.Image_link)
+
 		ads = ad
 	}
 

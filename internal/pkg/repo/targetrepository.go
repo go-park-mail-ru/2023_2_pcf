@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"text/template"
 )
 
 type TargetRepository struct {
@@ -101,6 +102,12 @@ func (r *TargetRepository) Read(id int) (*entities.Target, error) {
 			return nil, err
 		}
 
+		target.Name = template.HTMLEscapeString(target.Name)
+		tagsStr = template.HTMLEscapeString(tagsStr)
+		regionsStr = template.HTMLEscapeString(regionsStr)
+		interestsStr = template.HTMLEscapeString(interestsStr)
+		keysStr = template.HTMLEscapeString(keysStr)
+
 		target.Tags = splitTags(tagsStr)
 		target.Regions = splitTags(regionsStr)
 		target.Interests = splitTags(interestsStr)
@@ -131,6 +138,12 @@ func (r *TargetRepository) ReadList(id int) ([]*entities.Target, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		target.Name = template.HTMLEscapeString(target.Name)
+		tagsStr = template.HTMLEscapeString(tagsStr)
+		regionsStr = template.HTMLEscapeString(regionsStr)
+		interestsStr = template.HTMLEscapeString(interestsStr)
+		keysStr = template.HTMLEscapeString(keysStr)
 
 		target.Tags = splitTags(tagsStr)
 		target.Regions = splitTags(regionsStr)
