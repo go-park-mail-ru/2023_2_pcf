@@ -3,9 +3,10 @@ package router
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func (mr *AdRouter) AdGetHandler(w http.ResponseWriter, r *http.Request) {
