@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
@@ -14,7 +15,6 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		WebsiteLink *string  `json:"website_link"`
 		Budget      *float64 `json:"budget"`
 		TargetId    *int     `json:"target_id"`
-		ImageLink   *string  `json:"image_link"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -24,6 +24,27 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	var image string
+	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
+	if err == nil {
+		file, Header, err := r.FormFile("image")
+		defer file.Close()
+
+		bfile, err := io.ReadAll(file)
+		if err != nil {
+			mr.logger.Error("Error reading file: " + err.Error())
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+
+		image, err = mr.File.Save(bfile, Header.Filename)
+		if err != nil {
+			mr.logger.Error("Error saving file: " + err.Error())
+			http.Error(w, "Error saving file", http.StatusInternalServerError)
+			return
+		}
+	}
 
 	// Получаем ID пользователя из сессии
 	userId, err := mr.Session.GetUserId(request.Token)
@@ -64,8 +85,8 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if request.TargetId != nil {
 		currentAd.Target_id = *request.TargetId
 	}
-	if request.ImageLink != nil {
-		currentAd.Image_link = *request.ImageLink
+	if image != "" {
+		currentAd.Image_link = image
 	}
 
 	// Обновление данных рекламы в базе данных

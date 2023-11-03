@@ -3,6 +3,7 @@ package router
 import (
 	"AdHub/internal/pkg/entities"
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
@@ -14,7 +15,6 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		WebsiteLink string  `json:"website_link"`
 		Budget      float64 `json:"budget"`
 		TargetId    int     `json:"target_id"`
-		ImageLink   string  `json:"image_Link"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -24,6 +24,27 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	var image string
+	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
+	if err == nil {
+		file, Header, err := r.FormFile("image")
+		defer file.Close()
+
+		bfile, err := io.ReadAll(file)
+		if err != nil {
+			mr.logger.Error("Error reading file: " + err.Error())
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+
+		image, err = mr.File.Save(bfile, Header.Filename)
+		if err != nil {
+			mr.logger.Error("Error saving file: " + err.Error())
+			http.Error(w, "Error saving file", http.StatusInternalServerError)
+			return
+		}
+	}
 
 	userId, err := mr.Session.GetUserId(request.Token)
 	if err != nil {
@@ -37,10 +58,10 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		Name:         request.Name,
 		Description:  request.Description,
 		Website_link: request.WebsiteLink,
-		Budget:       request.Budget,    // Преобразование int в float64
-		Image_link:   request.ImageLink, // Используйте Imagelink из request
-		Owner_id:     userId,            // Укажите нужное значение Owner_id
-		Target_id:    request.TargetId,  // Укажите нужное значение Target_id
+		Budget:       request.Budget,   // Преобразование int в float64
+		Image_link:   image,            // Используйте Imagelink из request
+		Owner_id:     userId,           // Укажите нужное значение Owner_id
+		Target_id:    request.TargetId, // Укажите нужное значение Target_id
 	}
 
 	newAd, err := mr.Ad.AdCreate(&ad)

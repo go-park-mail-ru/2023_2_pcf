@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
@@ -13,7 +14,32 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 		FName       *string `json:"f_name"`
 		LName       *string `json:"l_name"`
 		CompanyName *string `json:"company_name"`
-		Avatar      *string `json:"avatar"`
+	}
+
+	var avatar string
+	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
+	if err == nil {
+		file, Header, err := r.FormFile("avatar")
+		defer file.Close()
+
+		bfile, err := io.ReadAll(file)
+		if err != nil {
+			ur.logger.Error("Error reading file: " + err.Error())
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+
+		avatar, err = ur.File.Save(bfile, Header.Filename)
+		if err != nil {
+			ur.logger.Error("Error saving file: " + err.Error())
+			http.Error(w, "Error saving file", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	if err != nil {
+		ur.logger.Error("Invalid request body: " + err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -63,8 +89,8 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	if request.CompanyName != nil {
 		currentUser.CompanyName = *request.CompanyName
 	}
-	if request.Avatar != nil {
-		currentUser.Avatar = *request.Avatar
+	if avatar != "" {
+		currentUser.Avatar = avatar
 	}
 
 	// Обновление данных пользователя в базе данных

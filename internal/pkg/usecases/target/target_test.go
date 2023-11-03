@@ -118,7 +118,6 @@ func TestTargetUseCase_TargetReadList(t *testing.T) {
 			Keys:      []string{"key3", "key4"},
 			Regions:   []string{"region3", "region4"},
 		},
-		// Добавьте другие фейковые таргеты
 	}
 
 	mockRepo.EXPECT().ReadList(ownerID).Return(fakeTargets, nil)
