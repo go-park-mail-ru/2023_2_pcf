@@ -7,8 +7,8 @@ import (
 
 func (tr *TargetRouter) TargetDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Id    int    `json:"id"`
-		Token string `json:"token"`
+		Id int `json:"id"`
+		//Token string `json:"token"`
 	}
 
 	// Получение данных из запроса
@@ -21,10 +21,18 @@ func (tr *TargetRouter) TargetDeleteHandler(w http.ResponseWriter, r *http.Reque
 	defer r.Body.Close()
 
 	// Получение ID пользователя из сессии
-	userId, err := tr.Session.GetUserId(request.Token)
-	if err != nil {
-		tr.logger.Error("Error getting user ID from session: " + err.Error())
-		http.Error(w, "Error getting user ID", http.StatusUnauthorized)
+	//userId, err := tr.Session.GetUserId(request.Token)
+	//if err != nil {
+	//	tr.logger.Error("Error getting user ID from session: " + err.Error())
+	//	http.Error(w, "Error getting user ID", http.StatusUnauthorized)
+	//	return
+	//}
+
+	uidAny := r.Context().Value("userid")
+	userId, ok := uidAny.(int)
+	if !ok {
+		tr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 

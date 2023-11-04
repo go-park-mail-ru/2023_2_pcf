@@ -8,7 +8,7 @@ import (
 
 func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token       *string `json:"token"`
+		//Token       *string `json:"token"`
 		Login       *string `json:"login"` // Любое поле может быть nil, если его нет в запросе
 		Password    *string `json:"password"`
 		FName       *string `json:"f_name"`
@@ -51,17 +51,24 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	defer r.Body.Close()
 
 	// Проверяем, что ID пользователя предоставлен
-	if request.Token == nil {
-		ur.logger.Error("Token is required")
-		http.Error(w, "User ID is required", http.StatusBadRequest)
-		return
-	}
-
+	//if request.Token == nil {
+	//	ur.logger.Error("Token is required")
+	//	http.Error(w, "User ID is required", http.StatusBadRequest)
+	//	return
+	//}
+	
 	// Получение айди пользователя по сессии
-	userId, err := ur.Session.GetUserId(*request.Token)
-	if err != nil {
-		ur.logger.Error("Error with session: " + err.Error())
-		http.Error(w, "Error with authentication", http.StatusInternalServerError)
+	//userId, err := ur.Session.GetUserId(*request.Token)
+	//if err != nil {
+	//	ur.logger.Error("Error with session: " + err.Error())
+	//	http.Error(w, "Error with authentication", http.StatusInternalServerError)
+	//	return
+	//}
+	uidAny := r.Context().Value("userid")
+	userId, ok := uidAny.(int)
+	if !ok {
+		ur.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 

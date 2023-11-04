@@ -8,7 +8,7 @@ import (
 
 func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token       string   `json:"token"`
+		//Token       string   `json:"token"`
 		AdId        int      `json:"ad_id"`
 		Name        *string  `json:"name"`
 		Description *string  `json:"description"`
@@ -47,10 +47,17 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Получаем ID пользователя из сессии
-	userId, err := mr.Session.GetUserId(request.Token)
-	if err != nil {
-		mr.logger.Error("Error getting session: " + err.Error())
-		http.Error(w, "Error getting session", http.StatusBadRequest)
+	//userId, err := mr.Session.GetUserId(request.Token)
+	//if err != nil {
+	//	mr.logger.Error("Error getting session: " + err.Error())
+	//	http.Error(w, "Error getting session", http.StatusBadRequest)
+	//	return
+	//}
+	uidAny := r.Context().Value("userid")
+	userId, ok := uidAny.(int)
+	if !ok {
+		mr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 

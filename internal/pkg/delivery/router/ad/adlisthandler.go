@@ -7,17 +7,24 @@ import (
 )
 
 func (mr *AdRouter) AdListHandler(w http.ResponseWriter, r *http.Request) {
-	token := r.URL.Query().Get("token")
-
-	id, err := mr.Session.GetUserId(token)
-	if err != nil {
-		mr.logger.Error("Session not found" + err.Error())
-		http.Error(w, "Session not found", http.StatusNotFound)
+	//token := r.URL.Query().Get("token")
+	uidAny := r.Context().Value("userid")
+	id, ok := uidAny.(int)
+	if !ok {
+		mr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 
+	//id, err := mr.Session.GetUserId(token)
+	//if err != nil {
+	//	mr.logger.Error("Session not found" + err.Error())
+	//	http.Error(w, "Session not found", http.StatusNotFound)
+	//	return
+	//}
+
 	var ads []*entities.Ad
-	ads, err = mr.Ad.AdReadList(id)
+	ads, err := mr.Ad.AdReadList(id)
 	if err != nil {
 		mr.logger.Error("AdsList not found" + err.Error())
 		http.Error(w, "Ads not found:", http.StatusNotFound)

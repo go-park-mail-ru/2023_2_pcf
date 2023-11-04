@@ -32,6 +32,7 @@ func ConfigureRouter(ur *TargetRouter) {
 	ur.router.HandleFunc("/targetget", ur.GetTargetHandler).Methods("DELETE", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
+	ur.router.Use(middleware.Auth(ur.Session))
 	ur.router.Use(middleware.Logger(ur.logger))
 	ur.router.Use(middleware.Recover(ur.logger))
 }

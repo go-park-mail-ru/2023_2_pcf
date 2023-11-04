@@ -5,15 +5,14 @@ import (
 	"AdHub/internal/pkg/entities/mock_entities"
 	"bytes"
 	"encoding/json"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestAdCreateHandler(t *testing.T) {
+func TestAdDeleteHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -41,7 +40,7 @@ func TestAdCreateHandler(t *testing.T) {
 	payloadJSON, err := json.Marshal(payload)
 	assert.NoError(t, err)
 
-	req := httptest.NewRequest("POST", "/ad/create", bytes.NewReader(payloadJSON))
+	req := httptest.NewRequest("POST", "/addelete", bytes.NewReader(payloadJSON))
 	rr := httptest.NewRecorder()
 
 	mockSession.EXPECT().GetUserId("fakeToken").Return(1, nil)

@@ -7,7 +7,7 @@ import (
 
 func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token  string  `json:"token"`
+		//Token  string  `json:"token"`
 		Amount float64 `json:"amount"`
 	}
 
@@ -26,10 +26,17 @@ func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	userId, err := br.Session.GetUserId(request.Token)
-	if err != nil {
-		br.logger.Error("Error getting user ID from session: " + err.Error())
-		http.Error(w, "Error getting user ID", http.StatusBadRequest)
+	//userId, err := br.Session.GetUserId(request.Token)
+	//if err != nil {
+	//	br.logger.Error("Error getting user ID from session: " + err.Error())
+	//	http.Error(w, "Error getting user ID", http.StatusBadRequest)
+	//	return
+	//}
+	uidAny := r.Context().Value("userid")
+	userId, ok := uidAny.(int)
+	if !ok {
+		br.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 
