@@ -5,6 +5,7 @@ import (
 	"AdHub/pkg/db"
 	"database/sql"
 	"fmt"
+	"text/template"
 )
 
 type UserRepository struct {
@@ -77,6 +78,13 @@ func (r *UserRepository) ReadByLogin(login string) (*entities.User, error) {
 			return nil, err
 		}
 	}
+	user.Login = template.HTMLEscapeString(user.Login)
+	user.Password = template.HTMLEscapeString(user.Password)
+	user.FName = template.HTMLEscapeString(user.FName)
+	user.LName = template.HTMLEscapeString(user.LName)
+	user.CompanyName = template.HTMLEscapeString(user.CompanyName)
+	user.Avatar = template.HTMLEscapeString(user.Avatar)
+
 	if user.Id == 0 {
 		return nil, fmt.Errorf("User not found")
 	}
@@ -96,6 +104,13 @@ func (r *UserRepository) ReadById(id int) (*entities.User, error) {
 			return nil, err
 		}
 	}
+	user.Login = template.HTMLEscapeString(user.Login)
+	user.Password = template.HTMLEscapeString(user.Password)
+	user.FName = template.HTMLEscapeString(user.FName)
+	user.LName = template.HTMLEscapeString(user.LName)
+	user.CompanyName = template.HTMLEscapeString(user.CompanyName)
+	user.Avatar = template.HTMLEscapeString(user.Avatar)
+
 	if user.Id == 0 {
 		return nil, fmt.Errorf("User not found")
 	}

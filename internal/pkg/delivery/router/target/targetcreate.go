@@ -13,6 +13,16 @@ func (tr *TargetRouter) CreateTargetHandler(w http.ResponseWriter, r *http.Reque
 		Gender string `json:"gender"`
 		MinAge int    `json:"min_age"`
 		MaxAge int    `json:"max_age"`
+		// Никита, тебе приходят теги в формате "tag1, tag2, tag3" и т.д. Ты должке их разделить по "," и получить массив строк
+		/* func splitTags(input string) []string {
+			tags := strings.Split(input, ",")
+			for i := range tags {
+				tags[i] = strings.TrimSpace(tags[i])
+			}
+			return tags
+		} */
+		// Также с регионами, интересами и ключевыми словами
+		// Держи функцию
 	}
 
 	// Получение данных из запроса
