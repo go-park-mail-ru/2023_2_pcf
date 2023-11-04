@@ -3,10 +3,11 @@ package router
 import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
-	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -18,53 +19,41 @@ func TestAdCreateHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
+	mockFileUseCase := mock_entities.NewMockFileUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		Ad:      mockAdUseCase,
-		Session: mockSession,
+		Ad:   mockAdUseCase,
+		File: mockFileUseCase,
 	}
-
-	payload := struct {
-		Token       string `json:"token"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Sector      string `json:"sector"`
-		TargetId    int    `json:"target_id"`
-	}{
-		Token:       "fakeToken",
-		Name:        "Test Ad",
-		Description: "This is a test ad",
-		Sector:      "Technology",
-	}
-
-	payloadJSON, err := json.Marshal(payload)
-	assert.NoError(t, err)
-
-	req := httptest.NewRequest("POST", "/ad/create", bytes.NewReader(payloadJSON))
-	rr := httptest.NewRecorder()
-
-	mockSession.EXPECT().GetUserId("fakeToken").Return(1, nil)
 
 	fakeAd := &entities.Ad{
-		Id:          1,
-		Name:        payload.Name,
-		Description: payload.Description,
-		Target_id:   payload.TargetId,
-		Owner_id:    1,
+		Name:         "Test Ad",
+		Description:  "Test Description",
+		Website_link: "http://example.com",
+		Budget:       100.0,
+		Image_link:   "image.jpg",
+		Owner_id:     1,
+		Target_id:    1,
 	}
+
 	mockAdUseCase.EXPECT().AdCreate(gomock.Any()).Return(fakeAd, nil)
+	mockFileUseCase.EXPECT().Save(gomock.Any(), gomock.Any()).Return("image.jpg", nil)
+
+	adJSON, _ := json.Marshal(fakeAd)
+
+	req, _ := http.NewRequest("POST", "/ad", strings.NewReader(string(adJSON)))
+	rr := httptest.NewRecorder()
+
+	// Добавление контекста с пользовательским ID
+	ctx := context.WithValue(req.Context(), "userid", 1)
+	req = req.WithContext(ctx)
 
 	adRouter.AdCreateHandler(rr, req)
 
 	assert.Equal(t, http.StatusCreated, rr.Code)
-
-	var response struct {
-		Id int `json:"id"`
+	responseAd := &entities.Ad{}
+	if err := json.NewDecoder(rr.Body).Decode(responseAd); err != nil {
+		t.Fatal(err)
 	}
 
-	err = json.Unmarshal(rr.Body.Bytes(), &response)
-	assert.NoError(t, err)
-
-	assert.Equal(t, 1, response.Id)
 }

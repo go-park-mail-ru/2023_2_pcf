@@ -3,12 +3,13 @@ package router
 import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
-	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -17,53 +18,38 @@ func TestAdDeleteHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		Ad:      mockAdUseCase,
-		Session: mockSession,
+		Ad: mockAdUseCase,
 	}
 
-	payload := struct {
-		Token       string `json:"token"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Sector      string `json:"sector"`
-		TargetId    int    `json:"target_id"`
-	}{
-		Token:       "fakeToken",
-		Name:        "Test Ad",
-		Description: "This is a test ad",
-		Sector:      "Technology",
+	testAd := entities.Ad{
+		Id:       1,
+		Owner_id: 123,
 	}
 
-	payloadJSON, err := json.Marshal(payload)
-	assert.NoError(t, err)
+	// Setting up the expected calls and returns for the mock object
+	mockAdUseCase.EXPECT().
+		AdRead(gomock.Eq(testAd.Id)).
+		Return(&testAd, nil)
 
-	req := httptest.NewRequest("POST", "/addelete", bytes.NewReader(payloadJSON))
+	mockAdUseCase.EXPECT().
+		AdRemove(gomock.Eq(testAd.Id)).
+		Return(nil)
+
+	requestBody, _ := json.Marshal(map[string]int{
+		"ad_id": testAd.Id,
+	})
+
+	req, _ := http.NewRequest("DELETE", "/ad", strings.NewReader(string(requestBody)))
+
+	// Вставляем userId в контекст запроса
+	ctx := context.WithValue(req.Context(), "userid", testAd.Owner_id)
+	req = req.WithContext(ctx)
+
 	rr := httptest.NewRecorder()
 
-	mockSession.EXPECT().GetUserId("fakeToken").Return(1, nil)
+	adRouter.AdDeleteHandler(rr, req)
 
-	fakeAd := &entities.Ad{
-		Id:          1,
-		Name:        payload.Name,
-		Description: payload.Description,
-		Target_id:   payload.TargetId,
-		Owner_id:    1,
-	}
-	mockAdUseCase.EXPECT().AdCreate(gomock.Any()).Return(fakeAd, nil)
-
-	adRouter.AdCreateHandler(rr, req)
-
-	assert.Equal(t, http.StatusCreated, rr.Code)
-
-	var response struct {
-		Id int `json:"id"`
-	}
-
-	err = json.Unmarshal(rr.Body.Bytes(), &response)
-	assert.NoError(t, err)
-
-	assert.Equal(t, 1, response.Id)
+	assert.Equal(t, http.StatusOK, rr.Code)
 }
