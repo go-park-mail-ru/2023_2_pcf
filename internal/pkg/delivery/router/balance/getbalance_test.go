@@ -4,11 +4,12 @@ import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
 	"context"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBalanceHandler(t *testing.T) {
@@ -21,7 +22,6 @@ func TestGetBalanceHandler(t *testing.T) {
 	balanceRouter := BalanceRouter{
 		Balance: mockBalanceUseCase,
 		Session: mockSession,
-		// предполагаем, что logger уже инициализирован
 	}
 
 	fakeBalance := &entities.Balance{
@@ -31,11 +31,10 @@ func TestGetBalanceHandler(t *testing.T) {
 		Available_balance: 900.0,
 	}
 
-	expectedUserID := 1 // Идентификатор пользователя для теста
+	expectedUserID := 1
 	mockBalanceUseCase.EXPECT().BalanceRead(expectedUserID).Return(fakeBalance, nil)
 
 	req, _ := http.NewRequest("GET", "/balance", nil)
-	// Добавление идентификатора пользователя в контекст запроса
 	ctx := context.WithValue(req.Context(), "userid", expectedUserID)
 	req = req.WithContext(ctx)
 

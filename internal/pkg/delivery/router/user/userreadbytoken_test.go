@@ -3,7 +3,9 @@ package router
 import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,35 +14,43 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserDeleteHandler(t *testing.T) {
+func TestGetUserByTokenHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockUserUseCase := mock_entities.NewMockUserUseCaseInterface(ctrl)
+	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
 
 	userRouter := UserRouter{
-		User: mockUserUseCase,
+		User:    mockUserUseCase,
+		Session: mockSession,
 	}
 
 	// Задаём тестовые данные
+	token := "test_token"
 	userId := 1
-	login := "testuser"
-	userFromDb := &entities.User{
-		Id:    userId,
-		Login: login,
-		// Другие поля, если необходимо
+	fakeUser := &entities.User{
+		Id: userId,
+		// Заполните другие поля, если необходимо
 	}
 
 	// Настройка ожидаемых вызовов
-	mockUserUseCase.EXPECT().
-		UserReadByLogin(gomock.Eq(login)).
-		Return(userFromDb, nil)
+	mockSession.EXPECT().
+		GetUserId(gomock.Eq(token)).
+		Return(userId, nil)
 
 	mockUserUseCase.EXPECT().
-		UserDelete(gomock.Eq(login)).
-		Return(nil)
+		UserReadById(gomock.Eq(userId)).
+		Return(fakeUser, nil)
 
-	req, _ := http.NewRequest("DELETE", "/user?login="+login, nil)
+	requestData := struct {
+		Token string `json:"token"`
+	}{
+		Token: token,
+	}
+
+	requestJSON, _ := json.Marshal(requestData)
+	req, _ := http.NewRequest("POST", "/user/by-token", bytes.NewReader(requestJSON))
 
 	rr := httptest.NewRecorder()
 
@@ -48,8 +58,8 @@ func TestUserDeleteHandler(t *testing.T) {
 	ctx := context.WithValue(req.Context(), "userid", userId)
 	req = req.WithContext(ctx)
 
-	userRouter.UserDeleteHandler(rr, req)
+	userRouter.GetUserByTokenHandler(rr, req)
 
 	// Проверяем код ответа
-	assert.Equal(t, http.StatusNoContent, rr.Code)
+	assert.Equal(t, http.StatusOK, rr.Code)
 }

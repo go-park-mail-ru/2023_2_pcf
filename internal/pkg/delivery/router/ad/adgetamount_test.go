@@ -6,11 +6,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAdGetAmountHandler(t *testing.T) {
@@ -20,8 +21,7 @@ func TestAdGetAmountHandler(t *testing.T) {
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		Ad:     mockAdUseCase,
-		logger: mockLogger,
+		Ad: mockAdUseCase,
 	}
 
 	fakeAds := []*entities.Ad{

@@ -5,12 +5,13 @@ import (
 	"AdHub/internal/pkg/entities/mock_entities"
 	"context"
 	"fmt"
-	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTargetHandler(t *testing.T) {

@@ -56,7 +56,7 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	//	http.Error(w, "User ID is required", http.StatusBadRequest)
 	//	return
 	//}
-	
+
 	// Получение айди пользователя по сессии
 	//userId, err := ur.Session.GetUserId(*request.Token)
 	//if err != nil {

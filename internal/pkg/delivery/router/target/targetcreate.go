@@ -4,25 +4,19 @@ import (
 	"AdHub/internal/pkg/entities"
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 func (tr *TargetRouter) CreateTargetHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		//Token  string `json:"token"`
-		Name   string `json:"name"`
-		Gender string `json:"gender"`
-		MinAge int    `json:"min_age"`
-		MaxAge int    `json:"max_age"`
-		// Никита, тебе приходят теги в формате "tag1, tag2, tag3" и т.д. Ты должке их разделить по "," и получить массив строк
-		/* func splitTags(input string) []string {
-			tags := strings.Split(input, ",")
-			for i := range tags {
-				tags[i] = strings.TrimSpace(tags[i])
-			}
-			return tags
-		} */
-		// Также с регионами, интересами и ключевыми словами
-		// Держи функцию
+		Name      string `json:"name"`
+		Gender    string `json:"gender"`
+		MinAge    int    `json:"min_age"`
+		MaxAge    int    `json:"max_age"`
+		Interests string `json:"interests"`
+		Tags      string `json:"tags"`
+		Keys      string `json:"keys"`
+		Regions   string `json:"regions"`
 	}
 
 	// Получение данных из запроса
@@ -34,27 +28,30 @@ func (tr *TargetRouter) CreateTargetHandler(w http.ResponseWriter, r *http.Reque
 	defer r.Body.Close()
 
 	// Получение айди пользователя из сессии
-	//ownerId, err := tr.Session.GetUserId(request.Token)
-	//if err != nil {
-	//	tr.logger.Error("Error getting user ID from session: " + err.Error())
-	//	http.Error(w, "Error getting user ID", http.StatusBadRequest)
-	//	return
-	//}
-
 	uidAny := r.Context().Value("userid")
-	ownerId, ok := uidAny.(int)
+	ownerID, ok := uidAny.(int)
 	if !ok {
 		tr.logger.Error("user id is not an integer")
 		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 
+	// Разделение тегов, интересов, ключей и регионов
+	interests := strings.Split(request.Interests, ", ")
+	tags := strings.Split(request.Tags, ", ")
+	keys := strings.Split(request.Keys, ", ")
+	regions := strings.Split(request.Regions, ", ")
+
 	newTarget := entities.Target{
-		Name:     request.Name,
-		Owner_id: ownerId,
-		Gender:   request.Gender,
-		Min_age:  request.MinAge,
-		Max_age:  request.MaxAge,
+		Name:      request.Name,
+		Owner_id:  ownerID,
+		Gender:    request.Gender,
+		Min_age:   request.MinAge,
+		Max_age:   request.MaxAge,
+		Interests: interests,
+		Tags:      tags,
+		Keys:      keys,
+		Regions:   regions,
 	}
 
 	// Сохранение в бд

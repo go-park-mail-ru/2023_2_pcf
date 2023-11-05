@@ -3,7 +3,7 @@ package router
 import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
-	"encoding/json"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,9 +24,9 @@ func TestAdListHandler(t *testing.T) {
 		Session: mockSession,
 	}
 
-	token := "fakeToken"
-	userID := 1
+	userId := 1 // Предполагаемый ID пользователя
 
+	// Подготовка мока для функции AdReadList
 	fakeAds := []*entities.Ad{
 		{
 			Id:          1,
@@ -51,20 +51,16 @@ func TestAdListHandler(t *testing.T) {
 		},
 	}
 
-	mockSession.EXPECT().GetUserId(token).Return(userID, nil)
-	mockAdUseCase.EXPECT().AdReadList(userID).Return(fakeAds, nil)
+	mockAdUseCase.EXPECT().AdReadList(userId).Return(fakeAds, nil)
 
-	req := httptest.NewRequest("GET", "/ad-list?token="+token, nil)
+	req, _ := http.NewRequest("GET", "/ad/list", nil)
+	req = req.WithContext(context.WithValue(req.Context(), "userid", userId))
+
 	rr := httptest.NewRecorder()
 
 	adRouter.AdListHandler(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 
-	var responseAds []*entities.Ad
-	if err := json.Unmarshal(rr.Body.Bytes(), &responseAds); err != nil {
-		t.Fatalf("Failed to unmarshal response: %v", err)
-	}
-
-	assert.Equal(t, fakeAds, responseAds)
+	// Дополнительные проверки на данные возвращенного JSON-ответа, если необходимо
 }

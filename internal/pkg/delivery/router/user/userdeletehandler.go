@@ -22,7 +22,6 @@ func (mr *UserRouter) UserDeleteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Проверка прав юзера
 	if userId != userFromDb.Id {
 		mr.logger.Error("Access denied" + err.Error())
 		http.Error(w, "Access denied", http.StatusMethodNotAllowed)
