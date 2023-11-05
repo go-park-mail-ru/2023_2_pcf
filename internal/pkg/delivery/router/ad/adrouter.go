@@ -10,6 +10,7 @@ import (
 )
 
 type AdRouter struct {
+	addr    string
 	router  *mux.Router
 	logger  logger.Logger
 	Ad      entities.AdUseCaseInterface
@@ -17,8 +18,9 @@ type AdRouter struct {
 	File    entities.FileUseCaseInterface
 }
 
-func NewAdRouter(r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, log logger.Logger) *AdRouter {
+func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, log logger.Logger) *AdRouter {
 	return &AdRouter{
+		addr:    addr,
 		router:  r,
 		logger:  log,
 		Ad:      AdUC,

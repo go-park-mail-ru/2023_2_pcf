@@ -59,7 +59,7 @@ func (s *HTTPServer) Start() error {
 	rout := mux.NewRouter()
 
 	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionUC, FileUC, log)
-	adrouter := AdRouter.NewAdRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, SessionUC, FileUC, log)
+	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, SessionUC, FileUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), BalanceUC, SessionUC, log)
 
 	http.Handle("/", rout)
