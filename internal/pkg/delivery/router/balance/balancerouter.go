@@ -31,6 +31,7 @@ func ConfigureRouter(ur *BalanceRouter) {
 	ur.router.HandleFunc("/balanceget", ur.GetBalanceHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
+	ur.router.Use(middleware.Auth(ur.Session))
 	ur.router.Use(middleware.Logger(ur.logger))
 	ur.router.Use(middleware.Recover(ur.logger))
 }

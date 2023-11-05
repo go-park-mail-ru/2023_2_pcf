@@ -8,7 +8,7 @@ import (
 
 func (tr *TargetRouter) CreateTargetHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token  string `json:"token"`
+		//Token  string `json:"token"`
 		Name   string `json:"name"`
 		Gender string `json:"gender"`
 		MinAge int    `json:"min_age"`
@@ -34,10 +34,18 @@ func (tr *TargetRouter) CreateTargetHandler(w http.ResponseWriter, r *http.Reque
 	defer r.Body.Close()
 
 	// Получение айди пользователя из сессии
-	ownerId, err := tr.Session.GetUserId(request.Token)
-	if err != nil {
-		tr.logger.Error("Error getting user ID from session: " + err.Error())
-		http.Error(w, "Error getting user ID", http.StatusBadRequest)
+	//ownerId, err := tr.Session.GetUserId(request.Token)
+	//if err != nil {
+	//	tr.logger.Error("Error getting user ID from session: " + err.Error())
+	//	http.Error(w, "Error getting user ID", http.StatusBadRequest)
+	//	return
+	//}
+
+	uidAny := r.Context().Value("userid")
+	ownerId, ok := uidAny.(int)
+	if !ok {
+		tr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 
