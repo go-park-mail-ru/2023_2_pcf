@@ -9,11 +9,11 @@ import (
 func Auth(ss entities.SessionUseCaseInterface) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == "/auth" {
+			if r.URL.Path == "/api/v1/auth" {
 				next.ServeHTTP(w, r)
 				return
 			}
-			if r.URL.Path == "/user" && r.Method == http.MethodPost {
+			if r.URL.Path == "/api/v1/user" {
 				next.ServeHTTP(w, r)
 				return
 			}

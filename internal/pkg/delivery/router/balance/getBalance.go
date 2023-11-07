@@ -19,7 +19,7 @@ func (br *BalanceRouter) GetBalanceHandler(w http.ResponseWriter, r *http.Reques
 	//	http.Error(w, "Error getting user ID", http.StatusBadRequest)
 	//	return
 	//}
-	uidAny := r.Context().Value("userid")
+	uidAny := r.Context().Value("userId")
 	userId, ok := uidAny.(int)
 	if !ok {
 		br.logger.Error("user id is not an integer")
