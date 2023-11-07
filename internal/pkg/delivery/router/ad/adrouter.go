@@ -33,7 +33,7 @@ func ConfigureRouter(ar *AdRouter) {
 	ar.router.HandleFunc("/ad", ar.AdListHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/ad", ar.AdCreateHandler).Methods("POST", "OPTIONS")
 	ar.router.HandleFunc("/adedit", ar.AdUpdateHandler).Methods("POST", "OPTIONS")
-	ar.router.HandleFunc("/addelete", ar.AdDeleteHandler).Methods("DELETE", "OPTIONS")
+	ar.router.HandleFunc("/addelete", ar.AdDeleteHandler).Methods("POST", "OPTIONS")
 	ar.router.HandleFunc("/addget/{adID}", ar.AdDeleteHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/addgetamount", ar.AdGetAmountHandler).Methods("GET", "OPTIONS")
 
