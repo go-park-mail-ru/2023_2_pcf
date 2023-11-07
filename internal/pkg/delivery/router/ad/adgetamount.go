@@ -8,9 +8,9 @@ import (
 func (ar *AdRouter) AdGetAmountHandler(w http.ResponseWriter, r *http.Request) {
 
 	var request struct {
-		Token  string `json:"token"`
-		Amount int    `json:"amount"`
-		Offset int    `json:"offset"`
+		//Token  string `json:"token"`
+		Amount int `json:"amount"`
+		Offset int `json:"offset"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -28,10 +28,17 @@ func (ar *AdRouter) AdGetAmountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Получение ID пользователя через сесссию
-	userId, err := ar.Session.GetUserId(request.Token)
-	if err != nil {
-		ar.logger.Error("Error getting user ID from session: " + err.Error())
-		http.Error(w, "Unauthorized - Invalid session token", http.StatusUnauthorized)
+	//userId, err := ar.Session.GetUserId(request.Token)
+	//if err != nil {
+	//	ar.logger.Error("Error getting user ID from session: " + err.Error())
+	//	http.Error(w, "Unauthorized - Invalid session token", http.StatusUnauthorized)
+	//	return
+	//}
+	uidAny := r.Context().Value("userid")
+	userId, ok := uidAny.(int)
+	if !ok {
+		ar.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 

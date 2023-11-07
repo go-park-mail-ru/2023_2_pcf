@@ -47,6 +47,8 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 			Value:    newSession.Token,
 			Expires:  time.Now().Add(10 * time.Hour),
 			HttpOnly: true,
+			Domain:   "127.0.0.1",
+			Path:     "/",
 		}
 		http.SetCookie(w, cookie)
 		w.WriteHeader(http.StatusOK)

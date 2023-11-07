@@ -18,7 +18,7 @@ services:
     restart: always
     image: postgres:latest
     volumes:
-      - ./db/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "zxc123"

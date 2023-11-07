@@ -4,13 +4,13 @@ import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAdCreateHandler(t *testing.T) {
@@ -18,52 +18,59 @@ func TestAdCreateHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
+	//mockFileUseCase := mock_entities.NewMockFileUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		Ad:      mockAdUseCase,
-		Session: mockSession,
+		Ad: mockAdUseCase,
 	}
 
+	// Prepare the request payload
 	payload := struct {
-		Token       string `json:"token"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		Sector      string `json:"sector"`
+		WebsiteLink string `json:"website_link"`
+		Budget      string `json:"budget"`
+		TargetId    string `json:"target_id"`
 	}{
-		Token:       "fakeToken",
 		Name:        "Test Ad",
 		Description: "This is a test ad",
-		Sector:      "Technology",
+		WebsiteLink: "https://example.com",
+		Budget:      "100",
+		TargetId:    "1",
 	}
 
-	payloadJSON, err := json.Marshal(payload)
-	assert.NoError(t, err)
+	// Mock the FileUseCaseInterface.Save method to return a fake image link
+	//mockFileUseCase.EXPECT().Save(gomock.Any(), gomock.Any()).Return("fake_image_link", nil)
 
-	req := httptest.NewRequest("POST", "/ad/create", bytes.NewReader(payloadJSON))
-	rr := httptest.NewRecorder()
-
-	mockSession.EXPECT().GetUserId("fakeToken").Return(1, nil)
-
-	fakeAd := &entities.Ad{
-		Id:          1,
-		Name:        payload.Name,
-		Description: payload.Description,
-		Sector:      payload.Sector,
-		Owner_id:    1,
-	}
-	mockAdUseCase.EXPECT().AdCreate(gomock.Any()).Return(fakeAd, nil)
-
-	adRouter.AdCreateHandler(rr, req)
-
-	assert.Equal(t, http.StatusCreated, rr.Code)
-
-	var response struct {
-		Id int `json:"id"`
+	expectedAd := &entities.Ad{
+		Name:         payload.Name,
+		Description:  payload.Description,
+		Website_link: payload.WebsiteLink,
+		Budget:       100,
+		Image_link:   "fake_image_link",
+		Owner_id:     1,
+		Target_id:    1,
 	}
 
-	err = json.Unmarshal(rr.Body.Bytes(), &response)
-	assert.NoError(t, err)
+	mockAdUseCase.EXPECT().AdCreate(gomock.Any()).Return(expectedAd, nil)
 
-	assert.Equal(t, 1, response.Id)
+	// Create a test request
+	userId := 1
+	reqBody, _ := json.Marshal(payload)
+	req := httptest.NewRequest("POST", "/ads/create", bytes.NewReader(reqBody))
+	req = req.WithContext(context.WithValue(req.Context(), "userid", userId))
+	rec := httptest.NewRecorder()
+
+	adRouter.AdCreateHandler(rec, req)
+
+	// Check the response status code
+	if rec.Code != http.StatusCreated {
+		t.Errorf("Expected HTTP status %d, but got %d", http.StatusCreated, rec.Code)
+	}
+
+	// Check the response body
+	expectedResponse := `{"id":0,"name":"Test Ad","description":"This is a test ad","website_link":"https://example.com","budget":100,"target_id":1,"image_link":"fake_image_link","Owner_id":1}`
+	if rec.Body.String() != expectedResponse {
+		t.Errorf("Response body does not match the expected value.\nExpected: %s\nActual: %s", expectedResponse, rec.Body.String())
+	}
 }

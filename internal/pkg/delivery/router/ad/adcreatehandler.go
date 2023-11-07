@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token       string  `json:"token"`
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		WebsiteLink string  `json:"website_link"`
-		Budget      float64 `json:"budget"`
-		TargetId    int     `json:"target_id"`
+		//Token       string  `json:"token"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		WebsiteLink string `json:"website_link"`
+		Budget      string `json:"budget"`
+		TargetId    string `json:"target_id"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -24,6 +25,14 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	uidAny := r.Context().Value("userId")
+	uid, ok := uidAny.(int)
+	if !ok {
+		mr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
+		return
+	}
 
 	var image string
 	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
@@ -46,10 +55,23 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	userId, err := mr.Session.GetUserId(request.Token)
+	//userId, err := mr.Session.GetUserId(request.Token)
+	//if err != nil {
+	//	mr.logger.Error("Error get session" + err.Error())
+	//	http.Error(w, "Error get session", http.StatusBadRequest)
+	//	return
+	//}
+	newbudget, err := strconv.ParseFloat(request.Budget, 64)
 	if err != nil {
-		mr.logger.Error("Error get session" + err.Error())
-		http.Error(w, "Error get session", http.StatusBadRequest)
+		mr.logger.Error("Error budget parse" + err.Error())
+		http.Error(w, "Error budget parse", http.StatusInternalServerError)
+		return
+	}
+
+	target, err := strconv.Atoi(request.TargetId)
+	if err != nil {
+		mr.logger.Error("Error target parse" + err.Error())
+		http.Error(w, "Error target parse", http.StatusInternalServerError)
 		return
 	}
 
@@ -58,10 +80,10 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		Name:         request.Name,
 		Description:  request.Description,
 		Website_link: request.WebsiteLink,
-		Budget:       request.Budget,   // Преобразование int в float64
-		Image_link:   image,            // Используйте Imagelink из request
-		Owner_id:     userId,           // Укажите нужное значение Owner_id
-		Target_id:    request.TargetId, // Укажите нужное значение Target_id
+		Budget:       newbudget, // Преобразование int в float64
+		Image_link:   image,     // Используйте Imagelink из request
+		Owner_id:     uid,       // Укажите нужное значение Owner_id
+		Target_id:    target,    // Укажите нужное значение Target_id
 	}
 
 	newAd, err := mr.Ad.AdCreate(&ad)

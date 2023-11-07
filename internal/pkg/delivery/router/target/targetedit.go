@@ -3,16 +3,20 @@ package router
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 func (tr *TargetRouter) UpdateTargetHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Token  string  `json:"token"`
-		Id     int     `json:"id"`
-		Name   *string `json:"name,omitempty"`
-		Gender *string `json:"gender,omitempty"`
-		MinAge *int    `json:"min_age,omitempty"`
-		MaxAge *int    `json:"max_age,omitempty"`
+		Id        int     `json:"id"`
+		Name      *string `json:"name,omitempty"`
+		Gender    *string `json:"gender,omitempty"`
+		MinAge    *int    `json:"min_age,omitempty"`
+		MaxAge    *int    `json:"max_age,omitempty"`
+		Interests string  `json:"interests,omitempty"`
+		Tags      string  `json:"tags,omitempty"`
+		Keys      string  `json:"keys,omitempty"`
+		Regions   string  `json:"regions,omitempty"`
 	}
 
 	// Получение данных из запроса
@@ -24,10 +28,11 @@ func (tr *TargetRouter) UpdateTargetHandler(w http.ResponseWriter, r *http.Reque
 	defer r.Body.Close()
 
 	// Получение айди пользователя из сессии
-	userId, err := tr.Session.GetUserId(request.Token)
-	if err != nil {
-		tr.logger.Error("Error getting user ID from session: " + err.Error())
-		http.Error(w, "Error getting user ID", http.StatusBadRequest)
+	uidAny := r.Context().Value("userid")
+	userId, ok := uidAny.(int)
+	if !ok {
+		tr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
 	}
 
@@ -58,6 +63,18 @@ func (tr *TargetRouter) UpdateTargetHandler(w http.ResponseWriter, r *http.Reque
 	}
 	if request.MaxAge != nil {
 		currentTarget.Max_age = *request.MaxAge
+	}
+	if request.Interests != "" {
+		currentTarget.Interests = strings.Split(request.Interests, ", ")
+	}
+	if request.Tags != "" {
+		currentTarget.Tags = strings.Split(request.Tags, ", ")
+	}
+	if request.Keys != "" {
+		currentTarget.Keys = strings.Split(request.Keys, ", ")
+	}
+	if request.Regions != "" {
+		currentTarget.Regions = strings.Split(request.Regions, ", ")
 	}
 
 	// Сохранение в бд
