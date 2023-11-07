@@ -14,14 +14,16 @@ type BalanceRouter struct {
 	logger  logger.Logger
 	Balance entities.BalanceUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	User    entities.UserUseCaseInterface
 }
 
-func NewBalanceRouter(r *mux.Router, BalanceUC entities.BalanceUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *BalanceRouter {
+func NewBalanceRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *BalanceRouter {
 	return &BalanceRouter{
 		logger:  log,
 		router:  r,
 		Balance: BalanceUC,
 		Session: SessionUC,
+		User:    UserUC,
 	}
 }
 

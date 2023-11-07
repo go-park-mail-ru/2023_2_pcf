@@ -26,7 +26,7 @@ func (mr *AdRouter) AdDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	//	http.Error(w, "Error getting session", http.StatusBadRequest)
 	//	return
 	//}
-	uidAny := r.Context().Value("userid")
+	uidAny := r.Context().Value("userId")
 	userId, ok := uidAny.(int)
 	if !ok {
 		mr.logger.Error("user id is not an integer")

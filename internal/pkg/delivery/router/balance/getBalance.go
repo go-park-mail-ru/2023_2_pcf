@@ -27,8 +27,10 @@ func (br *BalanceRouter) GetBalanceHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	user, err := br.User.UserReadById(userId)
+	balanceid := user.BalanceId
 	// Получение баланса пользователя
-	balance, err := br.Balance.BalanceRead(userId)
+	balance, err := br.Balance.BalanceRead(balanceid)
 	if err != nil {
 		br.logger.Error("Error retrieving balance: " + err.Error())
 		http.Error(w, "Error retrieving balance", http.StatusInternalServerError)
@@ -36,7 +38,6 @@ func (br *BalanceRouter) GetBalanceHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Отправка данных о балансе пользователю
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(balance); err != nil {
 		br.logger.Error("Error encoding response: " + err.Error())
