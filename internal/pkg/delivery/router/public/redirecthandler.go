@@ -20,6 +20,7 @@ func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, fmt.Sprintf("Error getting ad URL: %v", err), http.StatusInternalServerError)
 		return
 	}
+	website := "http://" + ad.Website_link
 
-	http.Redirect(w, r, ad.Website_link, http.StatusSeeOther)
+	http.Redirect(w, r, website, http.StatusSeeOther)
 }

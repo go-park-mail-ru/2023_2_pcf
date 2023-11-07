@@ -35,7 +35,7 @@ func ConfigureRouter(ur *UserRouter) {
 	ur.router.HandleFunc("/user", ur.UserCreateHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/userdel", ur.UserDeleteHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/auth", ur.AuthHandler).Methods("POST", "OPTIONS")
-	ur.router.HandleFunc("/useredit", ur.AuthHandler).Methods("POST", "OPTIONS")
+	ur.router.HandleFunc("/useredit", ur.UserUpdateHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/usergetbytoken", ur.GetUserByTokenHandler).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/file", ur.FileHandler).Methods("GET", "OPTIONS")
 

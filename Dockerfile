@@ -11,5 +11,6 @@ FROM debian AS apiserver
 WORKDIR /app
 COPY --from=builder /app/apiserver ./
 COPY ./configs ./configs
+COPY ./File ./File
 
 CMD ["./apiserver"]

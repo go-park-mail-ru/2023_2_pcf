@@ -4,26 +4,35 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
 		//Token       string   `json:"token"`
-		AdId        int      `json:"ad_id"`
-		Name        *string  `json:"name"`
-		Description *string  `json:"description"`
-		WebsiteLink *string  `json:"website_link"`
-		Budget      *float64 `json:"budget"`
-		TargetId    *int     `json:"target_id"`
+		AdId        string `json:"ad_id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		WebsiteLink string `json:"website_link"`
+		Budget      string `json:"budget"`
+		TargetId    string `json:"target_id"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&request); err != nil {
-		mr.logger.Error("Invalid request body: " + err.Error())
+		mr.logger.Error("Invalid request body" + err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
+
+	uidAny := r.Context().Value("userId")
+	uid, ok := uidAny.(int)
+	if !ok {
+		mr.logger.Error("user id is not an integer")
+		http.Error(w, "auth error", http.StatusInternalServerError)
+		return
+	}
 
 	var image string
 	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
@@ -46,23 +55,34 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Получаем ID пользователя из сессии
 	//userId, err := mr.Session.GetUserId(request.Token)
 	//if err != nil {
-	//	mr.logger.Error("Error getting session: " + err.Error())
-	//	http.Error(w, "Error getting session", http.StatusBadRequest)
+	//	mr.logger.Error("Error get session" + err.Error())
+	//	http.Error(w, "Error get session", http.StatusBadRequest)
 	//	return
 	//}
-	uidAny := r.Context().Value("userid")
-	userId, ok := uidAny.(int)
-	if !ok {
-		mr.logger.Error("user id is not an integer")
-		http.Error(w, "auth error", http.StatusInternalServerError)
+	newbudget, err := strconv.ParseFloat(request.Budget, 64)
+	if err != nil {
+		mr.logger.Error("Error budget parse" + err.Error())
+		http.Error(w, "Error budget parse", http.StatusInternalServerError)
+		return
+	}
+
+	target, err := strconv.Atoi(request.TargetId)
+	if err != nil {
+		mr.logger.Error("Error target parse" + err.Error())
+		http.Error(w, "Error target parse", http.StatusInternalServerError)
+		return
+	}
+	id, err := strconv.Atoi(request.AdId)
+	if err != nil {
+		mr.logger.Error("Error ad parse" + err.Error())
+		http.Error(w, "Error ad parse", http.StatusInternalServerError)
 		return
 	}
 
 	// Получение текущего состояния рекламы из базы данных
-	currentAd, err := mr.Ad.AdRead(request.AdId)
+	currentAd, err := mr.Ad.AdRead(id)
 	if err != nil {
 		mr.logger.Error("Error retrieving ad: " + err.Error())
 		http.Error(w, "Error retrieving ad", http.StatusInternalServerError)
@@ -70,27 +90,27 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Проверяем, что реклама принадлежит пользователю из сессии
-	if currentAd.Owner_id != userId {
+	if currentAd.Owner_id != uid {
 		mr.logger.Error("User does not have permission to update this ad")
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
 	// Обновляем поля рекламы
-	if request.Name != nil {
-		currentAd.Name = *request.Name
+	if request.Name != "" {
+		currentAd.Name = request.Name
 	}
-	if request.Description != nil {
-		currentAd.Description = *request.Description
+	if request.Description != "" {
+		currentAd.Description = request.Description
 	}
-	if request.WebsiteLink != nil {
-		currentAd.Website_link = *request.WebsiteLink
+	if request.WebsiteLink != "" {
+		currentAd.Website_link = request.WebsiteLink
 	}
-	if request.Budget != nil {
-		currentAd.Budget = *request.Budget
+	if request.Budget != "" {
+		currentAd.Budget = newbudget
 	}
-	if request.TargetId != nil {
-		currentAd.Target_id = *request.TargetId
+	if request.TargetId != "" {
+		currentAd.Target_id = target
 	}
 	if image != "" {
 		currentAd.Image_link = image

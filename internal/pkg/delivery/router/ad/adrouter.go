@@ -36,6 +36,7 @@ func ConfigureRouter(ar *AdRouter) {
 	ar.router.HandleFunc("/addelete", ar.AdDeleteHandler).Methods("POST", "OPTIONS")
 	ar.router.HandleFunc("/addget/{adID}", ar.AdDeleteHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/addgetamount", ar.AdGetAmountHandler).Methods("GET", "OPTIONS")
+	ar.router.HandleFunc("/aduniquelink", ar.AdBannerHandler).Methods("GET", "OPTIONS")
 
 	ar.router.Use(middleware.CORS)
 	ar.router.Use(middleware.Auth(ar.Session))

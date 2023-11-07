@@ -3,6 +3,7 @@ package server
 import (
 	AdRouter "AdHub/internal/pkg/delivery/router/ad"
 	BalanceRouter "AdHub/internal/pkg/delivery/router/balance"
+	PublicRouter "AdHub/internal/pkg/delivery/router/public"
 	TargetRouter "AdHub/internal/pkg/delivery/router/target"
 	UserRouter "AdHub/internal/pkg/delivery/router/user"
 	"AdHub/internal/pkg/repo"
@@ -69,6 +70,7 @@ func (s *HTTPServer) Start() error {
 	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, SessionUC, FileUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionUC, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionUC, log)
+	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, log)
 
 	http.Handle("/", rout)
 
@@ -76,6 +78,7 @@ func (s *HTTPServer) Start() error {
 	AdRouter.ConfigureRouter(adrouter)
 	BalanceRouter.ConfigureRouter(balancerouter)
 	TargetRouter.ConfigureRouter(targetrouter)
+	PublicRouter.ConfigureRouter(publicRouter)
 
 	log.Info("Starting API sever on " + s.config.BindAddr)
 	return http.ListenAndServe(s.config.BindAddr, nil)

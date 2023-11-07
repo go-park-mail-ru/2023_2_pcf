@@ -1,9 +1,10 @@
 package router
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 )
 
 func (mr *AdRouter) AdBannerHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,23 +16,23 @@ func (mr *AdRouter) AdBannerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ad, err := mr.Ad.AdRead(adID)
-
-	uniqueLink := mr.addr + "api/v1/redirect?id=" + adIDStr
-
-	tmpl, err := template.New("ad_template").Parse(`<a href="{{.Link}}"><img src="{{.ImageURL}}" alt="Ad Banner"></a>`)
-	if err != nil {
-		http.Error(w, "Failed to create template", http.StatusInternalServerError)
-		return
-	}
+	fmt.Println(ad)
+	uniqueLink := mr.addr + "/api/v1/redirect?id=" + adIDStr
 
 	data := struct {
 		Link     string
 		ImageURL string
 	}{
-		Link:     uniqueLink,
+		Link:     "http://" + uniqueLink,
 		ImageURL: mr.addr + "/api/v1/file?file=" + ad.Image_link,
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, data)
+	tmpl := "<a href=\"" + data.Link + "\"><img src=\"" + data.ImageURL + "\" alt=\"Ad Banner\"></a>"
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	err = json.NewEncoder(w).Encode(tmpl)
+	if err != nil {
+		http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+		return
+	}
 }
