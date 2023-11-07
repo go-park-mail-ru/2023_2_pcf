@@ -7,7 +7,7 @@ import (
 
 func (ur *UserRouter) GetUserByTokenHandler(w http.ResponseWriter, r *http.Request) {
 
-	uidAny := r.Context().Value("userid")
+	uidAny := r.Context().Value("userId")
 	userID, ok := uidAny.(int)
 	if !ok {
 		ur.logger.Error("user id is not an integer")

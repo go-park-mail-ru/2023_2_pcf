@@ -99,7 +99,7 @@ func (r *UserRepository) ReadById(id int) (*entities.User, error) {
 	defer rows.Close()
 	user := &entities.User{}
 	for rows.Next() {
-		err := rows.Scan(&user.Id, &user.Login, &user.Password, &user.FName, &user.LName, &user.CompanyName, &user.Avatar, &user.BalanceId)
+		err := rows.Scan(&user.Id, &user.Login, &user.Password, &user.FName, &user.LName, &user.CompanyName, &user.BalanceId, &user.Avatar)
 		if err != nil {
 			return nil, err
 		}

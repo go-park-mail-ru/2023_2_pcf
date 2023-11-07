@@ -33,7 +33,7 @@ func ConfigureRouter(ur *UserRouter) {
 	ur.router.HandleFunc("/ping", PingHandler).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/user", ur.UserReadHandler).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/user", ur.UserCreateHandler).Methods("POST", "OPTIONS")
-	ur.router.HandleFunc("/user", ur.UserDeleteHandler).Methods("POST", "OPTIONS")
+	ur.router.HandleFunc("/userdel", ur.UserDeleteHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/auth", ur.AuthHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/useredit", ur.AuthHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/usergetbytoken", ur.GetUserByTokenHandler).Methods("GET", "OPTIONS")

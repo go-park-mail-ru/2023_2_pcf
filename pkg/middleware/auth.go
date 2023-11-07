@@ -13,6 +13,10 @@ func Auth(ss entities.SessionUseCaseInterface) func(next http.Handler) http.Hand
 				next.ServeHTTP(w, r)
 				return
 			}
+			if r.URL.Path == "/user" && r.Method == http.MethodPost {
+				next.ServeHTTP(w, r)
+				return
+			}
 
 			sessionToken, err := r.Cookie("session_token")
 			if err != nil {
