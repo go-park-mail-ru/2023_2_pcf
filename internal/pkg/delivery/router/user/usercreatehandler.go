@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,11 +40,44 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	_, err = mr.Session.Auth(newUser)
-	if err != nil {
-		mr.logger.Error("Error user auth" + err.Error())
+	newBalance := &entities.Balance{
+		Total_balance:     0,
+		Reserved_balance:  0,
+		Available_balance: 0,
 	}
 
+	balance, err := mr.Balance.BalanceCreate(newBalance)
+	if err != nil {
+		mr.logger.Error("Invalid balance create.")
+		http.Error(w, "Invalid balance create.", http.StatusBadRequest)
+		return
+	}
+
+	newUser.BalanceId = balance.Id
+	err = mr.User.UserUpdate(newUser)
+	if err != nil {
+		mr.logger.Error("Invalid user update.")
+		http.Error(w, "Invalid user update.", http.StatusBadRequest)
+		return
+	}
+
+	newSession, err := mr.Session.Auth(newUser)
+	if err != nil {
+		mr.logger.Error("Error while token generation" + err.Error())
+		http.Error(w, "Error while token gen", http.StatusInternalServerError)
+	}
+
+	//Кукисет и возврат ответа (успех)
+	cookie := &http.Cookie{
+		Name:     "session_token",
+		Value:    newSession.Token,
+		Expires:  time.Now().Add(10 * time.Hour),
+		HttpOnly: true,
+		Domain:   "127.0.0.1",
+		Path:     "/",
+	}
+
+	http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusCreated) // HTTP Status - 201
 	w.Header().Set("Content-Type", "application/json")
 	responseJSON, err := json.Marshal(newUser)

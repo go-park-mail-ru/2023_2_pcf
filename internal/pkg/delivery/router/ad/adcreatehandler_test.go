@@ -26,17 +26,17 @@ func TestAdCreateHandler(t *testing.T) {
 
 	// Prepare the request payload
 	payload := struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		WebsiteLink string  `json:"website_link"`
-		Budget      float64 `json:"budget"`
-		TargetId    int     `json:"target_id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		WebsiteLink string `json:"website_link"`
+		Budget      string `json:"budget"`
+		TargetId    string `json:"target_id"`
 	}{
 		Name:        "Test Ad",
 		Description: "This is a test ad",
 		WebsiteLink: "https://example.com",
-		Budget:      100,
-		TargetId:    1,
+		Budget:      "100",
+		TargetId:    "1",
 	}
 
 	// Mock the FileUseCaseInterface.Save method to return a fake image link
@@ -46,10 +46,10 @@ func TestAdCreateHandler(t *testing.T) {
 		Name:         payload.Name,
 		Description:  payload.Description,
 		Website_link: payload.WebsiteLink,
-		Budget:       payload.Budget,
+		Budget:       100,
 		Image_link:   "fake_image_link",
 		Owner_id:     1,
-		Target_id:    payload.TargetId,
+		Target_id:    1,
 	}
 
 	mockAdUseCase.EXPECT().AdCreate(gomock.Any()).Return(expectedAd, nil)

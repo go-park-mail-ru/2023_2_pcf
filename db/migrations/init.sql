@@ -11,7 +11,7 @@ CREATE TABLE "user" (
     password VARCHAR(255) NOT NULL,
     f_name VARCHAR(255) DEFAULT NULL,
     l_name VARCHAR(255) DEFAULT NULL,
-    s_name VARCHAR(255) DEFAULT NULL,
+    s_name VARCHAR(255) DEFAULT "company",
     avatar VARCHAR(255) DEFAULT "default.jpg"
     balance_id INT,
     FOREIGN KEY (balance_id) REFERENCES "balance" (id)

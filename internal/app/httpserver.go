@@ -3,12 +3,14 @@ package server
 import (
 	AdRouter "AdHub/internal/pkg/delivery/router/ad"
 	BalanceRouter "AdHub/internal/pkg/delivery/router/balance"
+	TargetRouter "AdHub/internal/pkg/delivery/router/target"
 	UserRouter "AdHub/internal/pkg/delivery/router/user"
 	"AdHub/internal/pkg/repo"
 	"AdHub/internal/pkg/usecases/ad"
 	"AdHub/internal/pkg/usecases/balance"
 	"AdHub/internal/pkg/usecases/file"
 	"AdHub/internal/pkg/usecases/session"
+	"AdHub/internal/pkg/usecases/target"
 	"AdHub/internal/pkg/usecases/user"
 	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/db"
@@ -50,23 +52,30 @@ func (s *HTTPServer) Start() error {
 	if err != nil {
 		log.Error("Balance repo error: " + err.Error())
 	}
+	TargetRepo, err := repo.NewTargetRepo(DB)
+	if err != nil {
+		log.Error("Target repo error: " + err.Error())
+	}
 
 	FileUC := file.New(FileRepo)
 	SessionUC := session.New(SessionRepo)
 	AdUC := ad.New(AdRepo)
 	UserUC := user.New(UserRepo)
 	BalanceUC := balance.New(BalanceRepo)
+	TargetUC := target.New(TargetRepo)
 	rout := mux.NewRouter()
 
-	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionUC, FileUC, log)
+	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionUC, FileUC, BalanceUC, log)
 	adrouter := AdRouter.NewAdRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, SessionUC, FileUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), BalanceUC, SessionUC, log)
+	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionUC, log)
 
 	http.Handle("/", rout)
 
 	UserRouter.ConfigureRouter(userrouter)
 	AdRouter.ConfigureRouter(adrouter)
 	BalanceRouter.ConfigureRouter(balancerouter)
+	TargetRouter.ConfigureRouter(targetrouter)
 
 	log.Info("Starting API sever on " + s.config.BindAddr)
 	return http.ListenAndServe(s.config.BindAddr, nil)

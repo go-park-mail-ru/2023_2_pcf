@@ -8,7 +8,7 @@ import (
 
 func (mr *AdRouter) AdListHandler(w http.ResponseWriter, r *http.Request) {
 	//token := r.URL.Query().Get("token")
-	uidAny := r.Context().Value("userid")
+	uidAny := r.Context().Value("userId")
 	id, ok := uidAny.(int)
 	if !ok {
 		mr.logger.Error("user id is not an integer")

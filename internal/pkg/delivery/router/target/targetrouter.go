@@ -16,7 +16,7 @@ type TargetRouter struct {
 	Session entities.SessionUseCaseInterface
 }
 
-func NewUserRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *TargetRouter {
+func NewTargetRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *TargetRouter {
 	return &TargetRouter{
 		logger:  log,
 		router:  r,
@@ -29,7 +29,8 @@ func ConfigureRouter(ur *TargetRouter) {
 	ur.router.HandleFunc("/targetcreate", ur.CreateTargetHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/targetedit", ur.UpdateTargetHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/targetdelete", ur.TargetDeleteHandler).Methods("DELETE", "OPTIONS")
-	ur.router.HandleFunc("/targetget", ur.GetTargetHandler).Methods("DELETE", "OPTIONS")
+	ur.router.HandleFunc("/targetget", ur.GetTargetHandler).Methods("GET", "OPTIONS")
+	ur.router.HandleFunc("/targetlist", ur.TargetListHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
 	ur.router.Use(middleware.Auth(ur.Session))
