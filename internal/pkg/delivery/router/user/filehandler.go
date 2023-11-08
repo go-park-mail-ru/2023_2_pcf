@@ -11,6 +11,7 @@ func (mr *UserRouter) FileHandler(w http.ResponseWriter, r *http.Request) {
 	filename := r.URL.Query().Get("file")
 	fileData, err := mr.File.Get(filename)
 	if err != nil {
+		mr.logger.Error("Error getting file: " + err.Error())
 		http.Error(w, "Unable to open file", http.StatusInternalServerError)
 		return
 	}

@@ -3,12 +3,13 @@ package router
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
 		//Token  string  `json:"token"`
-		Amount float64 `json:"amount"`
+		Amount string `json:"amount"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -19,8 +20,15 @@ func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.
 	}
 	defer r.Body.Close()
 
+	amount, err := strconv.ParseFloat(request.Amount, 64)
+	if err != nil {
+		br.logger.Error("Invalid amount: " + err.Error())
+		http.Error(w, "Invalid amount", http.StatusBadRequest)
+		return
+	}
+
 	// Проверка на отрицательность (нельзя пополнить баланс на отрицательное значение)
-	if request.Amount <= 0 {
+	if amount <= 0 {
 		br.logger.Error("The replenishment amount must be positive")
 		http.Error(w, "The amount must be positive", http.StatusBadRequest)
 		return
@@ -32,7 +40,7 @@ func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.
 	//	http.Error(w, "Error getting user ID", http.StatusBadRequest)
 	//	return
 	//}
-	uidAny := r.Context().Value("userid")
+	uidAny := r.Context().Value("userId")
 	userId, ok := uidAny.(int)
 	if !ok {
 		br.logger.Error("user id is not an integer")
@@ -49,7 +57,7 @@ func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.
 	}
 
 	// Пополнение
-	err = br.Balance.BalanceUP(request.Amount, currentBalance.Id)
+	err = br.Balance.BalanceUP(amount, currentBalance.Id)
 	if err != nil {
 		br.logger.Error("Error updating balance: " + err.Error())
 		http.Error(w, "Error updating balance", http.StatusInternalServerError)
