@@ -16,15 +16,17 @@ type AdRouter struct {
 	Ad      entities.AdUseCaseInterface
 	Session entities.SessionUseCaseInterface
 	File    entities.FileUseCaseInterface
+	Balance entities.BalanceUseCaseInterface
 }
 
-func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, log logger.Logger) *AdRouter {
+func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
 	return &AdRouter{
 		addr:    addr,
 		router:  r,
 		logger:  log,
 		Ad:      AdUC,
 		Session: SessionUC,
+		Balance: BalanceUC,
 		File:    FileUC,
 	}
 }
@@ -34,7 +36,7 @@ func ConfigureRouter(ar *AdRouter) {
 	ar.router.HandleFunc("/ad", ar.AdCreateHandler).Methods("POST", "OPTIONS")
 	ar.router.HandleFunc("/adedit", ar.AdUpdateHandler).Methods("POST", "OPTIONS")
 	ar.router.HandleFunc("/addelete", ar.AdDeleteHandler).Methods("POST", "OPTIONS")
-	ar.router.HandleFunc("/addget/{adID}", ar.AdDeleteHandler).Methods("GET", "OPTIONS")
+	ar.router.HandleFunc("/adget", ar.AdGetHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/addgetamount", ar.AdGetAmountHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/aduniquelink", ar.AdBannerHandler).Methods("GET", "OPTIONS")
 

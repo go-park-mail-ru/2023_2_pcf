@@ -5,18 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
 )
 
 func (mr *AdRouter) AdGetHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	adIDStr, ok := vars["adID"]
-	if !ok {
-		mr.logger.Error("Ad ID is missing in the path")
-		http.Error(w, "Ad ID is required", http.StatusBadRequest)
-		return
-	}
+	adIDStr := r.URL.Query().Get("adID")
 	adID, err := strconv.Atoi(adIDStr)
 	if err != nil {
 		mr.logger.Error("Invalid Ad ID: " + err.Error())
@@ -36,7 +28,6 @@ func (mr *AdRouter) AdGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ad)
 }

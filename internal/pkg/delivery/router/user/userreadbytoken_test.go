@@ -35,10 +35,6 @@ func TestGetUserByTokenHandler(t *testing.T) {
 	}
 
 	// Настройка ожидаемых вызовов
-	mockSession.EXPECT().
-		GetUserId(gomock.Eq(token)).
-		Return(userId, nil)
-
 	mockUserUseCase.EXPECT().
 		UserReadById(gomock.Eq(userId)).
 		Return(fakeUser, nil)
@@ -50,12 +46,11 @@ func TestGetUserByTokenHandler(t *testing.T) {
 	}
 
 	requestJSON, _ := json.Marshal(requestData)
-	req, _ := http.NewRequest("POST", "/user/by-token", bytes.NewReader(requestJSON))
-
+	req, _ := http.NewRequest("POST", "/usergetbytoken", bytes.NewReader(requestJSON))
 	rr := httptest.NewRecorder()
 
 	// Установка контекста с user ID, как если бы middleware аутентификации уже было выполнено
-	ctx := context.WithValue(req.Context(), "userid", userId)
+	ctx := context.WithValue(req.Context(), "userId", userId)
 	req = req.WithContext(ctx)
 
 	userRouter.GetUserByTokenHandler(rr, req)

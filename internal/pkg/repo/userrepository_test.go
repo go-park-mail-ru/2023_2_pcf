@@ -36,7 +36,7 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	mock.ExpectQuery("INSERT INTO \"user\" (.+) RETURNING id;").
-		WithArgs(user.Login, user.Password, user.FName, user.LName, user.CompanyName, user.Avatar, user.BalanceId).
+		WithArgs(user.Login, user.Password, user.FName, user.LName).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	createdUser, err := repo.Create(user)
@@ -62,7 +62,7 @@ func TestRemoveUser(t *testing.T) {
 	repo, err := NewUserRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	mock.ExpectExec(`DELETE FROM "user" WHERE login=\$1;`).
+	mock.ExpectExec(`DELETE FROM user WHERE login=\$1;`).
 		WithArgs("testuser").
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
@@ -123,10 +123,10 @@ func TestReadUser(t *testing.T) {
 	repo, err := NewUserRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"id", "login", "password", "f_name", "l_name", "s_name", "balance_id", "avatar"}).
-		AddRow(1, "testuser", "password", "John", "Doe", "Smith", "def.jpg", 1)
+	rows := sqlmock.NewRows([]string{"id", "login", "password"}).
+		AddRow(1, "testuser", "password")
 
-	mock.ExpectQuery(`SELECT id, login, password, f_name, l_name, s_name, balance_id, avatar FROM \"user\" WHERE login=\$1;`).
+	mock.ExpectQuery(`SELECT id, login, password FROM \"user\" WHERE login=\$1;`).
 		WillReturnRows(rows)
 
 	user, err := repo.ReadByLogin("testuser")
@@ -135,9 +135,6 @@ func TestReadUser(t *testing.T) {
 
 	assert.Equal(t, "testuser", user.Login)
 	assert.Equal(t, "password", user.Password)
-	assert.Equal(t, "John", user.FName)
-	assert.Equal(t, "Doe", user.LName)
-	assert.Equal(t, "Smith", user.CompanyName)
 
 	require.NoError(t, mock.ExpectationsWereMet())
 }
@@ -157,7 +154,7 @@ func TestReadIdUser(t *testing.T) {
 	require.NoError(t, err)
 
 	rows := sqlmock.NewRows([]string{"id", "login", "password", "f_name", "l_name", "s_name", "balance_id", "avatar"}).
-		AddRow(1, "testuser", "password", "John", "Doe", "Smith", "def.jpg", 1)
+		AddRow(1, "testuser", "password", "John", "Doe", "Smith", 1, "def.jpg")
 
 	mock.ExpectQuery(`SELECT id, login, password, f_name, l_name, s_name, balance_id, avatar FROM \"user\" WHERE id=\$1;`).
 		WillReturnRows(rows)

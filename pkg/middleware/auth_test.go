@@ -35,7 +35,7 @@ func TestAuthMiddleware(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cookie := &http.Cookie{Name: "token", Value: "testToken"}
+	cookie := &http.Cookie{Name: "session_token", Value: "testToken"}
 	req.AddCookie(cookie)
 
 	resp, err := http.DefaultClient.Do(req)

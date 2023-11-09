@@ -68,6 +68,20 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	currentBalance, err := mr.Balance.BalanceRead(uid)
+	if currentBalance.Available_balance < newbudget {
+		mr.logger.Error("Недостаточно средства" + err.Error())
+		http.Error(w, "Недостаточно средств", http.StatusMethodNotAllowed)
+		return
+	} else {
+		err = mr.Balance.BalanceReserve(newbudget, currentBalance.Id)
+		if err != nil {
+			mr.logger.Error("Error balance update" + err.Error())
+			http.Error(w, "Error balance update", http.StatusInternalServerError)
+			return
+		}
+	}
+
 	target, err := strconv.Atoi(request.TargetId)
 	if err != nil {
 		mr.logger.Error("Error target parse" + err.Error())

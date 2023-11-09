@@ -27,7 +27,7 @@ func TestRedirectHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expectedURL := "http://example.com/ad/1"
+	expectedURL := "example.com/ad/1"
 	fakeAd := &entities.Ad{
 		Website_link: expectedURL,
 	}
@@ -39,5 +39,5 @@ func TestRedirectHandler(t *testing.T) {
 	assert.Equal(t, http.StatusSeeOther, rr.Code)
 
 	expectedLocation := rr.Header().Get("Location")
-	assert.Equal(t, expectedURL, expectedLocation)
+	assert.Equal(t, "http://"+expectedURL, expectedLocation)
 }

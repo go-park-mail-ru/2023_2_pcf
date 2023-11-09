@@ -6,16 +6,17 @@ import (
 )
 
 func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	/*var request struct {
+	var request struct {
 		//Token       *string `json:"token"`
 		Login    string `json:"login"` // Любое поле может быть nil, если его нет в запросе
 		Password string `json:"password"`
 		FName    string `json:"f_name"`
 		LName    string `json:"l_name"`
-	}*/
+		Company  string `json:"s_name"`
+	}
 
 	var avatar string
-	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
+	err := r.ParseMultipartForm(100 << 20) // 10 MB - максимальный размер файла
 	if err == nil {
 		file, Header, err := r.FormFile("avatar")
 		if err != nil {
@@ -41,18 +42,11 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	if err != nil {
-		ur.logger.Error("Invalid request body: " + err.Error())
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-	}
-
-	/*decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&request); err != nil {
-		ur.logger.Error("Invalid request body: " + err.Error())
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()*/
+	request.Login = r.FormValue("login")
+	request.Password = r.FormValue("password")
+	request.FName = r.FormValue("f_name")
+	request.LName = r.FormValue("l_name")
+	request.Company = r.FormValue("s_name")
 
 	// Проверяем, что ID пользователя предоставлен
 	//if request.Token == nil {
@@ -85,7 +79,7 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Обновляем поля, если они были предоставлены в запросе
-	/*if request.Login != "" {
+	if request.Login != "" {
 		currentUser.Login = request.Login
 	}
 	if request.Password != "" {
@@ -96,7 +90,10 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	if request.LName != "" {
 		currentUser.LName = request.LName
-	}*/
+	}
+	if request.Company != "" {
+		currentUser.CompanyName = request.Company
+	}
 	if avatar != "" {
 		currentUser.Avatar = avatar
 	}
