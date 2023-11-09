@@ -19,27 +19,30 @@ func (ur *UserRouter) UserUpdateHandler(w http.ResponseWriter, r *http.Request) 
 	err := r.ParseMultipartForm(100 << 20) // 10 MB - максимальный размер файла
 	if err == nil {
 		file, Header, err := r.FormFile("avatar")
-		if err != nil {
-			ur.logger.Error("Error getting file from form: " + err.Error())
-			http.Error(w, "Error getting file from form", http.StatusBadRequest)
-			return
-		}
+		if err == nil {
+			defer file.Close()
 
-		defer file.Close()
+			bfile, err := io.ReadAll(file)
+			if err != nil {
+				ur.logger.Error("Error reading file: " + err.Error())
+				http.Error(w, "Error reading file", http.StatusInternalServerError)
+				return
+			}
 
-		bfile, err := io.ReadAll(file)
-		if err != nil {
-			ur.logger.Error("Error reading file: " + err.Error())
-			http.Error(w, "Error reading file", http.StatusInternalServerError)
-			return
+			avatar, err = ur.File.Save(bfile, Header.Filename)
+			if err != nil {
+				ur.logger.Error("Error saving file: " + err.Error())
+				http.Error(w, "Error saving file", http.StatusInternalServerError)
+				return
+			}
 		}
+	}
 
-		avatar, err = ur.File.Save(bfile, Header.Filename)
-		if err != nil {
-			ur.logger.Error("Error saving file: " + err.Error())
-			http.Error(w, "Error saving file", http.StatusInternalServerError)
-			return
-		}
+	err = r.ParseForm()
+	if err != nil {
+		ur.logger.Error("Error parsing form: " + err.Error())
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		return
 	}
 
 	request.Login = r.FormValue("login")
