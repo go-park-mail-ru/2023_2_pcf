@@ -10,7 +10,6 @@ import (
 
 func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		//Token       string  `json:"token"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		WebsiteLink string `json:"website_link"`
@@ -18,13 +17,41 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		TargetId    string `json:"target_id"`
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&request); err != nil {
-		mr.logger.Error("Invalid request body" + err.Error())
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	var image string
+	err := r.ParseMultipartForm(100 << 20) // 10 MB - максимальный размер файла
+	if err == nil {
+		file, Header, err := r.FormFile("image")
+		if err == nil {
+			defer file.Close()
+
+			bfile, err := io.ReadAll(file)
+			if err != nil {
+				mr.logger.Error("Error reading file: " + err.Error())
+				http.Error(w, "Error reading file", http.StatusInternalServerError)
+				return
+			}
+
+			image, err = mr.File.Save(bfile, Header.Filename)
+			if err != nil {
+				mr.logger.Error("Error saving file: " + err.Error())
+				http.Error(w, "Error saving file", http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		mr.logger.Error("Error parsing form: " + err.Error())
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
+
+	request.Name = r.FormValue("name")
+	request.Description = r.FormValue("description")
+	request.WebsiteLink = r.FormValue("website_link")
+	request.Budget = r.FormValue("budget")
+	request.TargetId = r.FormValue("target_id")
 
 	uidAny := r.Context().Value("userId")
 	uid, ok := uidAny.(int)
@@ -32,27 +59,6 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		mr.logger.Error("user id is not an integer")
 		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
-	}
-
-	var image string
-	err := r.ParseMultipartForm(10 << 20) // 10 MB - максимальный размер файла
-	if err == nil {
-		file, Header, err := r.FormFile("image")
-		defer file.Close()
-
-		bfile, err := io.ReadAll(file)
-		if err != nil {
-			mr.logger.Error("Error reading file: " + err.Error())
-			http.Error(w, "Error reading file", http.StatusInternalServerError)
-			return
-		}
-
-		image, err = mr.File.Save(bfile, Header.Filename)
-		if err != nil {
-			mr.logger.Error("Error saving file: " + err.Error())
-			http.Error(w, "Error saving file", http.StatusInternalServerError)
-			return
-		}
 	}
 
 	//userId, err := mr.Session.GetUserId(request.Token)
@@ -90,7 +96,6 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ad := entities.Ad{
-		//Id:           1,
 		Name:         request.Name,
 		Description:  request.Description,
 		Website_link: request.WebsiteLink,

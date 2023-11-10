@@ -29,10 +29,10 @@ func (repo *FileRepository) GenerateUniqueFileName(originalName string) string {
 func (repo *FileRepository) Save(fileData []byte, originalName string) (string, error) {
 	uniqueFileName := repo.GenerateUniqueFileName(originalName)
 	filePath := repo.getFilePath(uniqueFileName)
-	wd, _ := os.Getwd()
+	//wd, _ := os.Getwd()
 	err := os.WriteFile(filePath, fileData, 0644)
 	if err != nil {
-		return "", fmt.Errorf("%s", wd)
+		return "", fmt.Errorf("%s", err.Error())
 	}
 
 	return uniqueFileName, nil
