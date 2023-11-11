@@ -17,9 +17,10 @@ type AdRouter struct {
 	Session entities.SessionUseCaseInterface
 	File    entities.FileUseCaseInterface
 	Balance entities.BalanceUseCaseInterface
+	User    entities.UserUseCaseInterface
 }
 
-func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
+func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
 	return &AdRouter{
 		addr:    addr,
 		router:  r,
@@ -28,6 +29,7 @@ func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, S
 		Session: SessionUC,
 		Balance: BalanceUC,
 		File:    FileUC,
+		User:    UserUC,
 	}
 }
 

@@ -49,7 +49,13 @@ func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.
 	}
 
 	// Получение текущего баланса
-	currentBalance, err := br.Balance.BalanceRead(userId)
+	user, err := br.User.UserReadById(userId)
+	if err != nil {
+		br.logger.Error("Error retrieving user: " + err.Error())
+		http.Error(w, "Error retrieving user", http.StatusInternalServerError)
+		return
+	}
+	currentBalance, err := br.Balance.BalanceRead(user.BalanceId)
 	if err != nil {
 		br.logger.Error("Error retrieving current balance: " + err.Error())
 		http.Error(w, "Error retrieving balance", http.StatusInternalServerError)
