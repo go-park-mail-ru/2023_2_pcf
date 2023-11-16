@@ -3,7 +3,7 @@ package middleware
 import "net/http"
 
 const (
-	front_addr = "http://adhub.store:8082"
+	front_addr = "http://127.0.0.1"
 )
 
 func CORS(next http.Handler) http.Handler {
