@@ -1,25 +1,26 @@
 package router
 
 import (
+	"AdHub/internal/pkg/entities"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 func (tr *TargetRouter) UpdateTargetHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Id        int     `json:"id"`
-		Name      *string `json:"name,omitempty"`
-		Gender    *string `json:"gender,omitempty"`
-		MinAge    *int    `json:"min_age,omitempty"`
-		MaxAge    *int    `json:"max_age,omitempty"`
-		Interests string  `json:"interests,omitempty"`
-		Tags      string  `json:"tags,omitempty"`
-		Keys      string  `json:"keys,omitempty"`
-		Regions   string  `json:"regions,omitempty"`
+		Id        int    `json:"id"`
+		Name      string `json:"name"`
+		Gender    string `json:"gender"`
+		MinAge    string `json:"min_age"`
+		MaxAge    string `json:"max_age"`
+		Interests string `json:"interests"`
+		Tags      string `json:"tags"`
+		Keys      string `json:"keys"`
+		Regions   string `json:"regions"`
 	}
 
-	// Получение данных из запроса
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		tr.logger.Error("Invalid request body: " + err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -28,12 +29,42 @@ func (tr *TargetRouter) UpdateTargetHandler(w http.ResponseWriter, r *http.Reque
 	defer r.Body.Close()
 
 	// Получение айди пользователя из сессии
-	uidAny := r.Context().Value("userid")
+	uidAny := r.Context().Value("userId")
 	userId, ok := uidAny.(int)
 	if !ok {
 		tr.logger.Error("user id is not an integer")
 		http.Error(w, "auth error", http.StatusInternalServerError)
 		return
+	}
+
+	interests := strings.Split(request.Interests, ", ")
+	tags := strings.Split(request.Tags, ", ")
+	keys := strings.Split(request.Keys, ", ")
+	regions := strings.Split(request.Regions, ", ")
+	min, err := strconv.Atoi(request.MinAge)
+	if err != nil {
+		tr.logger.Error("Invalid min age: " + err.Error())
+		http.Error(w, "Invalid min age", http.StatusBadRequest)
+		return
+	}
+
+	max, err := strconv.Atoi(request.MaxAge)
+	if err != nil {
+		tr.logger.Error("Invalid max age: " + err.Error())
+		http.Error(w, "Invalid max age", http.StatusBadRequest)
+		return
+	}
+
+	newTarget := entities.Target{
+		Name:      request.Name,
+		Owner_id:  userId,
+		Gender:    request.Gender,
+		Min_age:   min,
+		Max_age:   max,
+		Interests: interests,
+		Tags:      tags,
+		Keys:      keys,
+		Regions:   regions,
 	}
 
 	// Получение текущего таргета из бд
@@ -52,17 +83,17 @@ func (tr *TargetRouter) UpdateTargetHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Обновление полей
-	if request.Name != nil {
-		currentTarget.Name = *request.Name
+	if request.Name != "" {
+		currentTarget.Name = newTarget.Name
 	}
-	if request.Gender != nil {
-		currentTarget.Gender = *request.Gender
+	if request.Gender != "" {
+		currentTarget.Gender = newTarget.Gender
 	}
-	if request.MinAge != nil {
-		currentTarget.Min_age = *request.MinAge
+	if request.MinAge != "" {
+		currentTarget.Min_age = newTarget.Min_age
 	}
-	if request.MaxAge != nil {
-		currentTarget.Max_age = *request.MaxAge
+	if request.MaxAge != "" {
+		currentTarget.Max_age = newTarget.Max_age
 	}
 	if request.Interests != "" {
 		currentTarget.Interests = strings.Split(request.Interests, ", ")
