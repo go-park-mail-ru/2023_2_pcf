@@ -41,4 +41,17 @@ CREATE TABLE "target" (
     keys TEXT DEFAULT NULL,
     regions TEXT DEFAULT NULL,
     interests TEXT DEFAULT NULL
+    FOREIGN KEY (owner_id) REFERENCES "user" (id),
+);
+
+CREATE TABLE "pad" (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    owner_id INT,
+    target_id INT,
+    website_link TEXT NOT NULL,
+    price DECIMAL DEFAULT 0.0 NOT NULL,
+    description TEXT DEFAULT NULL,
+    FOREIGN KEY (owner_id) REFERENCES "user" (id),
+    FOREIGN KEY (target_id) REFERENCES "target" (id)
 );

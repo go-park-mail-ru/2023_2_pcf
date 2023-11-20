@@ -3,6 +3,7 @@ package server
 import (
 	AdRouter "AdHub/internal/pkg/delivery/router/ad"
 	BalanceRouter "AdHub/internal/pkg/delivery/router/balance"
+	PadRouter "AdHub/internal/pkg/delivery/router/pad"
 	PublicRouter "AdHub/internal/pkg/delivery/router/public"
 	TargetRouter "AdHub/internal/pkg/delivery/router/target"
 	UserRouter "AdHub/internal/pkg/delivery/router/user"
@@ -10,6 +11,7 @@ import (
 	"AdHub/internal/pkg/usecases/ad"
 	"AdHub/internal/pkg/usecases/balance"
 	"AdHub/internal/pkg/usecases/file"
+	"AdHub/internal/pkg/usecases/pad"
 	"AdHub/internal/pkg/usecases/session"
 	"AdHub/internal/pkg/usecases/target"
 	"AdHub/internal/pkg/usecases/user"
@@ -57,6 +59,10 @@ func (s *HTTPServer) Start() error {
 	if err != nil {
 		log.Error("Target repo error: " + err.Error())
 	}
+	PadRepo, err := repo.NewPadRepo(DB)
+	if err != nil {
+		log.Error("Pad repo error: " + err.Error())
+	}
 
 	FileUC := file.New(FileRepo)
 	SessionUC := session.New(SessionRepo)
@@ -64,10 +70,12 @@ func (s *HTTPServer) Start() error {
 	UserUC := user.New(UserRepo)
 	BalanceUC := balance.New(BalanceRepo)
 	TargetUC := target.New(TargetRepo)
+	PadUC := pad.New(PadRepo)
 	rout := mux.NewRouter()
 
 	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionUC, FileUC, BalanceUC, log)
 	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionUC, FileUC, BalanceUC, log)
+	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionUC, FileUC, BalanceUC, PadUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionUC, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionUC, log)
 	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, log)
@@ -78,6 +86,7 @@ func (s *HTTPServer) Start() error {
 	AdRouter.ConfigureRouter(adrouter)
 	BalanceRouter.ConfigureRouter(balancerouter)
 	TargetRouter.ConfigureRouter(targetrouter)
+	PadRouter.ConfigureRouter(padrouter)
 	PublicRouter.ConfigureRouter(publicRouter)
 
 	log.Info("Starting API sever on " + s.config.BindAddr)
