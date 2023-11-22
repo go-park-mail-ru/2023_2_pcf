@@ -14,16 +14,18 @@ type UserRouter struct {
 	logger  logger.Logger
 	User    entities.UserUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	Csrf    entities.CsrfUseCaseInterface
 	Balance entities.BalanceUseCaseInterface
 	File    entities.FileUseCaseInterface
 }
 
-func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *UserRouter {
+func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, CsrfUC entities.CsrfUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *UserRouter {
 	return &UserRouter{
 		logger:  log,
 		router:  r,
 		User:    UserUC,
 		Session: SessionUC,
+		Csrf:    CsrfUC,
 		Balance: BalanceUC,
 		File:    FileUC,
 	}
@@ -40,7 +42,7 @@ func ConfigureRouter(ur *UserRouter) {
 	ur.router.HandleFunc("/file", ur.FileHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
-	ur.router.Use(middleware.Auth(ur.Session))
+	ur.router.Use(middleware.Auth(ur.Session, ur.Csrf))
 	ur.router.Use(middleware.Logger(ur.logger))
 	ur.router.Use(middleware.Recover(ur.logger))
 }
