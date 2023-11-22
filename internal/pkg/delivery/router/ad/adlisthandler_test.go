@@ -54,7 +54,7 @@ func TestAdListHandler(t *testing.T) {
 	mockAdUseCase.EXPECT().AdReadList(userId).Return(fakeAds, nil)
 
 	req, _ := http.NewRequest("GET", "/ad/list", nil)
-	req = req.WithContext(context.WithValue(req.Context(), "userid", userId))
+	req = req.WithContext(context.WithValue(req.Context(), "userId", userId))
 
 	rr := httptest.NewRecorder()
 
