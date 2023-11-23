@@ -2,17 +2,18 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/middleware"
-
 	"AdHub/pkg/logger"
+	"AdHub/pkg/middleware"
+	"AdHub/proto/api"
 
 	"github.com/gorilla/mux"
 )
 
 type PublicRouter struct {
-	router *mux.Router
-	logger logger.Logger
-	Ad     entities.AdUseCaseInterface
+	router   *mux.Router
+	logger   logger.Logger
+	Ad       entities.AdUseCaseInterface
+	SelectUC api.SelectClient
 }
 
 func NewPublicRouter(r *mux.Router, AdUC entities.AdUseCaseInterface, log logger.Logger) *PublicRouter {

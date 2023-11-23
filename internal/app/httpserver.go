@@ -65,8 +65,11 @@ func (s *HTTPServer) Start() error {
 		log.Error("Auth Micro Service: " + err.Error())
 	}
 
+	selectconn, err := grpc.Dial(s.config.SelectBindAddr, grpc.WithInsecure())
+
 	FileUC := file.New(FileRepo)
 	SessionMS := api.NewSessionClient(authconn)
+	SelectMS := api.NewSelectClient(selectconn)
 	AdUC := ad.New(AdRepo)
 	UserUC := user.New(UserRepo)
 	BalanceUC := balance.New(BalanceRepo)
@@ -79,7 +82,7 @@ func (s *HTTPServer) Start() error {
 	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, PadUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionMS, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
-	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, log)
+	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, SelectMS, log)
 
 	http.Handle("/", rout)
 

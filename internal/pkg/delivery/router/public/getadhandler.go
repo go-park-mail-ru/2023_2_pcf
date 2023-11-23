@@ -15,10 +15,11 @@ func (mr *AdRouter) AdBannerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ad, err := mr.Ad.AdRead(adID)
+	ad, err := mr.Ad.AdReadTarget(adID)
 	fmt.Println(ad)
 	uniqueLink := mr.addr + "/api/v1/redirect?id=" + adIDStr
 
+	id := mr.SelectUC.Get()
 	data := struct {
 		Link     string
 		ImageURL string
