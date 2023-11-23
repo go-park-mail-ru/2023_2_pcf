@@ -6,6 +6,8 @@ import (
 
 	"AdHub/pkg/logger"
 
+	"AdHub/proto/api"
+
 	"github.com/gorilla/mux"
 )
 
@@ -13,11 +15,11 @@ type BalanceRouter struct {
 	router  *mux.Router
 	logger  logger.Logger
 	Balance entities.BalanceUseCaseInterface
-	Session entities.SessionUseCaseInterface
+	Session api.SessionClient
 	User    entities.UserUseCaseInterface
 }
 
-func NewBalanceRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *BalanceRouter {
+func NewBalanceRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, SessionUC api.SessionClient, log logger.Logger) *BalanceRouter {
 	return &BalanceRouter{
 		logger:  log,
 		router:  r,

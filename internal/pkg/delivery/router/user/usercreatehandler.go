@@ -2,6 +2,8 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
+	"AdHub/proto/api"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -61,7 +63,7 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	newSession, err := mr.Session.Auth(newUser)
+	newSession, err := mr.Session.Auth(context.Background(), &api.AuthRequest{Id: int64(newUser.Id), Login: newUser.Login, Password: newUser.Password, FName: newUser.FName, LName: newUser.LName, CompanyName: newUser.CompanyName, Avatar: newUser.Avatar, BalanceId: int64(newUser.BalanceId)})
 	if err != nil {
 		mr.logger.Error("Error while token generation" + err.Error())
 		http.Error(w, "Error while token gen", http.StatusInternalServerError)
@@ -70,7 +72,7 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 	//Кукисет и возврат ответа (успех)
 	cookie := &http.Cookie{
 		Name:     "session_token",
-		Value:    newSession.Token,
+		Value:    newSession.GetToken(),
 		Expires:  time.Now().Add(10 * time.Hour),
 		HttpOnly: true,
 		Domain:   "127.0.0.1",

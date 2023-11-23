@@ -17,4 +17,10 @@ test-cvg:
 	go tool cover -func coverage.out | grep total:
 	rm coverage.out
 
+.PHONY: proto
+proto:
+	protoc -I proto --go_out=proto proto/auth.proto && protoc -I proto --go-grpc_out=proto proto/auth.proto
+
+
+
 .DEFAULT_GOAL := docker

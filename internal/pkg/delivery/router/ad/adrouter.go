@@ -2,9 +2,9 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/middleware"
-
 	"AdHub/pkg/logger"
+	"AdHub/pkg/middleware"
+	"AdHub/proto/api"
 
 	"github.com/gorilla/mux"
 )
@@ -14,13 +14,13 @@ type AdRouter struct {
 	router  *mux.Router
 	logger  logger.Logger
 	Ad      entities.AdUseCaseInterface
-	Session entities.SessionUseCaseInterface
+	Session api.SessionClient
 	File    entities.FileUseCaseInterface
 	Balance entities.BalanceUseCaseInterface
 	User    entities.UserUseCaseInterface
 }
 
-func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
+func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC api.SessionClient, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
 	return &AdRouter{
 		addr:    addr,
 		router:  r,

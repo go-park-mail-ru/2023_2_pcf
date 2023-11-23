@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"AdHub/internal/pkg/entities"
+	"AdHub/proto/api"
 	"context"
 	"net/http"
 )
 
-func Auth(ss entities.SessionUseCaseInterface) func(next http.Handler) http.Handler {
+func Auth(ss api.SessionClient) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/api/v1/auth" {
@@ -24,13 +24,13 @@ func Auth(ss entities.SessionUseCaseInterface) func(next http.Handler) http.Hand
 				return
 			}
 
-			userId, err := ss.GetUserId(sessionToken.Value)
+			userId, err := ss.GetUserId(context.Background(), &api.GetRequest{Token: sessionToken.Value})
 			if err != nil {
 				http.Error(w, "User not found", http.StatusUnauthorized)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "userId", userId)
+			ctx := context.WithValue(r.Context(), "userId", int(userId.GetId()))
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

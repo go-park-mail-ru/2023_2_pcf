@@ -1,18 +1,29 @@
 version: '3'
 
 services:
+  authms:
+    build: 
+      context: ./
+      dockerfile: AuthDockerfile
+    command: ./authms
+    ports:
+      - 8082:8082
+    depends_on:
+      redis:
+        condition: service_healthy
+    links:
+      - redis 
+
   apiserver:
-    build: ./
+    build: 
+      context: ./
+      dockerfile: Dockerfile
     command: ./apiserver
     ports:
       - 8080:8080
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-    links:
-      - redis 
 
   db:
     restart: always

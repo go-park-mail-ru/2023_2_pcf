@@ -6,6 +6,8 @@ import (
 
 	"AdHub/pkg/logger"
 
+	"AdHub/proto/api"
+
 	"github.com/gorilla/mux"
 )
 
@@ -14,14 +16,14 @@ type PadRouter struct {
 	router  *mux.Router
 	logger  logger.Logger
 	Ad      entities.AdUseCaseInterface
-	Session entities.SessionUseCaseInterface
+	Session api.SessionClient
 	File    entities.FileUseCaseInterface
 	Balance entities.BalanceUseCaseInterface
 	User    entities.UserUseCaseInterface
 	Pad     entities.PadUseCaseInterface
 }
 
-func NewPadRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, PadUC entities.PadUseCaseInterface, log logger.Logger) *PadRouter {
+func NewPadRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC api.SessionClient, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, PadUC entities.PadUseCaseInterface, log logger.Logger) *PadRouter {
 	return &PadRouter{
 		addr:    addr,
 		router:  r,

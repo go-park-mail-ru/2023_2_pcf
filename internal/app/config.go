@@ -5,6 +5,7 @@ import (
 )
 
 type Config struct {
+	AuthBindAddr   string `toml:"auth_bind_addr"`
 	BindAddr       string `toml:"bind_addr"`
 	DataBase       string `toml:"database_url"`
 	LogLevel       string `toml:"log_level"`
@@ -29,6 +30,7 @@ func Parse(configPath string) error {
 
 func NewConfig() *Config {
 	return &Config{
+		AuthBindAddr:   viper.GetString("auth_bind_addr"),
 		BindAddr:       viper.GetString("bind_addr"),
 		DataBase:       viper.GetString("database_url"),
 		LogLevel:       viper.GetString("log_level"),

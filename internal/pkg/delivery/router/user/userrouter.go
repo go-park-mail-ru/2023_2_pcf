@@ -6,6 +6,8 @@ import (
 
 	"AdHub/pkg/logger"
 
+	"AdHub/proto/api"
+
 	"github.com/gorilla/mux"
 )
 
@@ -13,12 +15,12 @@ type UserRouter struct {
 	router  *mux.Router
 	logger  logger.Logger
 	User    entities.UserUseCaseInterface
-	Session entities.SessionUseCaseInterface
+	Session api.SessionClient
 	Balance entities.BalanceUseCaseInterface
 	File    entities.FileUseCaseInterface
 }
 
-func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *UserRouter {
+func NewUserRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, SessionUC api.SessionClient, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *UserRouter {
 	return &UserRouter{
 		logger:  log,
 		router:  r,
