@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+option go_package = "./api;api";
+
+package proto;
+
+
+service Select {
+  rpc Get(SelectRequests) returns (SelectResponse) {}
+}
+
+message SelectRequest {
+    int64 Id = 1;
+    string Name = 2;
+    string Description = 3;
+    string Website_link = 4;
+    float Budget = 5;
+    int64 Target_id = 6;
+    string Image_link = 7;
+    int64 Owner_id = 8;
+    int64 Click_cost = 9;
+}
+
+message SelectResponse {
+    int64 Id = 1;
+    string Name = 2;
+    string Description = 3;
+    string Website_link = 4;
+    float Budget = 5;
+    int64 Target_id = 6;
+    string Image_link = 7;
+    int64 Owner_id = 8;
+    int64 Click_cost = 9;
+}
+
+message SelectRequests {
+  repeated SelectRequest requests = 1;
+
+  message AdTarget {
+    int64 Id = 1;
+    string Name = 2;
+    int64 Owner_id = 3;
+    string Gender = 4;
+    int64 Min_age = 5;
+    int64 Max_age = 6;
+    repeated string Interests = 7;
+    repeated string Tags = 8;
+    repeated string Keys = 9;
+    repeated string Regions = 10;
+  }
+
+  message Pad {
+    int64 Id = 1;
+    string Name = 2;
+    string Description = 3;
+    string Website_link = 4;
+    float Price = 5;
+    int64 Target_id = 6;
+    int64 Owner_id = 7;
+    int64 Clicks = 8;
+  }
+
+  message PadTarget {
+    int64 Id = 1;
+    string Name = 2;
+    int64 Owner_id = 3;
+    string Gender = 4;
+    int64 Min_age = 5;
+    int64 Max_age = 6;
+    repeated string Interests = 7;
+    repeated string Tags = 8;
+    repeated string Keys = 9;
+    repeated string Regions = 10;
+  }
+
+
+}

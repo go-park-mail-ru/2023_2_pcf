@@ -23,6 +23,7 @@ CREATE TABLE "ad" (
     description TEXT DEFAULT NULL,
     website_link TEXT NOT NULL,
     budget DECIMAL DEFAULT 0.0 NOT NULL,
+    click_cost DECIMAL DEFAULT 0.0 NOT NULL,
     target_id INT,
     image_link TEXT NOT NULL,
     owner_id INT,
@@ -46,6 +47,7 @@ CREATE TABLE "target" (
 
 CREATE TABLE "pad" (
     id SERIAL PRIMARY KEY,
+    clicks INT DEFAULT 0,
     name TEXT NOT NULL,
     owner_id INT,
     target_id INT,

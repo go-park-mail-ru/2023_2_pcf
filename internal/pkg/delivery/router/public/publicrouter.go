@@ -25,6 +25,7 @@ func NewPublicRouter(r *mux.Router, AdUC entities.AdUseCaseInterface, log logger
 
 func ConfigureRouter(ar *PublicRouter) {
 	ar.router.HandleFunc("/redirect", ar.RedirectHandler).Methods("GET", "OPTIONS")
+	ar.router.HandleFunc("/aduniquelink", ar.AdBannerHandler).Methods("GET", "OPTIONS")
 
 	ar.router.Use(middleware.Pub_CORS)
 	ar.router.Use(middleware.Logger(ar.logger))
