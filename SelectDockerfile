@@ -1,0 +1,13 @@
+FROM golang:latest AS select-builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o /app/select ./cmd/select/main.go
+
+# Финальный образ для auth
+FROM debian AS authms
+WORKDIR /app
+COPY --from=select-builder /app/select ./select
+COPY ./configs ./configs
+CMD ["./select"]
