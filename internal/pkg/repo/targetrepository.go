@@ -84,6 +84,10 @@ func (r *TargetRepository) getByOwner(id int) (*sql.Rows, error) {
 	return r.store.Db().Query("SELECT id, name, owner_id, gender, min_age, max_age, tags, regions, interests, keys FROM \"target\" WHERE owner_id=$1;", id)
 }
 
+func (r *TargetRepository) getRandom() (*sql.Rows, error) {
+	return r.store.Db().Query("SELECT id, name, owner_id, gender, min_age, max_age, tags, regions, interests, keys FROM \"target\" LIMIT 500;")
+}
+
 func (r *TargetRepository) Read(id int) (*entities.Target, error) {
 	rows, err := r.get(id)
 	if err != nil {
@@ -123,6 +127,45 @@ func (r *TargetRepository) Read(id int) (*entities.Target, error) {
 
 func (r *TargetRepository) ReadList(id int) ([]*entities.Target, error) {
 	rows, err := r.getByOwner(id)
+	if err != nil {
+		log.Printf("Error GET target")
+		return nil, err
+	}
+	defer rows.Close()
+
+	var targets []*entities.Target
+
+	for rows.Next() {
+		var target entities.Target
+		var tagsStr, regionsStr, interestsStr, keysStr string
+		err := rows.Scan(&target.Id, &target.Name, &target.Owner_id, &target.Gender, &target.Min_age, &target.Max_age, &tagsStr, &regionsStr, &interestsStr, &keysStr)
+		if err != nil {
+			return nil, err
+		}
+
+		target.Name = template.HTMLEscapeString(target.Name)
+		tagsStr = template.HTMLEscapeString(tagsStr)
+		regionsStr = template.HTMLEscapeString(regionsStr)
+		interestsStr = template.HTMLEscapeString(interestsStr)
+		keysStr = template.HTMLEscapeString(keysStr)
+
+		target.Tags = splitTags(tagsStr)
+		target.Regions = splitTags(regionsStr)
+		target.Interests = splitTags(interestsStr)
+		target.Keys = splitTags(keysStr)
+
+		targets = append(targets, &target)
+	}
+
+	if len(targets) == 0 {
+		return nil, fmt.Errorf("No targets found")
+	}
+
+	return targets, nil
+}
+
+func (r *TargetRepository) ReadRandom() ([]*entities.Target, error) {
+	rows, err := r.getRandom()
 	if err != nil {
 		log.Printf("Error GET target")
 		return nil, err

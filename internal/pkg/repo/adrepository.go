@@ -99,6 +99,10 @@ func (r *AdRepository) getOne(id int) (*sql.Rows, error) {
 	return r.store.Db().Query("SELECT id, name, description, website_link, budget, target_id, image_link, owner_id, click_cost FROM \"ad\" WHERE id=$1;", id)
 }
 
+func (r *AdRepository) getTarget(id int) (*sql.Rows, error) {
+	return r.store.Db().Query("SELECT id, name, description, website_link, budget, target_id, image_link, owner_id, click_cost FROM \"ad\" WHERE target_id=$1;", id)
+}
+
 func (r *AdRepository) Get(id int) (*entities.Ad, error) {
 	rows, err := r.getOne(id)
 	if err != nil {
@@ -122,6 +126,34 @@ func (r *AdRepository) Get(id int) (*entities.Ad, error) {
 		ad.Image_link = template.HTMLEscapeString(ad.Image_link)
 
 		ads = ad
+	}
+
+	return ads, nil
+}
+
+func (r *AdRepository) ReaByTarget(id int) ([]*entities.Ad, error) {
+	rows, err := r.getTarget(id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var ads []*entities.Ad
+
+	for rows.Next() {
+		ad := &entities.Ad{}
+		err := rows.Scan(&ad.Id, &ad.Name, &ad.Description, &ad.Website_link, &ad.Budget, &ad.Target_id, &ad.Image_link, &ad.Owner_id, &ad.Click_cost)
+		if err != nil {
+			return nil, err
+		}
+
+		ad.Name = template.HTMLEscapeString(ad.Name)
+		ad.Description = template.HTMLEscapeString(ad.Description)
+		ad.Website_link = template.HTMLEscapeString(ad.Website_link)
+		ad.Image_link = template.HTMLEscapeString(ad.Image_link)
+
+		ads = append(ads, ad)
 	}
 
 	return ads, nil

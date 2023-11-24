@@ -33,3 +33,7 @@ func (uc *TargetUseCase) TargetReadList(id int) ([]*entities.Target, error) {
 func (uc *TargetUseCase) TargetUpdate(s *entities.Target) error {
 	return uc.repo.Update(s)
 }
+
+func (uc *TargetUseCase) TargetRandom() ([]*entities.Target, error) {
+	return uc.repo.ReadRandom()
+}

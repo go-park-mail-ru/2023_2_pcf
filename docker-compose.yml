@@ -1,14 +1,6 @@
 version: '3'
 
 services:
-  select:
-    build: 
-      context: ./
-      dockerfile: SelectDockerfile
-    command: ./select
-    ports:
-      - 8083:8083
-      
   authms:
     build: 
       context: ./
@@ -21,6 +13,14 @@ services:
         condition: service_healthy
     links:
       - redis 
+
+  select:
+    build: 
+      context: ./
+      dockerfile: SelectDockerfile
+    command: ./selectms
+    ports:
+      - 8083:8083
 
   apiserver:
     build: 

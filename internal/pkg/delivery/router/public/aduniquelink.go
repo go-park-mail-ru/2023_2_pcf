@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func (mr *AdRouter) AdBannerHandler(w http.ResponseWriter, r *http.Request) {
+func (mr *PublicRouter) AdBannerHandler(w http.ResponseWriter, r *http.Request) {
 	adIDStr := r.URL.Query().Get("id")
 	adID, err := strconv.Atoi(adIDStr)
 	if err != nil {
