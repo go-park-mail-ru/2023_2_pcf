@@ -1,19 +1,32 @@
 package router
 
 import (
+	"AdHub/internal/pkg/entities"
 	"fmt"
 	"net/http"
-	"strconv"
+
+	"github.com/google/uuid"
 )
 
 func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	adIDStr := r.URL.Query().Get("id")
-	if adIDStr == "" {
-		http.Error(w, "Ad ID is missing", http.StatusBadRequest)
+	Token := r.URL.Query().Get("id")
+	if Token == "" {
+		http.Error(w, "Ad token is missing", http.StatusBadRequest)
 		return
 	}
 
-	adID, err := strconv.Atoi(adIDStr)
+	adID, err := mr.ULink.GetAdId(Token)
+
+	mr.ULink.ULinkRemove(&entities.ULink{
+		Token: Token,
+		AdId:  adID,
+	})
+	token := uuid.New().String()
+
+	mr.ULink.ULinkCreate(&entities.ULink{
+		Token: token,
+		AdId:  adID,
+	})
 
 	ad, err := mr.Ad.AdRead(adID)
 	if err != nil {

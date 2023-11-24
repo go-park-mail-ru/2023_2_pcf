@@ -153,7 +153,9 @@ func (r *AdRepository) ReaByTarget(id int) ([]*entities.Ad, error) {
 		ad.Website_link = template.HTMLEscapeString(ad.Website_link)
 		ad.Image_link = template.HTMLEscapeString(ad.Image_link)
 
-		ads = append(ads, ad)
+		if ad.Budget > 0 {
+			ads = append(ads, ad)
+		}
 	}
 
 	return ads, nil

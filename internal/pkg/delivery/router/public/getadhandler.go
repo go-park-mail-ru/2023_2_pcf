@@ -1,11 +1,14 @@
 package router
 
 import (
+	"AdHub/internal/pkg/entities"
 	"AdHub/proto/api"
 	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
@@ -73,9 +76,16 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid get ad by target", http.StatusBadRequest)
 		return
 	}
-	ad := ads[0]
 
-	uniqueLink := mr.addr + "/api/v1/redirect?id=" + strconv.Itoa(ad.Id)
+	ad := ads[0]
+	token := uuid.New().String()
+
+	mr.ULink.ULinkCreate(&entities.ULink{
+		Token: token,
+		AdId:  0,
+	})
+
+	uniqueLink := mr.addr + "/api/v1/redirect?id=" + token
 	data := struct {
 		Link     string
 		ImageURL string

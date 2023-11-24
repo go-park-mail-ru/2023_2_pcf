@@ -13,7 +13,9 @@ import (
 	"AdHub/internal/pkg/usecases/file"
 	"AdHub/internal/pkg/usecases/pad"
 	"AdHub/internal/pkg/usecases/target"
+	"AdHub/internal/pkg/usecases/ulink"
 	"AdHub/internal/pkg/usecases/user"
+	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/db"
 	"AdHub/pkg/logger"
 	"net/http"
@@ -37,6 +39,14 @@ func New(config *Config) *HTTPServer {
 func (s *HTTPServer) Start() error {
 	log := logger.NewLogrusLogger(s.config.LogLevel)
 	DB := db.New(s.config.DataBase)
+	Redis := SessionStorage.New(s.config.Redis_addr, s.config.Redis_password, s.config.Redis_db_ul)
+
+	ULinkRepo, err := repo.NewULinkRepo(Redis)
+	if err != nil {
+		log.Error("Ad repo error: " + err.Error())
+	}
+
+	ULinkUC := ulink.New(ULinkRepo)
 
 	FileRepo := repo.NewFileRepository(s.config.File_path)
 	UserRepo, err := repo.NewUserRepo(DB)
@@ -82,7 +92,7 @@ func (s *HTTPServer) Start() error {
 	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, PadUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionMS, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
-	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, AdUC, TargetUC, PadUC, SelectMS, log)
+	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, ULinkUC, AdUC, TargetUC, PadUC, SelectMS, log)
 
 	http.Handle("/", rout)
 
