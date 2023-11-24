@@ -4,8 +4,6 @@ import (
 	"AdHub/internal/pkg/entities"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +17,6 @@ func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) 
 
 	mr.ULink.ULinkRemove(&entities.ULink{
 		Token: Token,
-		AdId:  adID,
-	})
-	token := uuid.New().String()
-
-	mr.ULink.ULinkCreate(&entities.ULink{
-		Token: token,
 		AdId:  adID,
 	})
 
