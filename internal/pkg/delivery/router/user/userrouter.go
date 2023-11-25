@@ -40,6 +40,7 @@ func ConfigureRouter(ur *UserRouter) {
 	ur.router.HandleFunc("/useredit", ur.UserUpdateHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/usergetbytoken", ur.GetUserByTokenHandler).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/file", ur.FileHandler).Methods("GET", "OPTIONS")
+	ur.router.HandleFunc("/isauthorised", ur.IsAuthorisedHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
 	ur.router.Use(middleware.Auth(ur.Session))

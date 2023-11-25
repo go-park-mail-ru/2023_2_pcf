@@ -17,6 +17,10 @@ func Auth(ss api.SessionClient) func(next http.Handler) http.Handler {
 				next.ServeHTTP(w, r)
 				return
 			}
+			if r.URL.Path == "/api/v1/isauthorised" {
+				next.ServeHTTP(w, r)
+				return
+			}
 
 			sessionToken, err := r.Cookie("session_token")
 			if err != nil {
