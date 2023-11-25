@@ -1,0 +1,13 @@
+FROM golang:latest AS survey-builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o /app/surveyms ./cmd/survey/main.go
+
+# Финальный образ для auth
+FROM debian AS survey
+WORKDIR /app
+COPY --from=survey-builder /app/surveyms ./surveyms
+COPY ./configs ./configs
+CMD ["./surveyms"]
