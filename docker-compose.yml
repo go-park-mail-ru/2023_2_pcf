@@ -35,6 +35,21 @@ services:
       redis:
         condition: service_healthy
     links:
+      - redis
+
+  surveyms:
+    build: 
+      context: ./
+      dockerfile: SurveyDockerfile
+    command: ./surveyms
+    ports:
+      - 8084:8084
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    links:
       - redis 
 
   db:
@@ -64,3 +79,21 @@ services:
       interval: 5s
       timeout: 2s
       retries: 3
+
+  survey_db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./survey/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_PORT: 5434
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "zxc123"
+      POSTGRES_DB: "survey"
+    ports:
+      - 5434:5434
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "survey", "-U", "postgres"]
+      interval: 5s
+      retries: 10
+
