@@ -85,7 +85,7 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 		AdId:  0,
 	})
 
-	uniqueLink := mr.addr + "/api/v1/redirect?id=" + token
+	uniqueLink := mr.addr + "/api/v1/redirect?id=" + token + "?pad=" + pad.Id
 	data := struct {
 		Link     string
 		ImageURL string

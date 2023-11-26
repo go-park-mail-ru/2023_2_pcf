@@ -49,6 +49,20 @@ func (mr *AdRouter) AdDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := mr.User.UserReadById(userId)
+	if err != nil {
+		mr.logger.Error("Error retrieving user: " + err.Error())
+		http.Error(w, "Error retrieving user", http.StatusInternalServerError)
+		return
+	}
+
+	err = mr.Balance.BalanceUP(ad.Budget, user.BalanceId)
+	if err != nil {
+		mr.logger.Error("Error balance return: " + err.Error())
+		http.Error(w, "Error balance return", http.StatusInternalServerError)
+		return
+	}
+
 	// Удаление
 	err = mr.Ad.AdRemove(request.AdID)
 	if err != nil {

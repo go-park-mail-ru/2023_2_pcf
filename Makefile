@@ -21,6 +21,4 @@ test-cvg:
 proto:
 	protoc -I proto --go_out=proto proto/auth.proto && protoc -I proto --go-grpc_out=proto proto/auth.proto && protoc -I proto --go_out=proto proto/select.proto && protoc -I proto --go-grpc_out=proto proto/select.proto
 
-
-
 .DEFAULT_GOAL := docker
