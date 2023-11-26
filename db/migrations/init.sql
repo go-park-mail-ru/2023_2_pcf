@@ -48,7 +48,7 @@ CREATE TABLE "target" (
 CREATE TABLE "pad" (
     id SERIAL PRIMARY KEY,
     clicks INT DEFAULT 0,
-    balance INT DEFAULt 0,
+    balance DECIMAL DEFAULT 0.0,
     name TEXT NOT NULL,
     owner_id INT,
     target_id INT,

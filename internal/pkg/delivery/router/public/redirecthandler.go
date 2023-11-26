@@ -32,7 +32,13 @@ func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) 
 		AdId:  adID,
 	})
 
-	pad, err := mr.Pad.PadRead(strconv.Atoi(padID))
+	pad_id, err := strconv.Atoi(padID)
+	if err != nil {
+		http.Error(w, "Padid cost to int error", http.StatusBadRequest)
+		return
+	}
+
+	pad, err := mr.Pad.PadRead(pad_id)
 	if err != nil {
 		http.Error(w, "Pad read missing", http.StatusBadRequest)
 		return
