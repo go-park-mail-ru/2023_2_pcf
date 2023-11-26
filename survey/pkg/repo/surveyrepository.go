@@ -83,3 +83,32 @@ func (r *SurveyRepository) Read(id int) (*entities.Survey, error) {
 
 	return surv, nil
 }
+
+func (r *SurveyRepository) getAll() (*sql.Rows, error) {
+	return r.store.Db().Query("SELECT id, type, question FROM \"survey\";")
+}
+
+func (r *SurveyRepository) ReadList() (*[]entities.Survey, error) {
+	rows, err := r.getAll()
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var surv *[]entities.Survey
+
+	for rows.Next() {
+		s := &entities.Survey{}
+		err = rows.Scan(&s.Id, &s.Type, &s.Question)
+		if err != nil {
+			return nil, err
+		}
+
+		s.Question = template.HTMLEscapeString(s.Question)
+
+		surv = append(surv, s)
+	}
+
+	return surv, nil
+}

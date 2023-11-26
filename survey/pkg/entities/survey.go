@@ -12,6 +12,7 @@ type SurveyRepoInterface interface {
 	Remove(id int) error
 	Update(s *Survey) error
 	Read(id int) (*Survey, error)
+	ReadList() (*[]Survey, error)
 }
 
 type SurveyUseCaseInterface interface {
@@ -19,4 +20,5 @@ type SurveyUseCaseInterface interface {
 	SurveyRead(id int) (*Survey, error)
 	SurveyRemove(id int) error
 	SurveyUpdate(s *Survey) error
+	SurveyList() (*[]Survey, error)
 }

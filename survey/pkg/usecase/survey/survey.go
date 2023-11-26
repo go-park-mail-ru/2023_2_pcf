@@ -29,3 +29,7 @@ func (uc *SurveyUseCase) SurveyRemove(id int) error {
 func (uc *SurveyUseCase) SurveyUpdate(s *entities.Survey) error {
 	return uc.repo.Update(s)
 }
+
+func (uc *SurveyUseCase) SurveyList() (*[]entities.Survey, error) {
+	return uc.repo.ReadList()
+}

@@ -32,6 +32,7 @@ func NewSurveyRouter(r *mux.Router, SurveyUC entities.SurveyUseCaseInterface, Se
 func ConfigureRouter(ur *SurveyRouter) {
 	ur.router.HandleFunc("/get", ur.GetSurvey).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/stat", ur.GetStat).Methods("GET", "OPTIONS")
+	ur.router.HandleFunc("/getList", ur.GetSurveyList).Methods("GET", "OPTIONS")
 	ur.router.HandleFunc("/rate", ur.RateCreateHandler).Methods("POST", "OPTIONS")
 	ur.router.HandleFunc("/survey", ur.SurveyCreateHandler).Methods("POST", "OPTIONS")
 
