@@ -8,17 +8,61 @@ import (
 	"context"
 	"errors"
 	"net"
+	"net/http"
 
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"time"
+
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+
+	"google.golang.org/grpc/status"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+var (
+	grpcRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "grpc_requests_total_select",
+			Help: "Number of gRPC requests.",
+		},
+		[]string{"service", "method", "status"},
+	)
+
+	grpcRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "grpc_request_duration_seconds_select",
+			Help:    "Duration of gRPC requests.",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"service", "method"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(grpcRequestsTotal)
+	prometheus.MustRegister(grpcRequestDuration)
+}
+
+func UnaryServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	startTime := time.Now()
+	resp, err := handler(ctx, req)
+	duration := time.Since(startTime)
+
+	statusCode := status.Code(err).String()
+	service := info.FullMethod // You might want to parse this
+
+	grpcRequestsTotal.WithLabelValues(service, info.FullMethod, statusCode).Inc()
+	grpcRequestDuration.WithLabelValues(service, info.FullMethod).Observe(duration.Seconds())
+
+	return resp, err
+}
 
 // GRPCServer ...
 type GRPCServer struct {
 	config   *Config
 	SelectUC *selectuc.SelectUseCase
-	api.UnimplementedSessionServer
+	api.UnimplementedSelectServer
 }
 
 func New(config *Config) *GRPCServer {
@@ -30,30 +74,21 @@ func New(config *Config) *GRPCServer {
 func (s *GRPCServer) Start() error {
 	log := logger.NewLogrusLogger(s.config.LogLevel)
 
-	grpcServer := grpc.NewServer(
-		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
-		grpc.UnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
-	)
-	api.RegisterSessionServer(grpcServer, s)
-	reflection.Register(grpcServer)
-
-	listener, err := net.Listen("tcp", s.config.BindAddr)
+	serv := grpc.NewServer(grpc.UnaryInterceptor(UnaryServerInterceptor))
+	api.RegisterSelectServer(serv, s)
+	l, err := net.Listen("tcp", s.config.BindAddr)
 	if err != nil {
 		log.Error(err.Error())
 	}
-
 	s.SelectUC = selectuc.New()
 
-	grpc_prometheus.EnableHandlingTimeHistogram()
-
 	go func() {
-		if err := grpcServer.Serve(listener); err != nil {
-			log.Fatalf("Failed to serve: %v", err)
-		}
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":8085", nil)
 	}()
 
 	log.Info("Starting Select service on " + s.config.BindAddr)
-	return nil
+	return serv.Serve(l)
 }
 
 func (s *GRPCServer) Get(ctx context.Context, req *api.SelectRequests) (*api.SelectResponse, error) {

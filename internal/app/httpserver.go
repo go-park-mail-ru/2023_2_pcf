@@ -18,12 +18,13 @@ import (
 	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/db"
 	"AdHub/pkg/logger"
+	"AdHub/pkg/middleware"
+	"AdHub/proto/api"
 	"net/http"
 
-	"AdHub/proto/api"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/promhttp"
 	"google.golang.org/grpc"
 )
 
@@ -87,6 +88,7 @@ func (s *HTTPServer) Start() error {
 	TargetUC := target.New(TargetRepo)
 	PadUC := pad.New(PadRepo)
 	rout := mux.NewRouter()
+	rout.Use(middleware.MetricsMiddleware)
 
 	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionMS, FileUC, BalanceUC, log)
 	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, log)
@@ -95,7 +97,7 @@ func (s *HTTPServer) Start() error {
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
 	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, ULinkUC, AdUC, TargetUC, PadUC, SelectMS, log)
 	http.Handle("/", rout)
-	http.Handle("/metrics", promhttp.Handler())
+	rout.Handle("/metrics", promhttp.Handler())
 
 	UserRouter.ConfigureRouter(userrouter)
 	AdRouter.ConfigureRouter(adrouter)

@@ -8,12 +8,12 @@ scrape_configs:
 
   - job_name: 'apiserver'
     static_configs:
-      - targets: ['apiserver:8080/metrics']
+      - targets: ['apiserver:8080']
     
   - job_name: 'authms'
     static_configs:
-      - targets: ['authms:8082']
+      - targets: ['authms:8084']
 
   - job_name: 'select'
     static_configs:
-      - targets: ['select:8083']
+      - targets: ['select:8085']

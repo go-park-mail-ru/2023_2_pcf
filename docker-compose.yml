@@ -8,6 +8,7 @@ services:
     command: ./authms
     ports:
       - 8082:8082
+      - 8084:8084
     depends_on:
       redis:
         condition: service_healthy
@@ -21,6 +22,7 @@ services:
     command: ./selectms
     ports:
       - 8083:8083
+      - 8085:8085
 
   apiserver:
     build: 
@@ -71,6 +73,8 @@ services:
       - ./configs/prometheus:/etc/prometheus
     ports:
       - "9090:9090"
+    depends_on:
+      - apiserver
 
   grafana:
     image: grafana/grafana

@@ -7,14 +7,57 @@ import (
 	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/logger"
 	api "AdHub/proto/api"
-	context "context"
+	"context"
 	"net"
 	"net/http"
 
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/prometheus/client_golang/promhttp"
+	"time"
+
 	"google.golang.org/grpc"
+
+	"google.golang.org/grpc/status"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+var (
+	grpcRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "grpc_requests_total_auth",
+			Help: "Number of gRPC requests.",
+		},
+		[]string{"service", "method", "status"},
+	)
+
+	grpcRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "grpc_request_duration_seconds_auth",
+			Help:    "Duration of gRPC requests.",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"service", "method"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(grpcRequestsTotal)
+	prometheus.MustRegister(grpcRequestDuration)
+}
+
+func UnaryServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	startTime := time.Now()
+	resp, err := handler(ctx, req)
+	duration := time.Since(startTime)
+
+	statusCode := status.Code(err).String()
+	service := info.FullMethod // You might want to parse this
+
+	grpcRequestsTotal.WithLabelValues(service, info.FullMethod, statusCode).Inc()
+	grpcRequestDuration.WithLabelValues(service, info.FullMethod).Observe(duration.Seconds())
+
+	return resp, err
+}
 
 // GRPCServer ...
 type GRPCServer struct {
@@ -35,32 +78,25 @@ func (s *GRPCServer) Start() error {
 
 	SessionRepo, err := repo.NewSessionRepo(Redis)
 	if err != nil {
-		log.Error("Session repo error: " + err.Error())
+		log.Error("Ad repo error: " + err.Error())
 	}
 
 	s.SessionUC = session.New(SessionRepo)
 
-	grpcServer := grpc.NewServer(
-		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
-		grpc.UnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
-	)
-	api.RegisterSessionServer(grpcServer, s)
-
-	listener, err := net.Listen("tcp", s.config.BindAddr)
+	serv := grpc.NewServer(grpc.UnaryInterceptor(UnaryServerInterceptor))
+	api.RegisterSessionServer(serv, s)
+	l, err := net.Listen("tcp", s.config.BindAddr)
 	if err != nil {
 		log.Error(err.Error())
 	}
 
-	grpc_prometheus.EnableHandlingTimeHistogram()
-
 	go func() {
-		if err := grpcServer.Serve(listener); err != nil {
-			log.Fatalf("Failed to serve: %v", err)
-		}
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":8084", nil)
 	}()
 
-	log.Info("Starting Auth service on " + s.config.BindAddr)
-	return nil
+	log.Info("Starting Auth sevice on " + s.config.BindAddr)
+	return serv.Serve(l)
 }
 
 func (s *GRPCServer) Auth(ctx context.Context, req *api.AuthRequest) (*api.AuthResponse, error) {
@@ -89,8 +125,4 @@ func (s *GRPCServer) GetUserId(ctx context.Context, req *api.GetRequest) (*api.G
 		return nil, err
 	}
 	return &api.GetResponse{Id: int64(id)}, nil
-}
-
-func (s *GRPCServer) MetricsHandler() http.Handler {
-	return promhttp.Handler()
 }
