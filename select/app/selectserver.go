@@ -9,7 +9,9 @@ import (
 	"errors"
 	"net"
 
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // GRPCServer ...
@@ -28,16 +30,30 @@ func New(config *Config) *GRPCServer {
 func (s *GRPCServer) Start() error {
 	log := logger.NewLogrusLogger(s.config.LogLevel)
 
-	serv := grpc.NewServer()
-	api.RegisterSessionServer(serv, s)
-	l, err := net.Listen("tcp", s.config.BindAddr)
+	grpcServer := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
+		grpc.UnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
+	)
+	api.RegisterSessionServer(grpcServer, s)
+	reflection.Register(grpcServer)
+
+	listener, err := net.Listen("tcp", s.config.BindAddr)
 	if err != nil {
 		log.Error(err.Error())
 	}
+
 	s.SelectUC = selectuc.New()
 
-	log.Info("Starting Select sevice on " + s.config.BindAddr)
-	return serv.Serve(l)
+	grpc_prometheus.EnableHandlingTimeHistogram()
+
+	go func() {
+		if err := grpcServer.Serve(listener); err != nil {
+			log.Fatalf("Failed to serve: %v", err)
+		}
+	}()
+
+	log.Info("Starting Select service on " + s.config.BindAddr)
+	return nil
 }
 
 func (s *GRPCServer) Get(ctx context.Context, req *api.SelectRequests) (*api.SelectResponse, error) {

@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  - job_name: 'apiserver'
+    static_configs:
+      - targets: ['apiserver:8080/metrics']
+    
+  - job_name: 'authms'
+    static_configs:
+      - targets: ['authms:8082']
+
+  - job_name: 'select'
+    static_configs:
+      - targets: ['select:8083']

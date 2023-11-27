@@ -23,6 +23,7 @@ import (
 	"AdHub/proto/api"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/promhttp"
 	"google.golang.org/grpc"
 )
 
@@ -93,8 +94,8 @@ func (s *HTTPServer) Start() error {
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionMS, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
 	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, ULinkUC, AdUC, TargetUC, PadUC, SelectMS, log)
-
 	http.Handle("/", rout)
+	http.Handle("/metrics", promhttp.Handler())
 
 	UserRouter.ConfigureRouter(userrouter)
 	AdRouter.ConfigureRouter(adrouter)
