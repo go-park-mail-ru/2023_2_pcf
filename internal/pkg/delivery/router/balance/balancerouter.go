@@ -14,15 +14,17 @@ type BalanceRouter struct {
 	logger  logger.Logger
 	Balance entities.BalanceUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	Csrf    entities.CsrfUseCaseInterface
 	User    entities.UserUseCaseInterface
 }
 
-func NewBalanceRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *BalanceRouter {
+func NewBalanceRouter(r *mux.Router, UserUC entities.UserUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, SessionUC entities.SessionUseCaseInterface, CsrfUC entities.CsrfUseCaseInterface, log logger.Logger) *BalanceRouter {
 	return &BalanceRouter{
 		logger:  log,
 		router:  r,
 		Balance: BalanceUC,
 		Session: SessionUC,
+		Csrf:    CsrfUC,
 		User:    UserUC,
 	}
 }
@@ -33,7 +35,7 @@ func ConfigureRouter(ur *BalanceRouter) {
 	ur.router.HandleFunc("/balanceget", ur.GetBalanceHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
-	ur.router.Use(middleware.Auth(ur.Session))
+	ur.router.Use(middleware.Auth(ur.Session, ur.Csrf))
 	ur.router.Use(middleware.Logger(ur.logger))
 	ur.router.Use(middleware.Recover(ur.logger))
 }

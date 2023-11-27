@@ -14,14 +14,16 @@ type TargetRouter struct {
 	logger  logger.Logger
 	Target  entities.TargetUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	Csrf    entities.CsrfUseCaseInterface
 }
 
-func NewTargetRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, SessionUC entities.SessionUseCaseInterface, log logger.Logger) *TargetRouter {
+func NewTargetRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, SessionUC entities.SessionUseCaseInterface, CsrfUC entities.CsrfUseCaseInterface, log logger.Logger) *TargetRouter {
 	return &TargetRouter{
 		logger:  log,
 		router:  r,
 		Target:  TargetUC,
 		Session: SessionUC,
+		Csrf:    CsrfUC,
 	}
 }
 
@@ -33,7 +35,7 @@ func ConfigureRouter(ur *TargetRouter) {
 	ur.router.HandleFunc("/targetlist", ur.TargetListHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
-	ur.router.Use(middleware.Auth(ur.Session))
+	ur.router.Use(middleware.Auth(ur.Session, ur.Csrf))
 	ur.router.Use(middleware.Logger(ur.logger))
 	ur.router.Use(middleware.Recover(ur.logger))
 }

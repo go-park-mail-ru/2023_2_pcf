@@ -15,18 +15,20 @@ type AdRouter struct {
 	logger  logger.Logger
 	Ad      entities.AdUseCaseInterface
 	Session entities.SessionUseCaseInterface
+	Csrf    entities.CsrfUseCaseInterface
 	File    entities.FileUseCaseInterface
 	Balance entities.BalanceUseCaseInterface
 	User    entities.UserUseCaseInterface
 }
 
-func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
+func NewAdRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC entities.SessionUseCaseInterface, CsrfUC entities.CsrfUseCaseInterface, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, log logger.Logger) *AdRouter {
 	return &AdRouter{
 		addr:    addr,
 		router:  r,
 		logger:  log,
 		Ad:      AdUC,
 		Session: SessionUC,
+		Csrf:    CsrfUC,
 		Balance: BalanceUC,
 		File:    FileUC,
 		User:    UserUC,
@@ -43,7 +45,7 @@ func ConfigureRouter(ar *AdRouter) {
 	ar.router.HandleFunc("/aduniquelink", ar.AdBannerHandler).Methods("GET", "OPTIONS")
 
 	ar.router.Use(middleware.CORS)
-	ar.router.Use(middleware.Auth(ar.Session))
+	ar.router.Use(middleware.Auth(ar.Session, ar.Csrf))
 	ar.router.Use(middleware.Logger(ar.logger))
 	ar.router.Use(middleware.Recover(ar.logger))
 }
