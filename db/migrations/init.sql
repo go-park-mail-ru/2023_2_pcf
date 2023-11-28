@@ -17,6 +17,20 @@ CREATE TABLE "user" (
     FOREIGN KEY (balance_id) REFERENCES "balance" (id)
 );
 
+CREATE TABLE "target" (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    owner_id INT,
+    gender TEXT DEFAULT NULL,
+    min_age INT DEFAULT 0, 
+    max_age INT DEFAULT 127,
+    tags TEXT DEFAULT NULL,
+    keys TEXT DEFAULT NULL,
+    regions TEXT DEFAULT NULL,
+    interests TEXT DEFAULT NULL,
+    FOREIGN KEY (owner_id) REFERENCES "user" (id)
+);
+
 CREATE TABLE "ad" (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -31,19 +45,6 @@ CREATE TABLE "ad" (
     FOREIGN KEY (target_id) REFERENCES "target" (id)
 );
 
-CREATE TABLE "target" (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    owner_id INT,
-    gender TEXT DEFAULT NULL,
-    min_age INT DEFAULT 0, 
-    max_age INT DEFAULT 127,
-    tags TEXT DEFAULT NULL,
-    keys TEXT DEFAULT NULL,
-    regions TEXT DEFAULT NULL,
-    interests TEXT DEFAULT NULL
-    FOREIGN KEY (owner_id) REFERENCES "user" (id),
-);
 
 CREATE TABLE "pad" (
     id SERIAL PRIMARY KEY,

@@ -95,7 +95,7 @@ func (s *HTTPServer) Start() error {
 	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, PadUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionMS, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
-	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, ULinkUC, AdUC, TargetUC, PadUC, SelectMS, log)
+	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, UserUC, ULinkUC, AdUC, TargetUC, PadUC, SelectMS, log)
 	http.Handle("/", rout)
 	rout.Handle("/metrics", promhttp.Handler())
 

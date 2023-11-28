@@ -15,16 +15,18 @@ type PublicRouter struct {
 	logger   logger.Logger
 	ULink    entities.ULinkUseCaseInterface
 	Ad       entities.AdUseCaseInterface
+	User     entities.UserUseCaseInterface
 	Target   entities.TargetUseCaseInterface
 	Pad      entities.PadUseCaseInterface
 	SelectUC api.SelectClient
 }
 
-func NewPublicRouter(r *mux.Router, addr string, ULinkUC entities.ULinkUseCaseInterface, AdUC entities.AdUseCaseInterface, TargetUC entities.TargetUseCaseInterface, PadUC entities.PadUseCaseInterface, Select api.SelectClient, log logger.Logger) *PublicRouter {
+func NewPublicRouter(r *mux.Router, addr string, UserUC entities.UserUseCaseInterface, ULinkUC entities.ULinkUseCaseInterface, AdUC entities.AdUseCaseInterface, TargetUC entities.TargetUseCaseInterface, PadUC entities.PadUseCaseInterface, Select api.SelectClient, log logger.Logger) *PublicRouter {
 	return &PublicRouter{
 		addr:     addr,
 		router:   r,
 		logger:   log,
+		User:     UserUC,
 		ULink:    ULinkUC,
 		Ad:       AdUC,
 		Target:   TargetUC,
