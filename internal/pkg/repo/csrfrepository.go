@@ -2,7 +2,7 @@ package repo
 
 import (
 	"AdHub/internal/pkg/entities"
-	"AdHub/pkg/CsrfStorage"
+	"AdHub/pkg/SessionStorage"
 	"context"
 	"fmt"
 	"strconv"
@@ -10,10 +10,10 @@ import (
 )
 
 type CsrfRepository struct {
-	store CsrfStorage.CsrfStorageInterface
+	store SessionStorage.SessionStorageInterface
 }
 
-func NewCsrfRepo(ss CsrfStorage.CsrfStorageInterface) (cr CsrfRepository, err error) {
+func NewCsrfRepo(ss SessionStorage.SessionStorageInterface) (cr CsrfRepository, err error) {
 	cr.store, err = ss.Open()
 	return cr, err
 }

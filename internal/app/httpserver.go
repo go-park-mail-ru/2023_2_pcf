@@ -16,7 +16,6 @@ import (
 	"AdHub/internal/pkg/usecases/target"
 	"AdHub/internal/pkg/usecases/ulink"
 	"AdHub/internal/pkg/usecases/user"
-	"AdHub/pkg/CsrfStorage"
 	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/db"
 	"AdHub/pkg/logger"
@@ -44,7 +43,7 @@ func (s *HTTPServer) Start() error {
 	log := logger.NewLogrusLogger(s.config.LogLevel)
 	DB := db.New(s.config.DataBase)
 	Redis := SessionStorage.New(s.config.Redis_addr, s.config.Redis_password, s.config.Redis_db_ul)
-	Redis_CSRF := CsrfStorage.New(s.config.Redis_addr, s.config.Redis_password, s.config.Redis_db_csrf)
+	Redis_CSRF := SessionStorage.New(s.config.Redis_addr, s.config.Redis_password, s.config.Redis_db_csrf)
 
 	ULinkRepo, err := repo.NewULinkRepo(Redis)
 	if err != nil {
