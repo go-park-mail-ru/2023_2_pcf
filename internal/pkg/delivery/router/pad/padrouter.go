@@ -16,6 +16,7 @@ type PadRouter struct {
 	router  *mux.Router
 	logger  logger.Logger
 	Ad      entities.AdUseCaseInterface
+	Csrf    entities.CsrfUseCaseInterface
 	Session api.SessionClient
 	File    entities.FileUseCaseInterface
 	Balance entities.BalanceUseCaseInterface
@@ -23,12 +24,13 @@ type PadRouter struct {
 	Pad     entities.PadUseCaseInterface
 }
 
-func NewPadRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, SessionUC api.SessionClient, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, PadUC entities.PadUseCaseInterface, log logger.Logger) *PadRouter {
+func NewPadRouter(addr string, r *mux.Router, AdUC entities.AdUseCaseInterface, UserUC entities.UserUseCaseInterface, CsrfUC entities.CsrfUseCaseInterface, SessionUC api.SessionClient, FileUC entities.FileUseCaseInterface, BalanceUC entities.BalanceUseCaseInterface, PadUC entities.PadUseCaseInterface, log logger.Logger) *PadRouter {
 	return &PadRouter{
 		addr:    addr,
 		router:  r,
 		logger:  log,
 		Ad:      AdUC,
+		Csrf:    CsrfUC,
 		Session: SessionUC,
 		Balance: BalanceUC,
 		File:    FileUC,

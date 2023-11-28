@@ -15,14 +15,16 @@ type TargetRouter struct {
 	router  *mux.Router
 	logger  logger.Logger
 	Target  entities.TargetUseCaseInterface
+	Csrf    entities.CsrfUseCaseInterface
 	Session api.SessionClient
 }
 
-func NewTargetRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, SessionUC api.SessionClient, log logger.Logger) *TargetRouter {
+func NewTargetRouter(r *mux.Router, TargetUC entities.TargetUseCaseInterface, CsrfUC entities.CsrfUseCaseInterface, SessionUC api.SessionClient, log logger.Logger) *TargetRouter {
 	return &TargetRouter{
 		logger:  log,
 		router:  r,
 		Target:  TargetUC,
+		Csrf:    CsrfUC,
 		Session: SessionUC,
 	}
 }

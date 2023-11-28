@@ -7,4 +7,5 @@ redis_addr = "redis:6379"
 redis_password = "123"
 redis_db = 0
 redis_db_ul = 1
+redis_db_csrf = 2
 file_path = "./File/Uploads"

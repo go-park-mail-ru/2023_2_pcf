@@ -9,7 +9,7 @@ type CsrfUseCase struct {
 	repo entities.CsrfRepoInterface
 }
 
-func NewCsrfUseCase(r entities.CsrfRepoInterface) *CsrfUseCase {
+func New(r entities.CsrfRepoInterface) *CsrfUseCase {
 	return &CsrfUseCase{
 		repo: r,
 	}
