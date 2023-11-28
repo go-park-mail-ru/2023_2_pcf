@@ -52,7 +52,7 @@ func (s *HTTPServer) Start() error {
 	}
 	ULinkUC := ulink.New(ULinkRepo)
 
-	CSRFRepo, err = repo.NewCsrfRepo(Redis_CSRF)
+	CSRFRepo, err := repo.NewCsrfRepo(Redis_CSRF)
 	if err != nil {
 		log.Error("CSRF repo error: " + err.Error())
 	}
