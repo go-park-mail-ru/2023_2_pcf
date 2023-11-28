@@ -5,7 +5,7 @@ type ULink struct {
 	AdId  int    `json:"-"`
 }
 
-//go:generate /Users/bincom/go/bin/mockgen -source=ULink.go -destination=mock_entities/ULink_mock.go
+//go:generate /Users/bincom/go/bin/mockgen -source=uniquelink.go -destination=mock_entities/uniquelink_mock.go
 type ULinkUseCaseInterface interface {
 	ULinkCreate(sr *ULink) (*ULink, error)
 	ULinkRead(sr *ULink) (*ULink, error)

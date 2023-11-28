@@ -5,6 +5,7 @@ type Csrf struct {
 	UserId int    `json:"-"`
 }
 
+//go:generate /Users/bincom/go/bin/mockgen -source=csrf.go -destination=mock_entities/csrf_mock.go
 type CsrfUseCaseInterface interface {
 	CsrfCreate(userId int) (*Csrf, error)
 	//CsrfRead(sr *Csrf) (*Csrf, error)

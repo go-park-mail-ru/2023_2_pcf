@@ -106,7 +106,7 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 	tmpl := fmt.Sprintf(`<div class="AdHub__AdBanner">
 	<a href=%s><img src="%s" alt="Ad Banner"></a>
     <p clss="AdHub__AdBanner-CompanyText">Реклама. %s</p>
-</div>`, &data.Link, &data.ImageURL, &data.Owner_Company)
+</div>`, data.Link, data.ImageURL, data.Owner_Company)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	err = json.NewEncoder(w).Encode(tmpl)

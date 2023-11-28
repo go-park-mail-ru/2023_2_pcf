@@ -64,6 +64,21 @@ func (mr *MockAdRepoInterfaceMockRecorder) Get(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockAdRepoInterface)(nil).Get), id)
 }
 
+// ReaByTarget mocks base method.
+func (m *MockAdRepoInterface) ReaByTarget(id int) ([]*entities.Ad, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReaByTarget", id)
+	ret0, _ := ret[0].([]*entities.Ad)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReaByTarget indicates an expected call of ReaByTarget.
+func (mr *MockAdRepoInterfaceMockRecorder) ReaByTarget(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReaByTarget", reflect.TypeOf((*MockAdRepoInterface)(nil).ReaByTarget), id)
+}
+
 // Read mocks base method.
 func (m *MockAdRepoInterface) Read(id int) ([]*entities.Ad, error) {
 	m.ctrl.T.Helper()
@@ -128,6 +143,21 @@ func NewMockAdUseCaseInterface(ctrl *gomock.Controller) *MockAdUseCaseInterface 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAdUseCaseInterface) EXPECT() *MockAdUseCaseInterfaceMockRecorder {
 	return m.recorder
+}
+
+// AdByTarget mocks base method.
+func (m *MockAdUseCaseInterface) AdByTarget(id int) ([]*entities.Ad, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdByTarget", id)
+	ret0, _ := ret[0].([]*entities.Ad)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AdByTarget indicates an expected call of AdByTarget.
+func (mr *MockAdUseCaseInterfaceMockRecorder) AdByTarget(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdByTarget", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdByTarget), id)
 }
 
 // AdCreate mocks base method.

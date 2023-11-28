@@ -79,6 +79,21 @@ func (mr *MockTargetRepoInterfaceMockRecorder) ReadList(id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadList", reflect.TypeOf((*MockTargetRepoInterface)(nil).ReadList), id)
 }
 
+// ReadRandom mocks base method.
+func (m *MockTargetRepoInterface) ReadRandom() ([]*entities.Target, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadRandom")
+	ret0, _ := ret[0].([]*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadRandom indicates an expected call of ReadRandom.
+func (mr *MockTargetRepoInterfaceMockRecorder) ReadRandom() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRandom", reflect.TypeOf((*MockTargetRepoInterface)(nil).ReadRandom))
+}
+
 // Remove mocks base method.
 func (m *MockTargetRepoInterface) Remove(id int) error {
 	m.ctrl.T.Helper()
@@ -143,6 +158,21 @@ func (m *MockTargetUseCaseInterface) TargetCreate(s *entities.Target) (*entities
 func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetCreate(s interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetCreate", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetCreate), s)
+}
+
+// TargetRandom mocks base method.
+func (m *MockTargetUseCaseInterface) TargetRandom() ([]*entities.Target, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TargetRandom")
+	ret0, _ := ret[0].([]*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TargetRandom indicates an expected call of TargetRandom.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetRandom() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetRandom", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetRandom))
 }
 
 // TargetRead mocks base method.

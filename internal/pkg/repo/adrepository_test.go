@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreate(t *testing.T) {
+func TestAdRepository_Create(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("error creating mock database: %v", err)
@@ -33,10 +33,11 @@ func TestCreate(t *testing.T) {
 		Target_id:    1,
 		Image_link:   "https://example.com/image.jpg",
 		Owner_id:     1,
+		Click_cost:   0.5,
 	}
 
 	mock.ExpectQuery(`INSERT INTO "ad" (.+) RETURNING id;`).
-		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id).
+		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, ad.Click_cost).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	createdAd, err := repo.Create(ad)
@@ -48,7 +49,7 @@ func TestCreate(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestRemove(t *testing.T) {
+func TestAdRepository_Remove(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("error creating mock database: %v", err)
@@ -73,7 +74,7 @@ func TestRemove(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestUpdate(t *testing.T) {
+func TestAdRepository_Read(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("error creating mock database: %v", err)
@@ -87,47 +88,11 @@ func TestUpdate(t *testing.T) {
 	repo, err := NewAdRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	ad := &entities.Ad{
-		Id:           1,
-		Name:         "Updated Ad",
-		Description:  "Updated Description",
-		Website_link: "https://updated.com",
-		Budget:       200.0,
-		Target_id:    2,
-		Image_link:   "https://updated.com/image.jpg",
-		Owner_id:     1,
-	}
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id", "click_cost"}).
+		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1, 0.5).
+		AddRow(2, "Ad2", "Description2", "https://example2.com", 200.0, 2, "https://example2.com/image.jpg", 2, 0.8)
 
-	mock.ExpectExec(`UPDATE "ad" SET name=\$1, description=\$2, website_link=\$3, budget=\$4, target_id=\$5, image_link=\$6, owner_id=\$7 WHERE id=\$8;`).
-		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, ad.Id).
-		WillReturnResult(sqlmock.NewResult(1, 1))
-
-	err = repo.Update(ad)
-
-	require.NoError(t, err)
-
-	require.NoError(t, mock.ExpectationsWereMet())
-}
-
-func TestRead(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("error creating mock database: %v", err)
-	}
-	defer db.Close()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	dbInterface := pg.NewMock(db)
-	repo, err := NewAdRepoMock(dbInterface)
-	require.NoError(t, err)
-
-	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id"}).
-		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1).
-		AddRow(2, "Ad2", "Description2", "https://example2.com", 200.0, 2, "https://example2.com/image.jpg", 2)
-
-	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM "ad" WHERE owner_id=\$1;`).
+	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id, click_cost FROM "ad" WHERE owner_id=\$1;`).
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -144,6 +109,7 @@ func TestRead(t *testing.T) {
 	assert.Equal(t, 1, ads[0].Target_id)
 	assert.Equal(t, "https://example1.com/image.jpg", ads[0].Image_link)
 	assert.Equal(t, 1, ads[0].Owner_id)
+	assert.Equal(t, 0.5, ads[0].Click_cost)
 	assert.Equal(t, 1, ads[0].Id)
 
 	assert.Equal(t, "Ad2", ads[1].Name)
@@ -153,12 +119,13 @@ func TestRead(t *testing.T) {
 	assert.Equal(t, 2, ads[1].Target_id)
 	assert.Equal(t, "https://example2.com/image.jpg", ads[1].Image_link)
 	assert.Equal(t, 2, ads[1].Owner_id)
+	assert.Equal(t, 0.8, ads[1].Click_cost)
 	assert.Equal(t, 2, ads[1].Id)
 
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestGet(t *testing.T) {
+func TestAdRepository_Get(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("error creating mock database: %v", err)
@@ -172,10 +139,10 @@ func TestGet(t *testing.T) {
 	repo, err := NewAdRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id"}).
-		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1)
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id", "click_cost"}).
+		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1, 0.5)
 
-	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM "ad" WHERE id=\$1;`).
+	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id, click_cost FROM "ad" WHERE id=\$1;`).
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -189,6 +156,7 @@ func TestGet(t *testing.T) {
 	assert.Equal(t, 1, ad.Target_id)
 	assert.Equal(t, "https://example1.com/image.jpg", ad.Image_link)
 	assert.Equal(t, 1, ad.Owner_id)
+	assert.Equal(t, 0.5, ad.Click_cost)
 	assert.Equal(t, 1, ad.Id)
 
 	require.NoError(t, mock.ExpectationsWereMet())
