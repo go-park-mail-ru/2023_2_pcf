@@ -40,7 +40,7 @@ func Auth(ss api.SessionClient, csrfUc entities.CsrfUseCaseInterface) func(next 
 				return
 			}
 
-			csrfFromDb, err := csrfUc.GetByUserId(userId)
+			csrfFromDb, err := csrfUc.GetByUserId(int(userId.Id))
 			if err != nil {
 				http.Error(w, "CSRF err", http.StatusForbidden)
 				return
@@ -52,7 +52,7 @@ func Auth(ss api.SessionClient, csrfUc entities.CsrfUseCaseInterface) func(next 
 			}
 
 			csrfUc.CsrfRemove(csrfFromDb)
-			newCsrf, err := csrfUc.CsrfCreate(userId)
+			newCsrf, err := csrfUc.CsrfCreate(int(userId.Id))
 			if err != nil {
 				http.Error(w, "err", http.StatusInternalServerError)
 				return

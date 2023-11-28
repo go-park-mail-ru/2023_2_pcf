@@ -46,7 +46,7 @@ func ConfigureRouter(ar *PadRouter) {
 	ar.router.HandleFunc("/paddelete", ar.PadDeleteHandler).Methods("POST", "OPTIONS")
 
 	ar.router.Use(middleware.CORS)
-	ar.router.Use(middleware.Auth(ar.Session))
+	ar.router.Use(middleware.Auth(ar.Session, ar.Csrf))
 	ar.router.Use(middleware.Logger(ar.logger))
 	ar.router.Use(middleware.Recover(ar.logger))
 }

@@ -37,7 +37,7 @@ func ConfigureRouter(ur *TargetRouter) {
 	ur.router.HandleFunc("/targetlist", ur.TargetListHandler).Methods("GET", "OPTIONS")
 
 	ur.router.Use(middleware.CORS)
-	ur.router.Use(middleware.Auth(ur.Session))
+	ur.router.Use(middleware.Auth(ur.Session, ur.Csrf))
 	ur.router.Use(middleware.Logger(ur.logger))
 	ur.router.Use(middleware.Recover(ur.logger))
 }
