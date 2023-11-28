@@ -6,10 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -20,37 +19,38 @@ func TestAdGetHandler(t *testing.T) {
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		router:  nil, // В данном случае не нужен для теста
-		Ad:      mockAdUseCase,
-		Session: nil, // В данном случае не нужен для теста
+		Ad: mockAdUseCase,
 	}
 
+	// Подготовка тестового объявления
+	adID := 1
 	expectedAd := &entities.Ad{
-		Id:           1,
+		Id:           adID,
 		Name:         "Test Ad",
-		Description:  "Test Description",
+		Description:  "This is a test ad",
 		Website_link: "https://example.com",
-		Budget:       100.0,
-		Target_id:    1,
-		Image_link:   "https://example.com/image.jpg",
+		Budget:       100,
 		Owner_id:     1,
+		// Заполните остальные поля как необходимо
 	}
 
-	mockAdUseCase.EXPECT().
-		AdRead(gomock.Eq(expectedAd.Id)).
-		Return(expectedAd, nil)
+	// Настройка ожидаемого поведения моков
+	mockAdUseCase.EXPECT().AdRead(adID).Return(expectedAd, nil)
 
-	req, _ := http.NewRequest("GET", fmt.Sprintf("/ad/%d", expectedAd.Id), nil)
-	rr := httptest.NewRecorder()
+	// Создание тестового запроса
+	req := httptest.NewRequest("GET", fmt.Sprintf("/ad?adID=%d", adID), nil)
+	rec := httptest.NewRecorder()
 
-	// Создание роутера с поддельным обработчиком для тестирования
-	r := mux.NewRouter()
-	r.HandleFunc("/ad/{adID}", adRouter.AdGetHandler)
-	r.ServeHTTP(rr, req)
+	adRouter.AdGetHandler(rec, req)
 
-	assert.Equal(t, http.StatusOK, rr.Code)
+	// Проверка кода ответа
+	if rec.Code != http.StatusOK {
+		t.Errorf("Expected HTTP status %d, but got %d", http.StatusOK, rec.Code)
+	}
 
-	// Проверяем, что тело ответа содержит информацию об объявлении
-	adJSON, _ := json.Marshal(expectedAd)
-	assert.JSONEq(t, string(adJSON), rr.Body.String())
+	// Проверка тела ответа
+	expectedBody, _ := json.Marshal(expectedAd)
+	if strings.TrimSpace(rec.Body.String()) != strings.TrimSpace(string(expectedBody)) {
+		t.Errorf("Response body does not match the expected value.\nExpected: %s\nActual: %s", string(expectedBody), rec.Body.String())
+	}
 }

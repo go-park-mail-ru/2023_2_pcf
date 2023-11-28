@@ -16,10 +16,12 @@ func TestGetBalanceHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	mockUserUseCase := mock_entities.NewMockUserUseCaseInterface(ctrl)
 	mockBalanceUseCase := mock_entities.NewMockBalanceUseCaseInterface(ctrl)
 	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
 
 	balanceRouter := BalanceRouter{
+		User:    mockUserUseCase,
 		Balance: mockBalanceUseCase,
 		Session: mockSession,
 	}
@@ -35,7 +37,7 @@ func TestGetBalanceHandler(t *testing.T) {
 	mockBalanceUseCase.EXPECT().BalanceRead(expectedUserID).Return(fakeBalance, nil)
 
 	req, _ := http.NewRequest("GET", "/balance", nil)
-	ctx := context.WithValue(req.Context(), "userid", expectedUserID)
+	ctx := context.WithValue(req.Context(), "userId", expectedUserID)
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()

@@ -1,12 +1,14 @@
 package middleware
 
 import (
+	"AdHub/internal/pkg/entities"
 	"AdHub/proto/api"
 	"context"
 	"net/http"
+	"time"
 )
 
-func Auth(ss api.SessionClient) func(next http.Handler) http.Handler {
+func Auth(ss api.SessionClient, csrfUc entities.CsrfUseCaseInterface) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/api/v1/auth" {
@@ -30,7 +32,42 @@ func Auth(ss api.SessionClient) func(next http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "userId", int(userId.GetId()))
+			//csrf logic
+
+			csrfToken, err := r.Cookie("csrf_token")
+			if err != nil {
+				http.Error(w, "CSRF required", http.StatusUnauthorized)
+				return
+			}
+
+			csrfFromDb, err := csrfUc.GetByUserId(userId)
+			if err != nil {
+				http.Error(w, "CSRF err", http.StatusForbidden)
+				return
+			}
+
+			if csrfFromDb.Token != csrfToken.Value {
+				http.Error(w, "CSRF err", http.StatusForbidden)
+				return
+			}
+
+			csrfUc.CsrfRemove(csrfFromDb)
+			newCsrf, err := csrfUc.CsrfCreate(userId)
+			if err != nil {
+				http.Error(w, "err", http.StatusInternalServerError)
+				return
+			}
+			cookie := &http.Cookie{
+				Name:     "csrf_token",
+				Value:    newCsrf.Token,
+				Expires:  time.Now().Add(24 * time.Hour),
+				HttpOnly: true,
+				Domain:   "127.0.0.1",
+				Path:     "/",
+			}
+			http.SetCookie(w, cookie)
+
+			ctx := context.WithValue(r.Context(), "userId", userId)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

@@ -44,7 +44,7 @@ func TestAdDeleteHandler(t *testing.T) {
 	req, _ := http.NewRequest("DELETE", "/ad", strings.NewReader(string(requestBody)))
 
 	// Вставляем userId в контекст запроса
-	ctx := context.WithValue(req.Context(), "userid", testAd.Owner_id)
+	ctx := context.WithValue(req.Context(), "userId", testAd.Owner_id)
 	req = req.WithContext(ctx)
 
 	rr := httptest.NewRecorder()

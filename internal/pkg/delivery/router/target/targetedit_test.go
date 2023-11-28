@@ -64,7 +64,7 @@ func TestUpdateTargetHandler(t *testing.T) {
 		})
 
 	req, _ := http.NewRequest("POST", "/update-target", strings.NewReader(requestBody))
-	req = req.WithContext(context.WithValue(req.Context(), "userid", fakeUserID))
+	req = req.WithContext(context.WithValue(req.Context(), "userId", fakeUserID))
 
 	rr := httptest.NewRecorder()
 

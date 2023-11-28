@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateTargetHandler(t *testing.T) {
@@ -19,36 +18,61 @@ func TestCreateTargetHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockTargetUseCase := mock_entities.NewMockTargetUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
 
 	targetRouter := TargetRouter{
-		Target:  mockTargetUseCase,
-		Session: mockSession,
+		Target: mockTargetUseCase,
 	}
 
-	fakeTarget := &entities.Target{
-		Name:   "TargetName",
-		Gender: "male",
+	// Подготовка тестовых данных
+	newTarget := entities.Target{
+		Name:      "Test Target",
+		Owner_id:  1,
+		Gender:    "any",
+		Min_age:   18,
+		Max_age:   35,
+		Interests: []string{"music", "sports"},
+		Tags:      []string{"tag1", "tag2"},
+		Keys:      []string{"key1", "key2"},
+		Regions:   []string{"region1", "region2"},
 	}
 
-	userId := 1 // Предполагаемый ID пользователя
+	//todo: саша, эта структурка специально для тебя:
+	//reqData := struct {
+	//	Name      string `json:"name"`
+	//	Gender    string `json:"gender"`
+	//	MinAge    string `json:"min_age"`
+	//	MaxAge    string `json:"max_age"`
+	//	Interests string `json:"interests"`
+	//	Tags      string `json:"tags"`
+	//	Keys      string `json:"keys"`
+	//	Regions   string `json:"regions"`
+	//}{
+	//	Name:      newTarget.Name,
+	//	Gender:    newTarget.Gender,
+	//	MinAge:    strconv.Itoa(newTarget.Min_age),
+	//	MaxAge:    strconv.Itoa(newTarget.Max_age),
+	//	Interests: strings.Join(newTarget.Interests, ", "),
+	//	Tags:      strings.Join(newTarget.Tags, ", "),
+	//	Keys:      strings.Join(newTarget.Keys, ", "),
+	//	Regions:   strings.Join(newTarget.Regions, ", "),
+	//}
+	//todo: ее нужно подсунуть сюда, но оно не пускает ее:
+	mockTargetUseCase.EXPECT().TargetCreate(gomock.Any()).Return(&newTarget, nil)
 
-	// Подготовка мока для создания таргета
-	mockTargetUseCase.EXPECT().
-		TargetCreate(gomock.Any()).
-		DoAndReturn(func(target *entities.Target) (*entities.Target, error) {
-			target.Id = 123 // Предполагаем, что созданный таргет получает ID 123
-			return target, nil
-		})
+	requestBody, _ := json.Marshal(newTarget)
+	req := httptest.NewRequest("POST", "/target/create", bytes.NewReader(requestBody))
+	req = req.WithContext(context.WithValue(req.Context(), "userId", newTarget.Owner_id))
+	rec := httptest.NewRecorder()
 
-	targetJSON, _ := json.Marshal(fakeTarget)
+	targetRouter.CreateTargetHandler(rec, req)
 
-	req, _ := http.NewRequest("POST", "/create-target", bytes.NewReader(targetJSON))
-	req = req.WithContext(context.WithValue(req.Context(), "userid", userId))
+	// Проверка ответа
+	if rec.Code != http.StatusCreated {
+		t.Errorf("Expected HTTP status %d, but got %d", http.StatusCreated, rec.Code)
+	}
 
-	rr := httptest.NewRecorder()
-
-	targetRouter.CreateTargetHandler(rr, req)
-
-	assert.Equal(t, http.StatusCreated, rr.Code)
+	expectedBody, _ := json.Marshal(&newTarget)
+	if rec.Body.String() != string(expectedBody) {
+		t.Errorf("Response body does not match the expected value.\nExpected: %s\nActual: %s", string(expectedBody), rec.Body.String())
+	}
 }

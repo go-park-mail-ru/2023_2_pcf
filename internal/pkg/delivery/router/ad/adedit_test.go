@@ -66,7 +66,7 @@ func TestAdEditHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Установка контекста с user ID, как если бы middleware аутентификации уже было выполнено
-	ctx := context.WithValue(req.Context(), "userid", userID)
+	ctx := context.WithValue(req.Context(), "userId", userID)
 	req = req.WithContext(ctx)
 
 	adRouter.AdUpdateHandler(rr, req)

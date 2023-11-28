@@ -7,18 +7,6 @@ import (
 
 func (br *BalanceRouter) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 
-	//if request.Token == "" {
-	//	br.logger.Error("Token is required")
-	//	http.Error(w, "Token is required", http.StatusBadRequest)
-	//	return
-	//}
-
-	//userId, err := br.Session.GetUserId(request.Token)
-	//if err != nil {
-	//	br.logger.Error("Error getting user ID from session: " + err.Error())
-	//	http.Error(w, "Error getting user ID", http.StatusBadRequest)
-	//	return
-	//}
 	uidAny := r.Context().Value("userId")
 	userId, ok := uidAny.(int)
 	if !ok {
