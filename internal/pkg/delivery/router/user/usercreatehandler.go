@@ -69,6 +69,12 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Error while token gen", http.StatusInternalServerError)
 	}
 
+	newCsrf, err := mr.Csrf.CsrfCreate(newUser.Id)
+	if err != nil {
+		mr.logger.Error("Error while csrf token generation" + err.Error())
+		http.Error(w, "Error while csrf token gen", http.StatusInternalServerError)
+	}
+
 	//Кукисет и возврат ответа (успех)
 	cookie := &http.Cookie{
 		Name:     "session_token",
@@ -78,6 +84,16 @@ func (mr *UserRouter) UserCreateHandler(w http.ResponseWriter, r *http.Request) 
 		Domain:   "127.0.0.1",
 		Path:     "/",
 	}
+
+	cookie2 := &http.Cookie{
+		Name:     "csrf_token",
+		Value:    newCsrf.Token,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+		Domain:   "127.0.0.1",
+		Path:     "/",
+	}
+	http.SetCookie(w, cookie2)
 
 	http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusCreated) // HTTP Status - 201
