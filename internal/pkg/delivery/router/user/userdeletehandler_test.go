@@ -28,7 +28,6 @@ func TestUserDeleteHandler(t *testing.T) {
 	userFromDb := &entities.User{
 		Id:    userId,
 		Login: login,
-		// Другие поля, если необходимо
 	}
 
 	// Настройка ожидаемых вызовов

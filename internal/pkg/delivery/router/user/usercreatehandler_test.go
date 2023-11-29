@@ -39,11 +39,6 @@ func TestUserCreateHandler(t *testing.T) {
 		BalanceId: 1,
 	}
 
-	//fakeSession := &entities.Session{
-	//	Token:  "test",
-	//	UserId: 1,
-	//}
-
 	fakeBalance := &entities.Balance{
 		Id:                1,
 		Available_balance: 0,
