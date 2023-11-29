@@ -2,6 +2,7 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
+	"log"
 	"net/http"
 )
 
@@ -19,13 +20,14 @@ func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	adID, err := mr.ULink.GetAdId(Token)
+	log.Printf("%s", adID)
 
 	ad, err := mr.Ad.AdRead(adID)
 	if err != nil {
 		http.Error(w, "Ad is missing", http.StatusBadRequest)
 		return
 	}
-
+	log.Printf("%s", ad.Id)
 	mr.ULink.ULinkRemove(&entities.ULink{
 		Token: Token,
 		AdId:  adID,

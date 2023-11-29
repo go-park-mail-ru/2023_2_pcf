@@ -5,6 +5,7 @@ import (
 	"AdHub/proto/api"
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -71,6 +72,7 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("If from select %s", id.Id)
 	ads, err := mr.Ad.AdByTarget(int(id.Id))
 	if err != nil {
 		http.Error(w, "Invalid get ad by target", http.StatusBadRequest)
@@ -82,7 +84,7 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 
 	mr.ULink.ULinkCreate(&entities.ULink{
 		Token: token,
-		AdId:  0,
+		AdId:  ad.Id,
 	})
 
 	owner, err := mr.User.UserReadById(ad.Owner_id)
