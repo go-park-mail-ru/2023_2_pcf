@@ -5,7 +5,10 @@
 package mock_entities
 
 import (
-	entities "AdHub/internal/pkg/entities"
+	"AdHub/auth/pkg/entities"
+	"AdHub/proto/api"
+	"context"
+	"google.golang.org/grpc"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,34 +37,66 @@ func (m *MockSessionUseCaseInterface) EXPECT() *MockSessionUseCaseInterfaceMockR
 	return m.recorder
 }
 
-// Auth mocks base method.
-func (m *MockSessionUseCaseInterface) Auth(arg0 *entities.User) (*entities.Session, error) {
+//// GetUserID mocks base method.
+//func (m *MockSessionUseCaseInterface) GetUserID(token string) (int, error) {
+//	m.ctrl.T.Helper()
+//	ret := m.ctrl.Call(m, "GetUserId", token)
+//	ret0, _ := ret[0].(int)
+//	ret1, _ := ret[1].(error)
+//	return ret0, ret1
+//}
+//
+//// GetUserID indicates an expected call of GetUserID.
+//func (mr *MockSessionUseCaseInterfaceMockRecorder) GetUserID(token interface{}) *gomock.Call {
+//	mr.mock.ctrl.T.Helper()
+//	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserId", reflect.TypeOf((*MockSessionUseCaseInterface)(nil).GetUserID), token)
+//}
+
+// Auth mocks the Auth method of SessionUseCaseInterface.
+func (m *MockSessionUseCaseInterface) Auth(ctx context.Context, in *api.AuthRequest, opts ...grpc.CallOption) (*api.AuthResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Auth", arg0)
-	ret0, _ := ret[0].(*entities.Session)
+	var args []interface{}
+	args = append(args, ctx, in)
+	for _, opt := range opts {
+		args = append(args, opt)
+	}
+	ret := m.ctrl.Call(m, "Auth", args...)
+	ret0, _ := ret[0].(*api.AuthResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Auth indicates an expected call of Auth.
-func (mr *MockSessionUseCaseInterfaceMockRecorder) Auth(arg0 interface{}) *gomock.Call {
+func (mr *MockSessionUseCaseInterfaceMockRecorder) Auth(ctx, in interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Auth", reflect.TypeOf((*MockSessionUseCaseInterface)(nil).Auth), arg0)
+	var args []interface{}
+	args = append(args, ctx, in)
+	args = append(args, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Auth", reflect.TypeOf((*MockSessionUseCaseInterface)(nil).Auth), args...)
 }
 
-// GetUserId mocks base method.
-func (m *MockSessionUseCaseInterface) GetUserId(token string) (int, error) {
+
+// GetUserId mocks the GetUserId method of SessionUseCaseInterface.
+func (m *MockSessionUseCaseInterface) GetUserId(ctx context.Context, in *api.GetRequest, opts ...grpc.CallOption) (*api.GetResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserId", token)
-	ret0, _ := ret[0].(int)
+	var args []interface{}
+	args = append(args, ctx, in)
+	for _, opt := range opts {
+		args = append(args, opt)
+	}
+	ret := m.ctrl.Call(m, "GetUserId", args...)
+	ret0, _ := ret[0].(*api.GetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserId indicates an expected call of GetUserId.
-func (mr *MockSessionUseCaseInterfaceMockRecorder) GetUserId(token interface{}) *gomock.Call {
+func (mr *MockSessionUseCaseInterfaceMockRecorder) GetUserId(ctx, in interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserId", reflect.TypeOf((*MockSessionUseCaseInterface)(nil).GetUserId), token)
+	var args []interface{}
+	args = append(args, ctx, in)
+	args = append(args, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserId", reflect.TypeOf((*MockSessionUseCaseInterface)(nil).GetUserId), args...)
 }
 
 // SessionContains mocks base method.

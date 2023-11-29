@@ -56,7 +56,7 @@ func TestPadCreateHandler(t *testing.T) {
 	}
 
 	// Проверка тела ответа
-	expectedResponse := `{"id":0,"name":"Test Pad","description":"This is a test pad","website_link":"https://examplepad.com","price":200,"target_id":2,"Owner_id":1}`
+	expectedResponse := `{"id":0,"name":"Test Pad","description":"This is a test pad","website_link":"https://examplepad.com","price":200,"target_id":2,"Owner_id":1,"clicks":0,"balance":0}`
 	if rec.Body.String() != expectedResponse {
 		t.Errorf("Response body does not match the expected value.\nExpected: %s\nActual: %s", expectedResponse, rec.Body.String())
 	}

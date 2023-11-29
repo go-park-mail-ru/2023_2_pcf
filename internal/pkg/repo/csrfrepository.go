@@ -13,6 +13,13 @@ type CsrfRepository struct {
 	store SessionStorage.SessionStorageInterface
 }
 
+func NewCsrfRepoMock(ss SessionStorage.SessionStorageInterface) (*CsrfRepository, error) {
+	sr := &CsrfRepository{
+		store: ss,
+	}
+	return sr, nil
+}
+
 func NewCsrfRepo(ss SessionStorage.SessionStorageInterface) (cr CsrfRepository, err error) {
 	cr.store, err = ss.Open()
 	return cr, err

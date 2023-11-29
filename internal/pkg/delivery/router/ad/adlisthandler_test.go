@@ -1,6 +1,7 @@
 package router
 
 import (
+	mock_entities2 "AdHub/auth/pkg/entities/mock_entities"
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
 	"context"
@@ -17,7 +18,7 @@ func TestAdListHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
+	mockSession := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
 		Ad:      mockAdUseCase,

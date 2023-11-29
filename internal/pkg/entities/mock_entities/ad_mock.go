@@ -17,6 +17,21 @@ type MockAdRepoInterface struct {
 	recorder *MockAdRepoInterfaceMockRecorder
 }
 
+// ReaByTarget mocks the ReaByTarget method of AdRepoInterface.
+func (m *MockAdRepoInterface) ReaByTarget(id int) ([]*entities.Ad, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadByTarget", id)
+	ret0, _ := ret[0].([]*entities.Ad)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReaByTarget indicates an expected call of ReaByTarget.
+func (mr *MockAdRepoInterfaceMockRecorder) ReaByTarget(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByTarget", reflect.TypeOf((*MockAdRepoInterface)(nil).ReaByTarget), id)
+}
+
 // MockAdRepoInterfaceMockRecorder is the mock recorder for MockAdRepoInterface.
 type MockAdRepoInterfaceMockRecorder struct {
 	mock *MockAdRepoInterface

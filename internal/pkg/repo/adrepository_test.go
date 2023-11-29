@@ -33,10 +33,11 @@ func TestCreate(t *testing.T) {
 		Target_id:    1,
 		Image_link:   "https://example.com/image.jpg",
 		Owner_id:     1,
+		Click_cost:   1.0,
 	}
 
 	mock.ExpectQuery(`INSERT INTO "ad" (.+) RETURNING id;`).
-		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id).
+		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, ad.Click_cost).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	createdAd, err := repo.Create(ad)
@@ -96,10 +97,11 @@ func TestUpdate(t *testing.T) {
 		Target_id:    2,
 		Image_link:   "https://updated.com/image.jpg",
 		Owner_id:     1,
+		Click_cost:   1,
 	}
 
-	mock.ExpectExec(`UPDATE "ad" SET name=\$1, description=\$2, website_link=\$3, budget=\$4, target_id=\$5, image_link=\$6, owner_id=\$7 WHERE id=\$8;`).
-		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, ad.Id).
+	mock.ExpectExec(`UPDATE "ad" SET name=\$1, description=\$2, website_link=\$3, budget=\$4, target_id=\$5, image_link=\$6, owner_id=\$7, click_cost=\$8 WHERE id=\$9;`).
+		WithArgs(ad.Name, ad.Description, ad.Website_link, ad.Budget, ad.Target_id, ad.Image_link, ad.Owner_id, int64(1), 1.0).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err = repo.Update(ad)
@@ -123,11 +125,11 @@ func TestRead(t *testing.T) {
 	repo, err := NewAdRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id"}).
-		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1).
-		AddRow(2, "Ad2", "Description2", "https://example2.com", 200.0, 2, "https://example2.com/image.jpg", 2)
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id", "click_cost"}).
+		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1, 1).
+		AddRow(2, "Ad2", "Description2", "https://example2.com", 200.0, 2, "https://example2.com/image.jpg", 2, 1)
 
-	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM "ad" WHERE owner_id=\$1;`).
+	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id, click_cost FROM "ad" WHERE owner_id=\$1;`).
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -172,10 +174,10 @@ func TestGet(t *testing.T) {
 	repo, err := NewAdRepoMock(dbInterface)
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id"}).
-		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1)
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "website_link", "budget", "target_id", "image_link", "owner_id", "click_cost"}).
+		AddRow(1, "Ad1", "Description1", "https://example1.com", 100.0, 1, "https://example1.com/image.jpg", 1, 1)
 
-	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id FROM "ad" WHERE id=\$1;`).
+	mock.ExpectQuery(`SELECT id, name, description, website_link, budget, target_id, image_link, owner_id, click_cost FROM "ad" WHERE id=\$1;`).
 		WithArgs(1).
 		WillReturnRows(rows)
 

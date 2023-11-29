@@ -1,6 +1,7 @@
 package router
 
 import (
+	mock_entities2 "AdHub/auth/pkg/entities/mock_entities"
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
 	"bytes"
@@ -18,7 +19,7 @@ func TestTargetDeleteHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockTargetUseCase := mock_entities.NewMockTargetUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
+	mockSession := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
 
 	targetRouter := TargetRouter{
 		Target:  mockTargetUseCase,

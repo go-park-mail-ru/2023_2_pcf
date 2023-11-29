@@ -8,9 +8,15 @@ import (
 	"time"
 )
 
-func Auth(ss api.SessionClient, csrfUc entities.CsrfUseCaseInterface) func(next http.Handler) http.Handler {
+func Auth(ss interface{}, csrfUc entities.CsrfUseCaseInterface) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ss, ok := ss.(api.SessionClient)
+			if !ok {
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				return
+			}
+
 			if r.URL.Path == "/api/v1/auth" {
 				next.ServeHTTP(w, r)
 				return

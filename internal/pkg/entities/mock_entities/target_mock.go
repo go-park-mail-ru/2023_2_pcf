@@ -64,6 +64,16 @@ func (mr *MockTargetRepoInterfaceMockRecorder) Read(id interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockTargetRepoInterface)(nil).Read), id)
 }
 
+// ReadRandom mocks base method.
+func (m *MockTargetRepoInterface) ReadRandom() ([]*entities.Target, error) {
+	return m.ReadList(1)
+}
+
+// ReadRandom indicates an expected call of ReadRandom.
+func (mr *MockTargetRepoInterfaceMockRecorder) ReadRandom() *gomock.Call {
+	return mr.ReadList(1)
+}
+
 // ReadList mocks base method.
 func (m *MockTargetRepoInterface) ReadList(id int) ([]*entities.Target, error) {
 	m.ctrl.T.Helper()

@@ -1,8 +1,11 @@
 package router
 
 import (
+	mock_entities2 "AdHub/auth/pkg/entities/mock_entities"
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
+	"AdHub/proto/api"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +22,7 @@ func TestUserCreateHandler(t *testing.T) {
 
 	mockUserUseCase := mock_entities.NewMockUserUseCaseInterface(ctrl)
 	mockBalanceUseCase := mock_entities.NewMockBalanceUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
+	mockSession := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
 
 	userRouter := UserRouter{
 		User:    mockUserUseCase,
@@ -36,10 +39,10 @@ func TestUserCreateHandler(t *testing.T) {
 		BalanceId: 1,
 	}
 
-	fakeSession := &entities.Session{
-		Token:  "test",
-		UserId: 1,
-	}
+	//fakeSession := &entities.Session{
+	//	Token:  "test",
+	//	UserId: 1,
+	//}
 
 	fakeBalance := &entities.Balance{
 		Id:                1,
@@ -63,8 +66,8 @@ func TestUserCreateHandler(t *testing.T) {
 		Return(fakeUser, nil)
 
 	mockSession.EXPECT().
-		Auth(gomock.Eq(fakeUser)).
-		Return(fakeSession, nil)
+		Auth(context.Background(), gomock.Any()).
+		Return(&api.AuthResponse{}, nil)
 
 	mockUserUseCase.EXPECT().
 		UserUpdate(gomock.Any()).

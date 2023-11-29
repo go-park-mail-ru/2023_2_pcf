@@ -1,6 +1,7 @@
 package router
 
 import (
+	mock_entities2 "AdHub/auth/pkg/entities/mock_entities"
 	"AdHub/internal/pkg/entities"
 	"AdHub/internal/pkg/entities/mock_entities"
 	"context"
@@ -18,7 +19,7 @@ func TestGetBalanceHandler(t *testing.T) {
 
 	mockUserUseCase := mock_entities.NewMockUserUseCaseInterface(ctrl)
 	mockBalanceUseCase := mock_entities.NewMockBalanceUseCaseInterface(ctrl)
-	mockSession := mock_entities.NewMockSessionUseCaseInterface(ctrl)
+	mockSession := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
 
 	balanceRouter := BalanceRouter{
 		User:    mockUserUseCase,
@@ -33,8 +34,11 @@ func TestGetBalanceHandler(t *testing.T) {
 		Available_balance: 900.0,
 	}
 
+	expectedUser := &entities.User{}
+	mockUserUseCase.EXPECT().UserReadById(1).Return(expectedUser, nil)
+
 	expectedUserID := 1
-	mockBalanceUseCase.EXPECT().BalanceRead(expectedUserID).Return(fakeBalance, nil)
+	mockBalanceUseCase.EXPECT().BalanceRead(0).Return(fakeBalance, nil)
 
 	req, _ := http.NewRequest("GET", "/balance", nil)
 	ctx := context.WithValue(req.Context(), "userId", expectedUserID)
