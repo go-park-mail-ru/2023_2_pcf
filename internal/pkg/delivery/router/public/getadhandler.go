@@ -4,7 +4,6 @@ import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/proto/api"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -92,7 +91,7 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uniqueLink := mr.addr + "/api/v1/redirect?id=" + token + "?pad=" + strconv.Itoa(pad.Id)
+	uniqueLink := mr.addr + "/api/v1/redirect?id=" + token + "&pad=" + strconv.Itoa(pad.Id)
 	data := struct {
 		Link          string
 		ImageURL      string
@@ -108,10 +107,10 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
     <p clss="AdHub__AdBanner-CompanyText">Реклама. %s</p>
 </div>`, data.Link, data.ImageURL, data.Owner_Company)
 
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err = json.NewEncoder(w).Encode(tmpl)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_, err = w.Write([]byte(tmpl))
 	if err != nil {
-		http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
+		http.Error(w, "Failed to write HTML", http.StatusInternalServerError)
 		return
 	}
 }
