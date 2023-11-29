@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	back_addr = "http://84.23.53.167"
+	back_addr = "http://127.0.0.1"
 )
 
 func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {

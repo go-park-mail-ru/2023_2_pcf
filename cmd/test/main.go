@@ -27,18 +27,18 @@ func main() {
 			});
 			
 			function fetchBanner() {
-				fetch("http://84.23.53.167:8080/api/v1/getad?id=1")
+				fetch("http://127.0.0.1:8080/api/v1/getad?id=3")
 				.then(response => {
-					console.log(response)
-					return response.text()
+				console.log(response)
+				return response.text()
 				})
 				.then(data => {
-					console.log(data)
-					const bannerContainer = document.getElementById('banner-container');
-					bannerContainer.innerHTML = data;
+				console.log(data)
+				const bannerContainer = document.getElementById('banner-container');
+				bannerContainer.innerHTML = data;
 				})
 				.catch(error => {
-					console.error('Fetch error:', error);
+				console.error('Fetch error:', error);
 				});
 			}
 			</script>
