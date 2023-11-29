@@ -53,7 +53,7 @@ func (r *PadRepository) Remove(id int) error {
 
 func (r *PadRepository) Update(pad *entities.Pad) error {
 	_, err := r.store.Db().Exec(
-		"UPDATE \"pad\" SET name=$1, description=$2, website_link=$3, price=$4, target_id=$5, owner_id=$6, clicks=$7, balnce=$8 WHERE id=$9;",
+		"UPDATE \"pad\" SET name=$1, description=$2, website_link=$3, price=$4, target_id=$5, owner_id=$6, clicks=$7, balance=$8 WHERE id=$9;",
 		pad.Name, pad.Description, pad.Website_link, pad.Price, pad.Target_id, pad.Owner_id, pad.Clicks, pad.Id, pad.Balance,
 	)
 	if err != nil {

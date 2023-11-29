@@ -4,6 +4,7 @@ import (
 	"AdHub/internal/pkg/entities"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +34,7 @@ func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) 
 		AdId:  adID,
 	})
 
-	/*pad_id, err := strconv.Atoi(padID)
+	pad_id, err := strconv.Atoi(padID)
 	if err != nil {
 		http.Error(w, "Padid cost to int error", http.StatusBadRequest)
 		return
@@ -51,14 +52,14 @@ func (mr *PublicRouter) RedirectHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		http.Error(w, "Pad update missing", http.StatusBadRequest)
 		return
-	}*/
+	}
 
-	/*ad.Budget -= ad.Click_cost
+	ad.Budget -= ad.Click_cost
 	err = mr.Ad.AdUpdate(ad)
 	if err != nil {
 		http.Error(w, "Ad update missing", http.StatusBadRequest)
 		return
-	}*/
+	}
 
 	website := "http://" + ad.Website_link
 
