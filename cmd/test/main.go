@@ -27,7 +27,7 @@ func main() {
 			});
 			
 			function fetchBanner() {
-				fetch("http://127.0.0.1:8080/api/v1/getad?id=4")
+				fetch("http://84.23.53.167:8080/api/v1/getad?id=1")
 				.then(response => {
 					console.log(response)
 					return response.text()

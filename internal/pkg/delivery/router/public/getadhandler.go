@@ -12,6 +12,10 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	back_addr = "http://84.23.53.167"
+)
+
 func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 	padIDStr := r.URL.Query().Get("id")
 	padID, err := strconv.Atoi(padIDStr)
@@ -93,14 +97,14 @@ func (mr *PublicRouter) GetBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uniqueLink := mr.addr + "/api/v1/redirect?id=" + token + "&pad=" + strconv.Itoa(pad.Id)
+	uniqueLink := back_addr + mr.addr + "/api/v1/redirect?id=" + token + "&pad=" + strconv.Itoa(pad.Id)
 	data := struct {
 		Link          string
 		ImageURL      string
 		Owner_Company string
 	}{
 		Link:          "http://" + uniqueLink,
-		ImageURL:      mr.addr + "/api/v1/file?file=" + ad.Image_link,
+		ImageURL:      back_addr + mr.addr + "/api/v1/file?file=" + ad.Image_link,
 		Owner_Company: owner.CompanyName,
 	}
 
