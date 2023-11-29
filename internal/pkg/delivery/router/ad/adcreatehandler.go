@@ -89,6 +89,7 @@ func (mr *AdRouter) AdCreateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error retrieving user", http.StatusInternalServerError)
 		return
 	}
+
 	currentBalance, err := mr.Balance.BalanceRead(user.BalanceId)
 	if currentBalance.Available_balance < newbudget {
 		mr.logger.Error("Недостаточно средства" + err.Error())

@@ -128,6 +128,19 @@ type MockTargetUseCaseInterfaceMockRecorder struct {
 	mock *MockTargetUseCaseInterface
 }
 
+// TargetRandom mocks the TargetRandom method of TargetUseCaseInterface.
+func (m *MockTargetUseCaseInterface) TargetRandom() ([]*entities.Target, error) {
+	ret := m.ctrl.Call(m, "TargetRandom")
+	ret0, _ := ret[0].([]*entities.Target)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TargetRandom indicates an expected call of TargetRandom.
+func (mr *MockTargetUseCaseInterfaceMockRecorder) TargetRandom() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TargetRandom", reflect.TypeOf((*MockTargetUseCaseInterface)(nil).TargetRandom))
+}
+
 // NewMockTargetUseCaseInterface creates a new mock instance.
 func NewMockTargetUseCaseInterface(ctrl *gomock.Controller) *MockTargetUseCaseInterface {
 	mock := &MockTargetUseCaseInterface{ctrl: ctrl}

@@ -18,14 +18,28 @@ func TestAdDeleteHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
+	mockUserUseCase := mock_entities.NewMockUserUseCaseInterface(ctrl)
+	mockBalanceUseCase := mock_entities.NewMockBalanceUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		Ad: mockAdUseCase,
+		Ad:      mockAdUseCase,
+		User:    mockUserUseCase,
+		Balance: mockBalanceUseCase,
 	}
 
 	testAd := entities.Ad{
 		Id:       1,
 		Owner_id: 123,
+	}
+
+	expectedUser := &entities.User{
+		Id:          1,
+		Login:       "testuser",
+		Password:    "test",
+		FName:       "test",
+		LName:       "test",
+		CompanyName: "Yandex",
+		Avatar:      "test.jpg",
 	}
 
 	// Setting up the expected calls and returns for the mock object
@@ -36,6 +50,10 @@ func TestAdDeleteHandler(t *testing.T) {
 	mockAdUseCase.EXPECT().
 		AdRemove(gomock.Eq(testAd.Id)).
 		Return(nil)
+
+	mockUserUseCase.EXPECT().UserReadById(123).Return(expectedUser, nil)
+
+	mockBalanceUseCase.EXPECT().BalanceUP(0.0, 0).Return(nil)
 
 	requestBody, _ := json.Marshal(map[string]int{
 		"ad_id": testAd.Id,

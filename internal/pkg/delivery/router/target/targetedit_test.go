@@ -29,7 +29,6 @@ func TestUpdateTargetHandler(t *testing.T) {
 	fakeTarget := &entities.Target{
 		Id:       fakeTargetID,
 		Owner_id: fakeUserID,
-		// Другие поля...
 	}
 
 	updatedName := "Updated Name"
@@ -41,8 +40,8 @@ func TestUpdateTargetHandler(t *testing.T) {
 		"id": 123,
 		"name": "Updated Name",
 		"gender": "Female",
-		"min_age": 30,
-		"max_age": 45,
+		"min_age": "30",
+		"max_age": "45",
 		"interests": "Interest1, Interest2",
 		"tags": "Tag1, Tag2",
 		"keys": "Key1, Key2",

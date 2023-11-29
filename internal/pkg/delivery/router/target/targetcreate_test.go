@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,62 +18,52 @@ func TestCreateTargetHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// Mock dependencies
 	mockTargetUseCase := mock_entities.NewMockTargetUseCaseInterface(ctrl)
 
-	targetRouter := TargetRouter{
+	// Create handler
+	tr := &TargetRouter{
 		Target: mockTargetUseCase,
 	}
 
-	// Подготовка тестовых данных
+	// Prepare request body
+	requestBody, _ := json.Marshal(map[string]string{
+		"name":      "SampleName",
+		"gender":    "SampleGender",
+		"min_age":   "18",
+		"max_age":   "35",
+		"interests": "Interest1, Interest2",
+		"tags":      "Tag1, Tag2",
+		"keys":      "Key1, Key2",
+		"regions":   "Region1, Region2",
+	})
+
+	// Create test request
+	req := httptest.NewRequest(http.MethodPost, "/target", bytes.NewBuffer(requestBody))
+	req = req.WithContext(context.WithValue(req.Context(), "userId", 1)) // Set mock user ID in context
+	rr := httptest.NewRecorder()
+
+	// Set expectations on mocks
 	newTarget := entities.Target{
-		Name:      "Test Target",
+		Name:      "SampleName",
 		Owner_id:  1,
-		Gender:    "any",
+		Gender:    "SampleGender",
 		Min_age:   18,
 		Max_age:   35,
-		Interests: []string{"music", "sports"},
-		Tags:      []string{"tag1", "tag2"},
-		Keys:      []string{"key1", "key2"},
-		Regions:   []string{"region1", "region2"},
+		Interests: []string{"Interest1", "Interest2"},
+		Tags:      []string{"Tag1", "Tag2"},
+		Keys:      []string{"Key1", "Key2"},
+		Regions:   []string{"Region1", "Region2"},
 	}
+	mockTargetUseCase.EXPECT().TargetCreate(&newTarget).Return(&newTarget, nil)
 
-	//todo: саша, эта структурка специально для тебя:
-	//reqData := struct {
-	//	Name      string `json:"name"`
-	//	Gender    string `json:"gender"`
-	//	MinAge    string `json:"min_age"`
-	//	MaxAge    string `json:"max_age"`
-	//	Interests string `json:"interests"`
-	//	Tags      string `json:"tags"`
-	//	Keys      string `json:"keys"`
-	//	Regions   string `json:"regions"`
-	//}{
-	//	Name:      newTarget.Name,
-	//	Gender:    newTarget.Gender,
-	//	MinAge:    strconv.Itoa(newTarget.Min_age),
-	//	MaxAge:    strconv.Itoa(newTarget.Max_age),
-	//	Interests: strings.Join(newTarget.Interests, ", "),
-	//	Tags:      strings.Join(newTarget.Tags, ", "),
-	//	Keys:      strings.Join(newTarget.Keys, ", "),
-	//	Regions:   strings.Join(newTarget.Regions, ", "),
-	//}
-	//todo: ее нужно подсунуть сюда, но оно не пускает ее:
-	mockTargetUseCase.EXPECT().TargetCreate(gomock.Any()).Return(&newTarget, nil)
+	// Call the handler
+	tr.CreateTargetHandler(rr, req)
 
-	requestBody, _ := json.Marshal(newTarget)
-	req := httptest.NewRequest("POST", "/target/create", bytes.NewReader(requestBody))
-	req = req.WithContext(context.WithValue(req.Context(), "userId", newTarget.Owner_id))
-	rec := httptest.NewRecorder()
+	// Assert response
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	var response entities.Target
+	json.NewDecoder(rr.Body).Decode(&response)
+	assert.Equal(t, newTarget, response)
 
-	targetRouter.CreateTargetHandler(rec, req)
-
-	// Проверка ответа
-	if rec.Code != http.StatusCreated {
-		t.Errorf("Expected HTTP status %d, but got %d", http.StatusCreated, rec.Code)
-	}
-
-	expectedBody, _ := json.Marshal(&newTarget)
-	if rec.Body.String() != string(expectedBody) {
-		t.Errorf("Response body does not match the expected value.\nExpected: %s\nActual: %s", string(expectedBody), rec.Body.String())
-	}
 }

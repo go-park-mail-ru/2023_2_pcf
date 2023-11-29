@@ -18,10 +18,13 @@ func TestAdCreateHandler(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
+	mockUserUseCase := mock_entities.NewMockUserUseCaseInterface(ctrl)
+	mockBalanceUseCase := mock_entities.NewMockBalanceUseCaseInterface(ctrl)
 
 	adRouter := AdRouter{
-		Ad: mockAdUseCase,
-		// Возможно, вам также потребуется мок логгера и других зависимостей
+		Ad:      mockAdUseCase,
+		User:    mockUserUseCase,
+		Balance: mockBalanceUseCase,
 	}
 
 	// Подготовка тела запроса в виде формы
@@ -31,6 +34,7 @@ func TestAdCreateHandler(t *testing.T) {
 	formData.Set("website_link", "https://example.com")
 	formData.Set("budget", "100")
 	formData.Set("target_id", "1")
+	formData.Set("click_cost", "1.0")
 
 	expectedAd := &entities.Ad{
 		Name:         "Test Ad",
@@ -40,9 +44,30 @@ func TestAdCreateHandler(t *testing.T) {
 		Image_link:   "fake_image_link",
 		Owner_id:     1,
 		Target_id:    1,
+		Click_cost:   1,
+	}
+
+	expectedUser := &entities.User{
+		Id:          1,
+		Login:       "testuser",
+		Password:    "test",
+		FName:       "test",
+		LName:       "test",
+		CompanyName: "Yandex",
+		Avatar:      "test.jpg",
+	}
+
+	expectedBalance := &entities.Balance{
+		Id:                1,
+		Total_balance:     1000.0,
+		Reserved_balance:  100.0,
+		Available_balance: 900.0,
 	}
 
 	mockAdUseCase.EXPECT().AdCreate(gomock.Any()).Return(expectedAd, nil)
+	mockUserUseCase.EXPECT().UserReadById(1).Return(expectedUser, nil)
+	mockBalanceUseCase.EXPECT().BalanceRead(0).Return(expectedBalance, nil)
+	mockBalanceUseCase.EXPECT().BalanceReserve(100.0, 1).Return(nil)
 
 	// Создание тестового запроса с данными формы
 	userId := 1
@@ -59,7 +84,7 @@ func TestAdCreateHandler(t *testing.T) {
 	}
 
 	// Проверка тела ответа
-	expectedResponse := `{"id":0,"name":"Test Ad","description":"This is a test ad","website_link":"https://example.com","budget":100,"target_id":1,"image_link":"fake_image_link","Owner_id":1}`
+	expectedResponse := `{"id":0,"name":"Test Ad","description":"This is a test ad","website_link":"https://example.com","budget":100,"target_id":1,"image_link":"fake_image_link","Owner_id":1,"click_cost":1}`
 	if rec.Body.String() != expectedResponse {
 		t.Errorf("Response body does not match the expected value.\nExpected: %s\nActual: %s", expectedResponse, rec.Body.String())
 	}

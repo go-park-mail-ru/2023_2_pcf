@@ -133,6 +133,20 @@ type MockAdUseCaseInterfaceMockRecorder struct {
 	mock *MockAdUseCaseInterface
 }
 
+// AdByTarget mocks base method.
+func (m *MockAdUseCaseInterface) AdByTarget(id int) ([]*entities.Ad, error) {
+	ret := m.ctrl.Call(m, "AdByTarget", id)
+	ret0, _ := ret[0].([]*entities.Ad)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AdByTarget indicates an expected call of AdByTarget.
+func (mr *MockAdUseCaseInterfaceMockRecorder) AdByTarget(id interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdByTarget", reflect.TypeOf((*MockAdUseCaseInterface)(nil).AdByTarget), id)
+}
+
+
 // NewMockAdUseCaseInterface creates a new mock instance.
 func NewMockAdUseCaseInterface(ctrl *gomock.Controller) *MockAdUseCaseInterface {
 	mock := &MockAdUseCaseInterface{ctrl: ctrl}

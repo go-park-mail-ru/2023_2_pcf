@@ -6,72 +6,68 @@ import (
 	"AdHub/internal/pkg/entities/mock_entities"
 	"bytes"
 	"context"
-	"encoding/json"
 	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 )
 
-func TestAdEditHandler(t *testing.T) {
+func TestAdUpdateHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// Mock dependencies
 	mockAdUseCase := mock_entities.NewMockAdUseCaseInterface(ctrl)
 	mockSession := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
-	mockFileUseCase := mock_entities.NewMockFileUseCaseInterface(ctrl)
 
-	adRouter := AdRouter{
+	// Create handler
+	mr := &AdRouter{
 		Ad:      mockAdUseCase,
 		Session: mockSession,
-		File:    mockFileUseCase,
 	}
 
-	// Задаём тестовые данные и ожидания
-	fakeAdId := 123
-	userID := 1
-	fakeAd := &entities.Ad{
-		Id:       fakeAdId,
-		Owner_id: userID,
-		// Заполните другие поля, если это необходимо
+	// Sample ad data
+	currentAd := &entities.Ad{
+		Owner_id:     1,
+		Name:         "Old Ad",
+		Description:  "Old Description",
+		Website_link: "http://oldwebsite.com",
+		Budget:       50.0,
+		Target_id:    2,
+		Click_cost:   1.0,
+		Image_link:   "oldimage.jpg",
 	}
 
-	updatedName := "Updated Name"
-	updateRequest := struct {
-		AdId int     `json:"ad_id"`
-		Name *string `json:"name"`
-		// Остальные поля заполнены, если необходимо
-	}{
-		AdId: fakeAdId,
-		Name: &updatedName,
-	}
+	// Prepare request body with multipart form data
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	_ = writer.WriteField("ad_id", "1")
+	_ = writer.WriteField("name", "Updated Ad")
+	_ = writer.WriteField("description", "Updated Description")
+	_ = writer.WriteField("website_link", "http://updatedwebsite.com")
+	_ = writer.WriteField("budget", "100.50")
+	_ = writer.WriteField("target_id", "3")
+	_ = writer.WriteField("click_cost", "1.5")
+	// Add other fields as needed
+	writer.Close()
 
-	mockAdUseCase.EXPECT().
-		AdRead(gomock.Eq(fakeAdId)).
-		Return(fakeAd, nil)
-
-	mockAdUseCase.EXPECT().
-		AdUpdate(gomock.Any()).
-		DoAndReturn(func(ad *entities.Ad) error {
-			assert.Equal(t, updatedName, ad.Name) // Убедитесь, что имя было обновлено
-			return nil
-		})
-
-	adUpdateJSON, _ := json.Marshal(updateRequest)
-
-	req, _ := http.NewRequest("POST", "/ad/update", bytes.NewBuffer(adUpdateJSON))
-	req = mux.SetURLVars(req, map[string]string{"ad_id": strconv.Itoa(fakeAdId)}) // установка переменных для маршрута, если они используются
+	// Create test request
+	req := httptest.NewRequest(http.MethodPost, "/ad/update", body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	userID := 1 // Sample user ID
+	req = req.WithContext(context.WithValue(req.Context(), "userId", userID))
 	rr := httptest.NewRecorder()
 
-	// Установка контекста с user ID, как если бы middleware аутентификации уже было выполнено
-	ctx := context.WithValue(req.Context(), "userId", userID)
-	req = req.WithContext(ctx)
+	// Set expectations on mocks
+	mockAdUseCase.EXPECT().AdRead(gomock.Any()).Return(currentAd, nil)
+	mockAdUseCase.EXPECT().AdUpdate(gomock.Any()).Return(nil)
 
-	adRouter.AdUpdateHandler(rr, req)
+	// Call the handler
+	mr.AdUpdateHandler(rr, req)
 
-	// Проверяем код ответа
+	// Assert response
 	assert.Equal(t, http.StatusOK, rr.Code)
+
 }

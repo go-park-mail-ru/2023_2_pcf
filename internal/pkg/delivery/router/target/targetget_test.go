@@ -30,8 +30,7 @@ func TestGetTargetHandler(t *testing.T) {
 	fakeTarget := &entities.Target{
 		Id:       1,
 		Name:     "Test Target",
-		Owner_id: 1, // ID владельца
-		// Другие поля...
+		Owner_id: 1,
 	}
 
 	// Настройка ожидаемых вызовов
