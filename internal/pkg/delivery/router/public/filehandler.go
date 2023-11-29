@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (mr *UserRouter) FileHandler(w http.ResponseWriter, r *http.Request) {
+func (mr *PublicRouter) FileHandler(w http.ResponseWriter, r *http.Request) {
 	filename := r.URL.Query().Get("file")
 	fileData, err := mr.File.Get(filename)
 	if err != nil {

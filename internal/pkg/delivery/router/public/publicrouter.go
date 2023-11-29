@@ -19,9 +19,10 @@ type PublicRouter struct {
 	Target   entities.TargetUseCaseInterface
 	Pad      entities.PadUseCaseInterface
 	SelectUC api.SelectClient
+	File     entities.FileUseCaseInterface
 }
 
-func NewPublicRouter(r *mux.Router, addr string, UserUC entities.UserUseCaseInterface, ULinkUC entities.ULinkUseCaseInterface, AdUC entities.AdUseCaseInterface, TargetUC entities.TargetUseCaseInterface, PadUC entities.PadUseCaseInterface, Select api.SelectClient, log logger.Logger) *PublicRouter {
+func NewPublicRouter(r *mux.Router, addr string, FileUC entities.FileUseCaseInterface, UserUC entities.UserUseCaseInterface, ULinkUC entities.ULinkUseCaseInterface, AdUC entities.AdUseCaseInterface, TargetUC entities.TargetUseCaseInterface, PadUC entities.PadUseCaseInterface, Select api.SelectClient, log logger.Logger) *PublicRouter {
 	return &PublicRouter{
 		addr:     addr,
 		router:   r,
@@ -32,12 +33,14 @@ func NewPublicRouter(r *mux.Router, addr string, UserUC entities.UserUseCaseInte
 		Target:   TargetUC,
 		Pad:      PadUC,
 		SelectUC: Select,
+		File:     FileUC,
 	}
 }
 
 func ConfigureRouter(ar *PublicRouter) {
 	ar.router.HandleFunc("/redirect", ar.RedirectHandler).Methods("GET", "OPTIONS")
 	ar.router.HandleFunc("/getad", ar.GetBanner).Methods("GET", "OPTIONS")
+	ar.router.HandleFunc("/file", ar.FileHandler).Methods("GET", "OPTIONS")
 
 	ar.router.Use(middleware.Pub_CORS)
 	ar.router.Use(middleware.Logger(ar.logger))
