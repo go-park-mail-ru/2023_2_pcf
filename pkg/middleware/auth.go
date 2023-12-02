@@ -4,7 +4,6 @@ import (
 	"AdHub/internal/pkg/entities"
 	"AdHub/proto/api"
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -34,8 +33,6 @@ func Auth(ss interface{}, csrfUc entities.CsrfUseCaseInterface) func(next http.H
 			}
 
 			userId, err := ss.GetUserId(context.Background(), &api.GetRequest{Token: sessionToken.Value})
-			fmt.Print("12345678\n")
-			fmt.Println(userId)
 			if err != nil {
 				http.Error(w, "User not found", http.StatusUnauthorized)
 				return
