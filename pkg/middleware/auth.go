@@ -76,7 +76,7 @@ func Auth(ss interface{}, csrfUc entities.CsrfUseCaseInterface) func(next http.H
 			}
 			http.SetCookie(w, cookie)
 
-			ctx := context.WithValue(r.Context(), "userId", userId)
+			ctx := context.WithValue(r.Context(), "userId", int(userId.Id))
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
