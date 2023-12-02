@@ -48,12 +48,12 @@ func Auth(ss interface{}, csrfUc entities.CsrfUseCaseInterface) func(next http.H
 
 			csrfFromDb, err := csrfUc.GetByUserId(int(userId.Id))
 			if err != nil {
-				http.Error(w, "CSRF err", http.StatusForbidden)
+				http.Error(w, "CSRF err1", http.StatusForbidden)
 				return
 			}
 
 			if csrfFromDb.Token != csrfToken.Value {
-				http.Error(w, "CSRF err", http.StatusForbidden)
+				http.Error(w, "CSRF err2", http.StatusForbidden)
 				return
 			}
 
