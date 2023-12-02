@@ -1,66 +1,66 @@
 package middleware
 
-//
-//func TestAuthMiddlewareWithCsrf(t *testing.T) {
-//	ctrl := gomock.NewController(t)
-//	defer ctrl.Finish()
-//
-//	mockSession := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
-//	mockCsrf := mock_entities.NewMockCsrfUseCaseInterface(ctrl)
-//
-//	authMiddleware := Auth(mockSession, mockCsrf)
-//
-//	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//		userID := r.Context().Value("userId")
-//		if userID != nil {
-//			w.WriteHeader(http.StatusOK)
-//		} else {
-//			w.WriteHeader(http.StatusUnauthorized)
-//		}
-//	})
-//
-//	server := httptest.NewServer(authMiddleware(testHandler))
-//	defer server.Close()
-//
-//	userId := 1
-//	sessionTokenValue := "testToken"
-//	csrfTokenValue := "testCsrfToken"
-//	newCsrfTokenValue := "newTestCsrfToken"
-//
-//	// Mocking session token validation
-//	//mockSession.EXPECT().GetUserID(sessionTokenValue).Return(userId, nil).AnyTimes()
-//
-//	// Mocking CSRF token validation
-//	csrfEntity := &entities.Csrf{Token: csrfTokenValue}
-//	mockCsrf.EXPECT().GetByUserId(userId).Return(csrfEntity, nil).AnyTimes()
-//	mockCsrf.EXPECT().CsrfRemove(csrfEntity).Return(nil).AnyTimes()
-//	mockCsrf.EXPECT().CsrfCreate(userId).Return(&entities.Csrf{Token: newCsrfTokenValue}, nil).AnyTimes()
-//
-//	// Creating request with valid session and CSRF tokens
-//	req, err := http.NewRequest("GET", server.URL, nil)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	req.AddCookie(&http.Cookie{Name: "session_token", Value: sessionTokenValue})
-//	req.AddCookie(&http.Cookie{Name: "csrf_token", Value: csrfTokenValue})
-//
-//	// Sending request
-//	resp, err := http.DefaultClient.Do(req)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	defer resp.Body.Close()
-//
-//	// Verifying the status code
-//	assert.Equal(t, http.StatusOK, resp.StatusCode)
-//
-//	// Verifying the CSRF cookie
-//	csrfCookieFound := false
-//	for _, cookie := range resp.Cookies() {
-//		if cookie.Name == "csrf_token" && cookie.Value == newCsrfTokenValue {
-//			csrfCookieFound = true
-//			break
-//		}
-//	}
-//	assert.True(t, csrfCookieFound)
-//}
+import (
+	mock_entities2 "AdHub/auth/pkg/entities/mock_entities"
+	"AdHub/internal/pkg/entities"
+	"AdHub/internal/pkg/entities/mock_entities"
+	"AdHub/proto/api"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+func TestAuthMiddleware(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockSessionClient := mock_entities2.NewMockSessionUseCaseInterface(ctrl)
+	mockCsrfUseCase := mock_entities.NewMockCsrfUseCaseInterface(ctrl)
+
+	authMiddleware := Auth(mockSessionClient, mockCsrfUseCase)
+
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Test handler logic
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Set up test server
+	server := httptest.NewServer(authMiddleware(testHandler))
+	defer server.Close()
+
+	// Define test cases
+	testCases := []struct {
+		name           string
+		path           string
+		setupMocks     func()
+		expectedStatus int
+	}{
+		{
+			name: "Valid Session and CSRF Token",
+			path: "/api/v1/test",
+			setupMocks: func() {
+				mockSessionClient.EXPECT().GetUserId(gomock.Any(), gomock.Any()).Return(&api.GetResponse{Id: 1}, nil)
+				mockCsrfUseCase.EXPECT().GetByUserId(1).Return(&entities.Csrf{Token: "validCsrfToken"}, nil)
+				mockCsrfUseCase.EXPECT().CsrfRemove(gomock.Any()).Return(nil)
+				mockCsrfUseCase.EXPECT().CsrfCreate(1).Return(&entities.Csrf{Token: "newCsrfToken"}, nil)
+			},
+			expectedStatus: http.StatusOK,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.setupMocks()
+
+			req, _ := http.NewRequest("GET", server.URL+tc.path, nil)
+			req.AddCookie(&http.Cookie{Name: "session_token", Value: "validSessionToken"})
+			req.AddCookie(&http.Cookie{Name: "csrf_token", Value: "validCsrfToken"})
+
+			resp, _ := http.DefaultClient.Do(req)
+
+			assert.Equal(t, tc.expectedStatus, resp.StatusCode)
+		})
+	}
+}
