@@ -14,6 +14,7 @@ import (
 	"testing"
 )
 
+// todo: ПЕРЕДАВАТЬ ИНТ А НЕ СТРИНГ!!!!!!!!!!!!!
 func TestBalanceReplenishHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

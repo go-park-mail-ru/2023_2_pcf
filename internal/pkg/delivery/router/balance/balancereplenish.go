@@ -3,12 +3,11 @@ package router
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 )
 
 func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Amount string `json:"amount"`
+		Amount int `json:"amount"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -19,12 +18,14 @@ func (br *BalanceRouter) BalanceReplenishHandler(w http.ResponseWriter, r *http.
 	}
 	defer r.Body.Close()
 
-	amount, err := strconv.ParseFloat(request.Amount, 64)
-	if err != nil {
-		br.logger.Error("Invalid amount: " + err.Error())
-		http.Error(w, "Invalid amount", http.StatusBadRequest)
-		return
-	}
+	var amount float64 = float64(request.Amount)
+
+	//amount, err := strconv.ParseFloat(request.Amount, 64)
+	//if err != nil {
+	//	br.logger.Error("Invalid amount: " + err.Error())
+	//	http.Error(w, "Invalid amount", http.StatusBadRequest)
+	//	return
+	//}
 
 	// Проверка на отрицательность (нельзя пополнить баланс на отрицательное значение)
 	if amount <= 0 {
