@@ -20,6 +20,7 @@ type TargetRepoInterface interface {
 	Update(s *Target) error
 	Read(id int) (*Target, error)
 	ReadList(id int) ([]*Target, error)
+	ReadRandom() ([]*Target, error)
 }
 
 type TargetUseCaseInterface interface {
@@ -28,4 +29,5 @@ type TargetUseCaseInterface interface {
 	TargetReadList(id int) ([]*Target, error)
 	TargetRemove(id int) error
 	TargetUpdate(s *Target) error
+	TargetRandom() ([]*Target, error)
 }

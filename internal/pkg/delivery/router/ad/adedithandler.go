@@ -15,6 +15,7 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		WebsiteLink string `json:"website_link"`
 		Budget      string `json:"budget"`
 		TargetId    string `json:"target_id"`
+		Click_cost  string `json:"click_cost"`
 	}
 
 	var image string
@@ -53,6 +54,8 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	request.Budget = r.FormValue("budget")
 	request.TargetId = r.FormValue("target_id")
 	request.AdId = r.FormValue("ad_id")
+	request.Click_cost = r.FormValue("click_cost")
+
 	uidAny := r.Context().Value("userId")
 
 	uid, ok := uidAny.(int)
@@ -66,6 +69,13 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		mr.logger.Error("Error budget parse" + err.Error())
 		http.Error(w, "Error budget parse", http.StatusInternalServerError)
+		return
+	}
+
+	newclickcost, err := strconv.ParseFloat(request.Click_cost, 64)
+	if err != nil {
+		mr.logger.Error("Error click cost parse" + err.Error())
+		http.Error(w, "Error click cost parse", http.StatusInternalServerError)
 		return
 	}
 
@@ -115,6 +125,9 @@ func (mr *AdRouter) AdUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if image != "" {
 		currentAd.Image_link = image
+	}
+	if request.Click_cost != "" {
+		currentAd.Click_cost = newclickcost
 	}
 
 	// Обновление данных рекламы в базе данных

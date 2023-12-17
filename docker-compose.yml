@@ -8,11 +8,21 @@ services:
     command: ./authms
     ports:
       - 8082:8082
+      - 8084:8084
     depends_on:
       redis:
         condition: service_healthy
     links:
       - redis 
+
+  select:
+    build: 
+      context: ./
+      dockerfile: SelectDockerfile
+    command: ./selectms
+    ports:
+      - 8083:8083
+      - 8085:8085
 
   apiserver:
     build: 
@@ -24,12 +34,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    links:
+      - redis 
 
   db:
     restart: always
     image: postgres:latest
     volumes:
-      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "zxc123"
@@ -52,3 +66,20 @@ services:
       interval: 5s
       timeout: 2s
       retries: 3
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./configs/prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - apiserver
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+
+  node-exporter:
+    image: prom/node-exporter

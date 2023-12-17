@@ -10,7 +10,9 @@
 *.dll
 *.so
 *.dylib
-
+apiserver
+selectms
+authms
 # Временные файлы компиляции
 *.o
 *.obj

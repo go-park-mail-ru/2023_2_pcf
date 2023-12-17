@@ -50,6 +50,7 @@ func (mr *PadRouter) PadCreateHandler(w http.ResponseWriter, r *http.Request) {
 		Price:        newbudget, // Преобразование int в float64
 		Owner_id:     uid,       // Укажите нужное значение Owner_id
 		Target_id:    target,    // Укажите нужное значение Target_id
+		Clicks:       0,
 	}
 
 	newPad, err := mr.Pad.PadCreate(&pad)

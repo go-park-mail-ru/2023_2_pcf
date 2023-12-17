@@ -33,3 +33,7 @@ func (uc *AdUseCase) AdRemove(id int) error {
 func (uc *AdUseCase) AdUpdate(s *entities.Ad) error {
 	return uc.repo.Update(s)
 }
+
+func (uc *AdUseCase) AdByTarget(id int) ([]*entities.Ad, error) {
+	return uc.repo.ReaByTarget(id)
+}

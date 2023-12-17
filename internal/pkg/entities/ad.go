@@ -9,6 +9,7 @@ type Ad struct {
 	Target_id    int     `json:"target_id"`    //таргетинг
 	Image_link   string  `json:"image_link"`   //баннер(картинка)
 	Owner_id     int     `json:"owner_id`      // id владельца
+	Click_cost   float64 `json:"click_cost"`
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=ad.go -destination=mock_entities/ad_mock.go
@@ -18,6 +19,7 @@ type AdRepoInterface interface {
 	Update(s *Ad) error
 	Read(id int) ([]*Ad, error)
 	Get(id int) (*Ad, error)
+	ReaByTarget(id int) ([]*Ad, error)
 }
 
 type AdUseCaseInterface interface {
@@ -26,4 +28,5 @@ type AdUseCaseInterface interface {
 	AdRead(id int) (*Ad, error)
 	AdRemove(id int) error
 	AdUpdate(s *Ad) error
+	AdByTarget(id int) ([]*Ad, error)
 }

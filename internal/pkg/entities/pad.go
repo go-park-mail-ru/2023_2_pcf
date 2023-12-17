@@ -6,8 +6,10 @@ type Pad struct {
 	Description  string  `json:"description"`  // описание
 	Website_link string  `json:"website_link"` // cайт
 	Price        float64 `json:"price"`        // бюджет
-	Target_id    int     `json:"target_id"`    //таргетинг
+	Target_id    int     `json:"target_id"`    // таргетинг
 	Owner_id     int     `json:"owner_id`      // id владельца
+	Clicks       int     `json:"clicks"`       // Клики
+	Balance      float64 `json:"balance"`      // Заработанные деньги
 }
 
 //go:generate /Users/bincom/go/bin/mockgen -source=pad.go -destination=mock_entities/pad_mock.go

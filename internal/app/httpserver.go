@@ -13,12 +13,16 @@ import (
 	"AdHub/internal/pkg/usecases/file"
 	"AdHub/internal/pkg/usecases/pad"
 	"AdHub/internal/pkg/usecases/target"
+	"AdHub/internal/pkg/usecases/ulink"
 	"AdHub/internal/pkg/usecases/user"
+	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/db"
 	"AdHub/pkg/logger"
+	"AdHub/pkg/middleware"
+	"AdHub/proto/api"
 	"net/http"
 
-	"AdHub/proto/api"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc"
@@ -37,6 +41,14 @@ func New(config *Config) *HTTPServer {
 func (s *HTTPServer) Start() error {
 	log := logger.NewLogrusLogger(s.config.LogLevel)
 	DB := db.New(s.config.DataBase)
+	Redis := SessionStorage.New(s.config.Redis_addr, s.config.Redis_password, s.config.Redis_db_ul)
+
+	ULinkRepo, err := repo.NewULinkRepo(Redis)
+	if err != nil {
+		log.Error("Ad repo error: " + err.Error())
+	}
+
+	ULinkUC := ulink.New(ULinkRepo)
 
 	FileRepo := repo.NewFileRepository(s.config.File_path)
 	UserRepo, err := repo.NewUserRepo(DB)
@@ -65,23 +77,27 @@ func (s *HTTPServer) Start() error {
 		log.Error("Auth Micro Service: " + err.Error())
 	}
 
+	selectconn, err := grpc.Dial(s.config.SelectBindAddr, grpc.WithInsecure())
+
 	FileUC := file.New(FileRepo)
 	SessionMS := api.NewSessionClient(authconn)
+	SelectMS := api.NewSelectClient(selectconn)
 	AdUC := ad.New(AdRepo)
 	UserUC := user.New(UserRepo)
 	BalanceUC := balance.New(BalanceRepo)
 	TargetUC := target.New(TargetRepo)
 	PadUC := pad.New(PadRepo)
 	rout := mux.NewRouter()
+	rout.Use(middleware.MetricsMiddleware)
 
 	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionMS, FileUC, BalanceUC, log)
 	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, log)
 	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, PadUC, log)
 	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionMS, log)
 	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
-	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, log)
-
+	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), s.config.BindAddr, UserUC, ULinkUC, AdUC, TargetUC, PadUC, SelectMS, log)
 	http.Handle("/", rout)
+	rout.Handle("/metrics", promhttp.Handler())
 
 	UserRouter.ConfigureRouter(userrouter)
 	AdRouter.ConfigureRouter(adrouter)

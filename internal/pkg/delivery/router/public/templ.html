@@ -1,0 +1,25 @@
+<div id="banner-container"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetchBanner();
+});
+
+function fetchBanner() {
+    const padId = '123'; // Замените на нужный ID
+    fetch(`/getad?id=${padId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const bannerContainer = document.getElementById('banner-container');
+            bannerContainer.innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+}
+</script>
