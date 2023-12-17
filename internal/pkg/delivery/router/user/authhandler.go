@@ -2,6 +2,8 @@ package router
 
 import (
 	"AdHub/internal/pkg/entities"
+	"AdHub/proto/api"
+	"context"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -35,7 +37,7 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Проверка пароля
 	if user.Password == userFromDB.Password {
-		newSession, err := mr.Session.Auth(userFromDB)
+		newSession, err := mr.Session.Auth(context.Background(), &api.AuthRequest{Id: int64(userFromDB.Id), Login: userFromDB.Login, Password: userFromDB.Password, FName: userFromDB.FName, LName: userFromDB.LName, CompanyName: userFromDB.CompanyName, Avatar: userFromDB.Avatar, BalanceId: int64(userFromDB.BalanceId)})
 		if err != nil {
 			mr.logger.Error("Error while token generation" + err.Error())
 			http.Error(w, "Error while token gen", http.StatusInternalServerError)
@@ -44,7 +46,7 @@ func (mr *UserRouter) AuthHandler(w http.ResponseWriter, r *http.Request) {
 		//Кукисет и возврат ответа (успех)
 		cookie := &http.Cookie{
 			Name:     "session_token",
-			Value:    newSession.Token,
+			Value:    newSession.GetToken(),
 			Expires:  time.Now().Add(10 * time.Hour),
 			HttpOnly: true,
 			Domain:   "127.0.0.1",

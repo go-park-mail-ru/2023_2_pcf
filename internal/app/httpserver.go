@@ -12,15 +12,16 @@ import (
 	"AdHub/internal/pkg/usecases/balance"
 	"AdHub/internal/pkg/usecases/file"
 	"AdHub/internal/pkg/usecases/pad"
-	"AdHub/internal/pkg/usecases/session"
 	"AdHub/internal/pkg/usecases/target"
 	"AdHub/internal/pkg/usecases/user"
-	"AdHub/pkg/SessionStorage"
 	"AdHub/pkg/db"
 	"AdHub/pkg/logger"
 	"net/http"
 
+	"AdHub/proto/api"
+
 	"github.com/gorilla/mux"
+	"google.golang.org/grpc"
 )
 
 type HTTPServer struct {
@@ -36,7 +37,6 @@ func New(config *Config) *HTTPServer {
 func (s *HTTPServer) Start() error {
 	log := logger.NewLogrusLogger(s.config.LogLevel)
 	DB := db.New(s.config.DataBase)
-	Redis := SessionStorage.New(s.config.Redis_addr, s.config.Redis_password, s.config.Redis_db)
 
 	FileRepo := repo.NewFileRepository(s.config.File_path)
 	UserRepo, err := repo.NewUserRepo(DB)
@@ -44,10 +44,6 @@ func (s *HTTPServer) Start() error {
 		log.Error("User repo error: " + err.Error())
 	}
 	AdRepo, err := repo.NewAdRepo(DB)
-	if err != nil {
-		log.Error("Ad repo error: " + err.Error())
-	}
-	SessionRepo, err := repo.NewSessionRepo(Redis)
 	if err != nil {
 		log.Error("Ad repo error: " + err.Error())
 	}
@@ -64,8 +60,13 @@ func (s *HTTPServer) Start() error {
 		log.Error("Pad repo error: " + err.Error())
 	}
 
+	authconn, err := grpc.Dial(s.config.AuthBindAddr, grpc.WithInsecure())
+	if err != nil {
+		log.Error("Auth Micro Service: " + err.Error())
+	}
+
 	FileUC := file.New(FileRepo)
-	SessionUC := session.New(SessionRepo)
+	SessionMS := api.NewSessionClient(authconn)
 	AdUC := ad.New(AdRepo)
 	UserUC := user.New(UserRepo)
 	BalanceUC := balance.New(BalanceRepo)
@@ -73,11 +74,11 @@ func (s *HTTPServer) Start() error {
 	PadUC := pad.New(PadRepo)
 	rout := mux.NewRouter()
 
-	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionUC, FileUC, BalanceUC, log)
-	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionUC, FileUC, BalanceUC, log)
-	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionUC, FileUC, BalanceUC, PadUC, log)
-	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionUC, log)
-	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionUC, log)
+	userrouter := UserRouter.NewUserRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, SessionMS, FileUC, BalanceUC, log)
+	adrouter := AdRouter.NewAdRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, log)
+	padrouter := PadRouter.NewPadRouter(s.config.BindAddr, rout.PathPrefix("/api/v1").Subrouter(), AdUC, UserUC, SessionMS, FileUC, BalanceUC, PadUC, log)
+	balancerouter := BalanceRouter.NewBalanceRouter(rout.PathPrefix("/api/v1").Subrouter(), UserUC, BalanceUC, SessionMS, log)
+	targetrouter := TargetRouter.NewTargetRouter(rout.PathPrefix("/api/v1").Subrouter(), TargetUC, SessionMS, log)
 	publicRouter := PublicRouter.NewPublicRouter(rout.PathPrefix("/api/v1").Subrouter(), AdUC, log)
 
 	http.Handle("/", rout)
